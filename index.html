@@ -11,7 +11,337 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700;1,800&family=Barlow:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
-<link rel="stylesheet" href="css/style.css">
+<style>
+/*
+ * Tableau de bord — thème "néon de Miami" (couchant rose/orange/violet, cyan, nuit violette)
+ *
+ * Toutes les tailles sont en "rem". Le script ajuste la taille de base pour que
+ * la maquette (pensée pour 1024 x 768) tienne toujours entièrement à l'écran.
+ * NB : Safari iOS 12 ne gère pas "gap" en flexbox -> marges ou grid-gap.
+ */
+:root {
+  --bg: #100a20;
+  --card: rgba(29, 19, 54, .92);
+  --card2: #2a1c4a;
+  --line: #36265e;
+  --text: #fff3fb;
+  --muted: #b9a3d6;
+  --dim: #7d6aa0;
+  --pink: #ff3fa4;
+  --cyan: #2de2e6;
+  --orange: #ff9e4f;
+  --purple: #a66bff;
+  --sunset: linear-gradient(90deg, #ff9e4f, #ff3fa4 55%, #a66bff);
+  --cond: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 10px; }
+html, body { height: 100%; }
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 90% -10%, rgba(255, 63, 164, .22), transparent 55%),
+    radial-gradient(ellipse at 10% 115%, rgba(45, 226, 230, .14), transparent 50%);
+  color: var(--text);
+  font-family: "Barlow", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+  -webkit-text-size-adjust: 100%;
+  overflow: hidden;
+}
+button { font: inherit; color: inherit; background: none; border: 0; -webkit-appearance: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+/* ---------- Structure : barre latérale + pages ---------- */
+.app {
+  position: relative;
+  width: 100%; height: 100%;
+  display: grid;
+  grid-template-columns: 8.6rem 1fr;
+}
+/* Toujours en paysage : si l'iPad est en portrait, on fait pivoter l'affichage */
+@media (orientation: portrait) {
+  .app {
+    position: absolute; top: 0; left: 100vw;
+    width: 100vh; height: 100vw;
+    -webkit-transform-origin: top left; transform-origin: top left;
+    -webkit-transform: rotate(90deg); transform: rotate(90deg);
+  }
+}
+
+#side {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 1.4rem 0 1.4rem;
+  background: rgba(14, 8, 28, .85);
+  border-right: 1px solid rgba(255, 63, 164, .18);
+}
+.logo { text-align: center; margin-bottom: 2rem; }
+.logo svg { width: 5rem; height: 5rem; display: block; margin: 0 auto; }
+.logo-t {
+  font-family: var(--cond); font-style: italic; font-weight: 800;
+  font-size: 1.5rem; letter-spacing: .25rem; margin-top: .3rem;
+  color: var(--pink);
+}
+.tab {
+  width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 1.2rem 0 1.1rem;
+  color: var(--dim);
+  position: relative;
+}
+.tab svg { width: 3.4rem; height: 3.4rem; }
+.tab span {
+  font-family: var(--cond); font-style: italic; font-weight: 700;
+  font-size: 1.35rem; letter-spacing: .12rem; text-transform: uppercase; margin-top: .4rem;
+}
+.tab.on { color: var(--cyan); }
+.tab.on svg { -webkit-filter: drop-shadow(0 0 .6rem rgba(45, 226, 230, .7)); filter: drop-shadow(0 0 .6rem rgba(45, 226, 230, .7)); }
+.tab.on:before {
+  content: ""; position: absolute; left: 0; top: 1rem; bottom: 1rem; width: .35rem;
+  border-radius: 0 .3rem .3rem 0; background: var(--pink);
+  box-shadow: 0 0 1rem var(--pink);
+}
+.side-clock { margin-top: auto; text-align: center; }
+#s-time { font-family: var(--cond); font-style: italic; font-weight: 600; font-size: 2.4rem; }
+#s-date { font-family: var(--cond); font-size: 1.2rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1rem; }
+
+.page { display: none; height: 100%; padding: 1.2rem; position: relative; min-width: 0; }
+.page.on { display: grid; }
+
+/* ---------- Éléments communs ---------- */
+.card {
+  background: var(--card);
+  border: 1px solid rgba(166, 107, 255, .16);
+  border-radius: 1.6rem;
+  overflow: hidden;
+  position: relative;
+}
+.label {
+  font-family: var(--cond); font-style: italic; font-weight: 700;
+  font-size: 1.3rem; letter-spacing: .14rem; text-transform: uppercase;
+  color: var(--cyan);
+  white-space: nowrap;
+}
+.num { font-family: var(--cond); font-variant-numeric: tabular-nums; }
+.grad {
+  background-image: var(--sunset);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+}
+.head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .6rem; }
+.status { font-size: 1.1rem; color: var(--dim); white-space: nowrap; }
+.status.err { color: #ff7a9c; }
+
+.city-btn {
+  display: flex; align-items: center;
+  height: 3.6rem;
+  color: var(--muted);
+  border: .2rem solid var(--line); border-radius: 1.2rem;
+  padding: 0 1.1rem 0 .6rem; margin-right: .7rem;
+  font-family: var(--cond); font-style: italic; font-weight: 600; font-size: 1.6rem; letter-spacing: .05rem;
+}
+.city-btn img { height: 2.6rem; width: auto; margin-right: .6rem; opacity: .5; }
+.city-btn .ic { font-style: normal; font-size: 1.7rem; margin: 0 .5rem 0 .3rem; }
+.city-btn.on {
+  color: var(--text); border-color: var(--pink); background: var(--card2);
+  box-shadow: 0 0 1.2rem rgba(255, 63, 164, .35);
+}
+.city-btn.on img { opacity: 1; }
+
+.leaflet-container { font: inherit; background: #120b24 !important; }
+/* Fond de carte teinté violet nuit */
+.leaflet-tile-pane {
+  -webkit-filter: sepia(1) hue-rotate(215deg) saturate(2.6) brightness(.8);
+  filter: sepia(1) hue-rotate(215deg) saturate(2.6) brightness(.8);
+}
+.leaflet-control-attribution { font-size: .85rem !important; background: rgba(16, 10, 32, .65) !important; color: #7d6aa0 !important; }
+.leaflet-control-attribution a { color: #b9a3d6 !important; }
+.map-msg { position: absolute; top: 45%; left: 2rem; right: 2rem; text-align: center; font-size: 1.4rem; color: var(--muted); }
+.map-info {
+  position: absolute; top: 1rem; left: 1rem; z-index: 1000;
+  background: rgba(16, 10, 32, .8); border-radius: 1rem;
+  padding: .6rem 1rem; font-size: 1.15rem; color: var(--muted); line-height: 1.45;
+  pointer-events: none;
+}
+.map-info b { color: var(--text); font-weight: 600; }
+.key { display: inline-block; width: 1rem; height: 1rem; border-radius: .3rem; vertical-align: -.1rem; margin-right: .4rem; }
+.arrow { display: inline-block; width: 1.6rem; height: 1.6rem; vertical-align: -.15rem; }
+
+/* =====================================================================
+   PAGE MÉTÉO
+   ===================================================================== */
+#page-meteo {
+  grid-template-columns: 27rem 1fr 27rem;
+  grid-template-rows: 44rem 1fr;
+  grid-gap: 1rem;
+}
+#main { grid-column: 1; grid-row: 1; padding: 1.4rem 1.7rem 1.5rem; display: flex; flex-direction: column; }
+#time {
+  font-family: var(--cond); font-style: italic; font-weight: 600;
+  font-size: 8.2rem; line-height: .95; letter-spacing: -.1rem; white-space: nowrap;
+  -webkit-filter: drop-shadow(0 0 1.4rem rgba(255, 63, 164, .4)); filter: drop-shadow(0 0 1.4rem rgba(255, 63, 164, .4));
+  padding-right: .6rem;
+}
+#time .sec { font-size: 3rem; margin-left: .4rem; letter-spacing: 0; }
+#date { font-family: var(--cond); font-size: 1.9rem; color: var(--muted); margin-top: .2rem; white-space: nowrap; letter-spacing: .05rem; }
+#date::first-letter { text-transform: uppercase; }
+#cities { display: flex; margin-top: 1.1rem; }
+
+.sep { height: 1px; margin: 1.3rem 0; background: linear-gradient(90deg, rgba(255, 63, 164, .6), rgba(166, 107, 255, .2), transparent); }
+
+#now { display: flex; align-items: center; }
+#now-icon { font-size: 5.4rem; line-height: 1; margin-right: 1.3rem; }
+#now-temp { font-family: var(--cond); font-style: italic; font-weight: 600; font-size: 6.6rem; line-height: 1; padding-right: .4rem; }
+#now-desc { font-size: 1.5rem; margin-top: .2rem; }
+#now-minmax { font-size: 1.4rem; color: var(--muted); margin-top: .3rem; }
+#now-minmax b { color: var(--text); font-weight: 600; }
+
+#nowcast {
+  margin-top: 1.2rem; padding: .8rem 1.1rem;
+  background: var(--card2); border-radius: 1.1rem;
+  font-size: 1.35rem; line-height: 1.3;
+}
+#nowcast.rain { background: rgba(45, 226, 230, .14); color: #d4fbfc; border: 1px solid rgba(45, 226, 230, .35); }
+
+#astro { margin-top: auto; font-size: 1.35rem; color: var(--muted); line-height: 1.7; }
+#astro b { color: var(--text); font-weight: 600; }
+
+#map-card { grid-column: 2; grid-row: 1; }
+#map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+
+#tiles {
+  grid-column: 3; grid-row: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(6, 1fr);
+  grid-gap: .8rem;
+}
+.tile { background: var(--card); border: 1px solid rgba(166, 107, 255, .14); border-radius: 1.3rem; padding: .7rem 1.1rem; overflow: hidden; position: relative; }
+.tile .label { font-size: 1.15rem; }
+.tile .v { font-family: var(--cond); font-weight: 600; font-size: 2.4rem; line-height: 1.05; margin-top: .15rem; white-space: nowrap; }
+.tile .v small { font-family: "Barlow", sans-serif; font-weight: 500; font-size: 1.2rem; color: var(--muted); margin-left: .25rem; }
+.tile .s { font-size: 1.15rem; color: var(--muted); margin-top: .15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile .bar { position: absolute; left: 0; right: 0; bottom: 0; height: .3rem; }
+
+#hourly-card { grid-column: 1 / 3; grid-row: 2; padding: 1.2rem 1.6rem 1.1rem; display: flex; flex-direction: column; }
+.hrow { display: flex; }
+.hc { -webkit-flex: 1; flex: 1; text-align: center; min-width: 0; }
+.hc .h { font-family: var(--cond); font-size: 1.45rem; color: var(--muted); }
+.hc .i { font-size: 2.5rem; line-height: 1.2; margin-top: .2rem; }
+#h-curve { -webkit-flex: 1; flex: 1; min-height: 6rem; position: relative; }
+#h-curve svg { position: absolute; top: 0; left: 0; }
+.rb { height: 2.8rem; position: relative; margin: 0 auto; width: 2.2rem; background: rgba(45, 226, 230, .08); border-radius: .4rem; overflow: hidden; }
+.rb div { position: absolute; left: 0; right: 0; bottom: 0; background: var(--cyan); box-shadow: 0 0 .8rem rgba(45, 226, 230, .6); }
+.hc .p { font-family: var(--cond); font-size: 1.3rem; color: var(--cyan); margin-top: .3rem; height: 1.5rem; white-space: nowrap; }
+.hc .w { font-family: var(--cond); font-size: 1.3rem; color: var(--muted); margin-top: .4rem; white-space: nowrap; }
+
+#daily-card { grid-column: 3; grid-row: 2; padding: 1.2rem 1.4rem 1rem; display: flex; flex-direction: column; }
+#daily { -webkit-flex: 1; flex: 1; display: flex; flex-direction: column; }
+.dr { -webkit-flex: 1; flex: 1; display: flex; align-items: center; font-family: var(--cond); font-size: 1.6rem; border-top: 1px solid var(--line); }
+.dr:first-child { border-top: 0; }
+.dr .d { width: 4rem; color: var(--muted); white-space: nowrap; font-style: italic; }
+.dr .i { width: 3rem; font-size: 1.9rem; text-align: center; }
+.dr .p { width: 3.4rem; font-size: 1.25rem; color: var(--cyan); text-align: center; }
+.dr .mn { width: 2.8rem; text-align: right; color: var(--muted); }
+.dr .mx { width: 2.8rem; text-align: left; font-weight: 600; }
+.dr .rng { -webkit-flex: 1; flex: 1; height: .5rem; background: rgba(166, 107, 255, .15); border-radius: .3rem; margin: 0 .7rem; position: relative; }
+.dr .rng div { position: absolute; top: 0; bottom: 0; border-radius: .3rem; background: linear-gradient(90deg, #2de2e6, #a66bff, #ff3fa4); }
+
+/* =====================================================================
+   PAGE RADAR (avions)
+   ===================================================================== */
+#page-radar {
+  grid-template-columns: 1fr 31rem;
+  grid-template-rows: 1fr;
+  grid-gap: 1rem;
+}
+#r-map-card { grid-column: 1; grid-row: 1; }
+#r-map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+
+/* Balayage du radar (décoratif) */
+#r-sweep {
+  position: absolute; z-index: 500; pointer-events: none;
+  width: 100rem; height: 100rem; margin: -50rem 0 0 -50rem;
+  -webkit-animation: sweep 6s linear infinite; animation: sweep 6s linear infinite;
+  will-change: transform;
+}
+@-webkit-keyframes sweep { from { -webkit-transform: rotate(0deg); } to { -webkit-transform: rotate(360deg); } }
+@keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+#r-legend {
+  position: absolute; left: 1rem; bottom: 1.6rem; z-index: 1000;
+  background: rgba(16, 10, 32, .8); border-radius: 1rem; padding: .6rem 1rem .7rem;
+  font-size: 1.1rem; color: var(--muted); pointer-events: none;
+}
+#r-legend .gb { width: 16rem; height: .6rem; border-radius: .3rem; margin: .4rem 0 .2rem;
+  background: linear-gradient(90deg, #ff9e4f, #ff3fa4, #a66bff, #2de2e6); }
+#r-legend .gl { display: flex; justify-content: space-between; font-family: var(--cond); font-size: 1.15rem; }
+
+.plane-ic { position: relative; }
+.plane-ic .pl { width: 3rem; height: 3rem; }
+.plane-ic .pl svg { width: 100%; height: 100%; display: block; }
+.plane-ic .lab {
+  position: absolute; left: 3.1rem; top: -.2rem; white-space: nowrap;
+  font-family: var(--cond); font-weight: 600; font-size: 1.25rem; line-height: 1.15; color: var(--text);
+  text-shadow: 0 0 .3rem #100a20, 0 0 .3rem #100a20;
+}
+.plane-ic .lab i { font-style: normal; color: var(--muted); font-weight: 500; }
+.plane-ic.sel .pl { -webkit-filter: drop-shadow(0 0 .7rem #fff); filter: drop-shadow(0 0 .7rem #fff); }
+.plane-ic.sel .lab { color: var(--cyan); }
+.ring-lab { font-family: var(--cond); font-size: 1.15rem; color: rgba(45, 226, 230, .8); white-space: nowrap; text-shadow: 0 0 .3rem #100a20; }
+
+#r-side { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; min-height: 0; }
+#r-side .card { margin-bottom: 1rem; }
+#r-side .card:last-child { margin-bottom: 0; }
+
+#r-head { padding: 1.2rem 1.4rem 1.3rem; }
+.title-big {
+  font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 3rem; line-height: 1;
+  text-transform: uppercase; letter-spacing: .05rem; padding-right: .5rem;
+}
+#r-cities { display: flex; margin-top: 1rem; }
+#r-cities .city-btn { height: 3.2rem; font-size: 1.45rem; margin-right: .5rem; padding: 0 .9rem 0 .5rem; }
+#r-cities .city-btn img { height: 2.3rem; }
+.stats { display: flex; margin-top: 1.1rem; }
+.stat { -webkit-flex: 1; flex: 1; border-left: 1px solid var(--line); padding-left: 1rem; }
+.stat:first-child { border-left: 0; padding-left: 0; }
+.stat .v { font-family: var(--cond); font-style: italic; font-weight: 600; font-size: 2.8rem; line-height: 1.1; white-space: nowrap; }
+.stat .v small { font-size: 1.4rem; color: var(--muted); font-style: normal; margin-left: .2rem; }
+.stat .k { font-size: 1.1rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08rem; }
+
+#r-detail { padding: 1.3rem 1.4rem; min-height: 0; }
+.dt-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.dt-call { font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 3.4rem; line-height: 1; padding-right: .5rem; }
+.dt-air { font-size: 1.35rem; color: var(--muted); margin-top: .2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 19rem; }
+.badge { font-family: var(--cond); font-weight: 600; font-size: 1.3rem; color: var(--cyan); border: 1px solid rgba(45, 226, 230, .5); border-radius: .7rem; padding: .2rem .7rem; white-space: nowrap; }
+.route { display: flex; align-items: center; margin: 1.1rem 0 1rem; background: var(--card2); border-radius: 1.1rem; padding: .7rem 1rem; }
+.route .ap { -webkit-flex: 1; flex: 1; min-width: 0; }
+.route .ap.r { text-align: right; }
+.route .code { font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 2.4rem; line-height: 1; }
+.route .town { font-size: 1.15rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.route .mid { color: var(--pink); font-size: 2rem; margin: 0 .8rem; }
+.route.none { color: var(--muted); font-size: 1.25rem; justify-content: center; }
+.facts { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-row-gap: .8rem; grid-column-gap: .8rem; }
+.fact .k { font-size: 1.05rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08rem; white-space: nowrap; }
+.fact .v { font-family: var(--cond); font-weight: 600; font-size: 1.9rem; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fact .v small { font-size: 1.2rem; color: var(--muted); font-weight: 500; margin-left: .15rem; }
+
+#r-list-card { -webkit-flex: 1; flex: 1; padding: 1.2rem 1.2rem .6rem; display: flex; flex-direction: column; min-height: 0; }
+#r-list { -webkit-flex: 1; flex: 1; overflow: hidden; }
+.row {
+  display: flex; align-items: center;
+  padding: .55rem .6rem; border-radius: .9rem; margin-bottom: .2rem;
+}
+.row.sel { background: var(--card2); box-shadow: inset .3rem 0 0 var(--pink); }
+.row .dot { width: 1rem; height: 1rem; border-radius: 50%; margin-right: .9rem; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.row .mid { -webkit-flex: 1; flex: 1; min-width: 0; }
+.row .c { font-family: var(--cond); font-weight: 700; font-size: 1.7rem; line-height: 1.1; }
+.row .s { font-size: 1.15rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .rt { text-align: right; margin-left: .6rem; }
+.row .a { font-family: var(--cond); font-weight: 600; font-size: 1.6rem; line-height: 1.1; white-space: nowrap; }
+.row .d { font-family: var(--cond); font-size: 1.3rem; color: var(--muted); white-space: nowrap; }
+.empty { color: var(--muted); font-size: 1.35rem; line-height: 1.5; padding: .6rem; }
+.empty code { font-size: 1.2rem; color: var(--cyan); }
+</style>
 </head>
 <body>
 <div class="app">
@@ -141,9 +471,1095 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="js/commun.js"></script>
-<script src="js/meteo.js"></script>
-<script src="js/avions.js"></script>
+<script>
+/* =====================================================================
+   RÉGLAGES
+   ===================================================================== */
+// Blasons : Wikimedia Commons (Angers : CC BY-SA 3.0, Limoges : CC BY-SA 4.0)
+var CITIES = [
+  { name: "Angers", latitude: 47.4784, longitude: -0.5632,
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Blason_d%27Angers.svg/250px-Blason_d%27Angers.svg.png" },
+  { name: "Limoges", latitude: 45.8336, longitude: 1.2611,
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Heraldique_blason_ville_fr_Limoges.svg/250px-Heraldique_blason_ville_fr_Limoges.svg.png" }
+];
+var CONFIG = {
+  mapZoom: 9,               // météo : 6 = moitié de la France, 9 = ~80 km autour
+  refreshMinutes: 10,       // météo
+  planeProxy: "https://radar-avions.louisdemaison.workers.dev/",           // adresse du relais avions (voir proxy/LISEZMOI.txt)
+  planeRadiusKm: 60,        // rayon de recherche des avions
+  planeZoom: 9,
+  planeRefreshSeconds: 10
+};
+// Pour tester un autre relais : ajouter ?proxy=https://... à l'adresse de la page
+(function () {
+  var m = location.search.match(/[?&]proxy=([^&]+)/);
+  if (m) { CONFIG.planeProxy = decodeURIComponent(m[1]); }
+})();
+
+/* =====================================================================
+   OUTILS
+   ===================================================================== */
+// Code JS volontairement "à l'ancienne" (var, function) pour Safari iOS 12.
+var JOURS = ["Dim.", "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam."];
+var JOURS_LONG = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+var MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet",
+            "août", "septembre", "octobre", "novembre", "décembre"];
+
+function $(id) { return document.getElementById(id); }
+function pad(n) { return n < 10 ? "0" + n : "" + n; }
+function fr(x, dec) { // nombre à la française : 3,2
+  var f = Math.pow(10, dec || 0);
+  return String(Math.round(x * f) / f).replace(".", ",").replace("-", "−");
+}
+function milliers(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+function deg(x) { return fr(x) + "°"; }
+function hhmm(iso) { return iso.slice(11, 16); }
+function parseDay(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+function remPx() { return parseFloat(window.getComputedStyle(document.documentElement).fontSize); }
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+var DIRS = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
+function compass(d) { return DIRS[Math.round(d / 45) % 8]; }
+// Flèche qui pointe vers "d" degrés (0 = nord)
+function arrowTo(d, color) {
+  return '<svg class="arrow" viewBox="0 0 20 20" style="-webkit-transform:rotate(' + d + 'deg);transform:rotate(' + d + 'deg)">' +
+    '<path d="M10 2 L15 15 L10 12 L5 15 Z" fill="' + (color || "#fff3fb") + '"/></svg>';
+}
+
+// Stockage local (peut être indisponible en navigation privée)
+var store = {
+  get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+
+function getJSON(url, ok, ko) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", url, true);
+  xhr.timeout = 20000;
+  xhr.onload = function () {
+    if (xhr.status !== 200) { return ko("HTTP " + xhr.status); }
+    var data;
+    try { data = JSON.parse(xhr.responseText); } catch (e) { return ko("réponse illisible"); }
+    ok(data);
+  };
+  xhr.onerror = function () { ko("pas de connexion"); };
+  xhr.ontimeout = function () { ko("délai dépassé"); };
+  xhr.send();
+}
+
+/* ---------- Mise à l'échelle : la maquette 1024x768 tient toujours dans l'écran ---------- */
+function fit() {
+  var w = window.innerWidth, h = window.innerHeight;
+  if (h > w) { var t = w; w = h; h = t; } // portrait -> l'affichage est pivoté
+  var s = Math.min(w / 1024, h / 768);
+  document.documentElement.style.fontSize = (10 * s) + "px";
+}
+fit();
+
+/* =====================================================================
+   HORLOGE (barre latérale + abonnés)
+   ===================================================================== */
+var tickListeners = [];
+function onTick(fn) { tickListeners.push(fn); fn(new Date()); }
+function tick() {
+  var d = new Date();
+  $("s-time").textContent = pad(d.getHours()) + ":" + pad(d.getMinutes());
+  $("s-date").textContent = JOURS[d.getDay()].replace(".", "") + " " + d.getDate();
+  for (var i = 0; i < tickListeners.length; i++) { tickListeners[i](d); }
+}
+setInterval(tick, 1000);
+
+/* =====================================================================
+   VILLE CHOISIE (partagée par tous les onglets)
+   ===================================================================== */
+var cityIndex = 0;
+(function () {
+  var saved = parseInt(store.get("cityIndex"), 10);
+  if (saved >= 0 && saved < CITIES.length) { cityIndex = saved; }
+})();
+var cityListeners = [];
+function currentCity() { return CITIES[cityIndex]; }
+function onCityChange(fn) { cityListeners.push(fn); }
+function selectCity(idx) {
+  if (idx === cityIndex) { return; }
+  cityIndex = idx;
+  store.set("cityIndex", String(idx));
+  for (var i = 0; i < cityListeners.length; i++) { cityListeners[i](); }
+}
+// Boutons de ville. "isOn(i)" dit si le bouton i est actif ; "extra" ajoute des boutons.
+function cityButtonsHTML(isOn) {
+  var html = "";
+  for (var i = 0; i < CITIES.length; i++) {
+    html += '<button class="city-btn' + (isOn(i) ? " on" : "") + '" data-city="' + i + '">' +
+      '<img src="' + CITIES[i].logo + '" alt="">' + CITIES[i].name + "</button>";
+  }
+  return html;
+}
+
+/* =====================================================================
+   ONGLETS
+   ===================================================================== */
+var TABS = {};      // nom -> { show: fn, hide: fn }
+var currentTab = null;
+function registerTab(name, handlers) { TABS[name] = handlers; }
+function showTab(name) {
+  if (!TABS[name]) { name = "meteo"; }
+  if (name === currentTab) { return; }
+  if (currentTab && TABS[currentTab].hide) { TABS[currentTab].hide(); }
+  var btns = document.querySelectorAll(".tab");
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].className = "tab" + (btns[i].getAttribute("data-tab") === name ? " on" : "");
+  }
+  var pages = document.querySelectorAll(".page");
+  for (i = 0; i < pages.length; i++) {
+    pages[i].className = "page" + (pages[i].id === "page-" + name ? " on" : "");
+  }
+  currentTab = name;
+  store.set("tab", name);
+  if (TABS[name].show) { TABS[name].show(); }
+}
+
+/* =====================================================================
+   CARTE DE BASE (fond sombre teinté + noms de lieux par-dessus)
+   ===================================================================== */
+function makeMap(id, lat, lon, zoom) {
+  var map = L.map(id, {
+    zoomControl: false, attributionControl: true,
+    scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, keyboard: false,
+    minZoom: 4, maxZoom: 12
+  }).setView([lat, lon], zoom);
+  map.attributionControl.setPrefix(false);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 16, attribution: "Fond © Esri"
+  }).addTo(map);
+  map.createPane("labels");
+  map.getPane("labels").style.zIndex = 450;
+  map.getPane("labels").style.pointerEvents = "none";
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+    maxZoom: 16, pane: "labels"
+  }).addTo(map);
+  return map;
+}
+function leafletOK(id) {
+  if (typeof L !== "undefined") { return true; }
+  $(id).innerHTML = '<div class="map-msg">Carte indisponible (pas de connexion)</div>';
+  return false;
+}
+
+/* =====================================================================
+   DÉMARRAGE (appelé en bas de la page, une fois tous les onglets chargés)
+   ===================================================================== */
+function startApp() {
+  var btns = document.querySelectorAll(".tab");
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].onclick = function () { showTab(this.getAttribute("data-tab")); };
+  }
+  // Clic sur un bouton de ville, où qu'il soit
+  document.addEventListener("click", function (e) {
+    var el = e.target;
+    while (el && el !== document) {
+      if (el.getAttribute && el.getAttribute("data-city") !== null) {
+        selectCity(parseInt(el.getAttribute("data-city"), 10));
+        return;
+      }
+      el = el.parentNode;
+    }
+  });
+  window.addEventListener("resize", function () {
+    fit();
+    for (var k in TABS) { if (TABS[k].resize) { TABS[k].resize(); } }
+  });
+  tick();
+  showTab(store.get("tab") || "meteo");
+  // Rechargement complet toutes les 6 h (évite que Safari "s'endorme" sur un vieil iPad)
+  setTimeout(function () { location.reload(); }, 6 * 60 * 60 * 1000);
+}
+</script>
+<script>
+/* =====================================================================
+   ONGLET MÉTÉO
+   Données : Open-Meteo (prévisions, qualité de l'air) — gratuit, sans clé
+   Carte   : nuages Meteosat (EUMETSAT) + pluie radar (RainViewer)
+   ===================================================================== */
+
+/* ---------- Codes météo WMO ---------- */
+function weatherInfo(code, isDay) {
+  var map = {
+    0: ["☀️", "🌙", "Ciel dégagé"],
+    1: ["🌤", "🌙", "Plutôt dégagé"],
+    2: ["⛅️", "☁️", "Partiellement nuageux"],
+    3: ["☁️", "☁️", "Couvert"],
+    45: ["🌫️", "🌫️", "Brouillard"],
+    48: ["🌫️", "🌫️", "Brouillard givrant"],
+    51: ["🌦", "🌧", "Bruine légère"],
+    53: ["🌦", "🌧", "Bruine"],
+    55: ["🌧", "🌧", "Bruine forte"],
+    56: ["🌧", "🌧", "Bruine verglaçante"],
+    57: ["🌧", "🌧", "Bruine verglaçante"],
+    61: ["🌦", "🌧", "Pluie faible"],
+    63: ["🌧", "🌧", "Pluie"],
+    65: ["🌧", "🌧", "Forte pluie"],
+    66: ["🌧", "🌧", "Pluie verglaçante"],
+    67: ["🌧", "🌧", "Pluie verglaçante"],
+    71: ["🌨", "🌨", "Neige faible"],
+    73: ["🌨", "🌨", "Neige"],
+    75: ["❄️", "❄️", "Forte neige"],
+    77: ["🌨", "🌨", "Grains de neige"],
+    80: ["🌦", "🌧", "Averses"],
+    81: ["🌧", "🌧", "Averses"],
+    82: ["⛈", "⛈", "Fortes averses"],
+    85: ["🌨", "🌨", "Averses de neige"],
+    86: ["❄️", "❄️", "Averses de neige"],
+    95: ["⛈", "⛈", "Orage"],
+    96: ["⛈", "⛈", "Orage avec grêle"],
+    99: ["⛈", "⛈", "Orage avec grêle"]
+  };
+  var w = map[code] || ["❔", "❔", "—"];
+  return { icon: isDay === 0 ? w[1] : w[0], desc: w[2] };
+}
+
+function beaufort(kmh) {
+  var t = [1, 6, 12, 20, 29, 39, 50, 62, 75, 89, 103, 118];
+  for (var i = 0; i < t.length; i++) { if (kmh < t[i]) { return i; } }
+  return 12;
+}
+function uvLevel(u) {
+  if (u < 3) { return ["Faible", "#3ee08f"]; }
+  if (u < 6) { return ["Modéré", "#ffd166"]; }
+  if (u < 8) { return ["Élevé", "#ff9e4f"]; }
+  if (u < 11) { return ["Très élevé", "#ff3f6c"]; }
+  return ["Extrême", "#a66bff"];
+}
+function aqiLevel(a) {
+  if (a <= 20) { return ["Bon", "#2de2e6"]; }
+  if (a <= 40) { return ["Correct", "#3ee08f"]; }
+  if (a <= 60) { return ["Moyen", "#ffd166"]; }
+  if (a <= 80) { return ["Médiocre", "#ff9e4f"]; }
+  if (a <= 100) { return ["Très médiocre", "#ff3f6c"]; }
+  return ["Extrêmement mauvais", "#a66bff"];
+}
+function moon(d) {
+  var syn = 29.530588853;
+  var ref = Date.UTC(2000, 0, 6, 18, 14);
+  var age = ((d.getTime() - ref) / 86400000) % syn;
+  if (age < 0) { age += syn; }
+  var illum = Math.round((1 - Math.cos(2 * Math.PI * age / syn)) / 2 * 100);
+  var phases = [[1.84, "🌑", "Nouvelle lune"], [5.53, "🌒", "Premier croissant"], [9.23, "🌓", "Premier quartier"],
+                [12.91, "🌔", "Gibbeuse croissante"], [16.61, "🌕", "Pleine lune"], [20.30, "🌖", "Gibbeuse décroissante"],
+                [23.99, "🌗", "Dernier quartier"], [27.68, "🌘", "Dernier croissant"], [99, "🌑", "Nouvelle lune"]];
+  for (var i = 0; i < phases.length; i++) {
+    if (age < phases[i][0]) { return { icon: phases[i][1], name: phases[i][2], illum: illum }; }
+  }
+}
+// Flèche de vent : pointe là où va le vent (il vient de "d")
+function windArrow(d, color) { return arrowTo(d + 180, color); }
+
+var meteo = {
+  map: null, cloudLayer: null, radarLayer: null, marker: null,
+  radarTime: "", requestId: 0, last: null, retry: null, timer: null, tiles: {}
+};
+
+/* ---------- Horloge principale ---------- */
+onTick(function (d) {
+  $("time").innerHTML = '<span class="grad">' + pad(d.getHours()) + ":" + pad(d.getMinutes()) +
+    '<span class="sec">' + pad(d.getSeconds()) + "</span></span>";
+  $("date").textContent = JOURS_LONG[d.getDay()] + " " + d.getDate() + " " + MOIS[d.getMonth()] + " " + d.getFullYear();
+});
+
+function meteoCityButtons() {
+  $("cities").innerHTML = cityButtonsHTML(function (i) { return i === cityIndex; });
+}
+
+/* ---------- Requêtes ---------- */
+function meteoLoad() {
+  var city = currentCity();
+  var myId = ++meteo.requestId;
+  var ll = "?latitude=" + city.latitude + "&longitude=" + city.longitude + "&timezone=auto";
+
+  var wUrl = "https://api.open-meteo.com/v1/forecast" + ll +
+    "&current=temperature_2m,relative_humidity_2m,apparent_temperature,dew_point_2m,is_day,precipitation," +
+      "weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,visibility,uv_index" +
+    "&minutely_15=precipitation&past_minutely_15=1&forecast_minutely_15=5" +
+    "&hourly=temperature_2m,weather_code,precipitation_probability,precipitation,is_day,pressure_msl,wind_speed_10m,wind_direction_10m" +
+    "&past_hours=3&forecast_hours=26" +
+    "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum," +
+      "sunrise,sunset,daylight_duration,uv_index_max,wind_gusts_10m_max" +
+    "&forecast_days=7";
+
+  getJSON(wUrl, function (data) {
+    if (myId !== meteo.requestId) { return; }
+    meteo.last = data;
+    try { meteoRender(data); meteoStatus(""); }
+    catch (e) { meteoStatus("Erreur d'affichage : " + e.message, true); }
+  }, function (msg) {
+    if (myId !== meteo.requestId) { return; }
+    meteoStatus("Météo indisponible (" + msg + ") — nouvel essai dans 1 min", true);
+    clearTimeout(meteo.retry);
+    meteo.retry = setTimeout(meteoLoad, 60000);
+  });
+
+  var aUrl = "https://air-quality-api.open-meteo.com/v1/air-quality" + ll +
+    "&current=european_aqi,pm2_5,pm10,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen";
+  getJSON(aUrl, function (data) {
+    if (myId !== meteo.requestId) { return; }
+    meteoAir(data.current);
+  }, function () { meteoAir(null); });
+
+  meteoRadar();
+}
+
+function meteoStatus(msg, isErr) {
+  var s = $("m-status"), t = new Date();
+  s.className = "status" + (isErr ? " err" : "");
+  s.textContent = msg || ("Mis à jour à " + pad(t.getHours()) + ":" + pad(t.getMinutes()));
+}
+
+/* ---------- Indicateurs ---------- */
+var TILE_ORDER = ["feels", "hum", "dew", "press", "wind", "gust", "uv", "vis", "cloud", "rain", "aqi", "pollen"];
+function setTile(id, label, value, sub, color) { meteo.tiles[id] = [label, value, sub, color]; }
+function drawTiles() {
+  var html = "";
+  for (var i = 0; i < TILE_ORDER.length; i++) {
+    var t = meteo.tiles[TILE_ORDER[i]] || ["", "—", "", ""];
+    html += '<div class="tile"><div class="label">' + t[0] + '</div>' +
+      '<div class="v">' + t[1] + '</div><div class="s">' + t[2] + '</div>' +
+      (t[3] ? '<div class="bar" style="background:' + t[3] + ";box-shadow:0 0 .8rem " + t[3] + '"></div>' : "") + "</div>";
+  }
+  $("tiles").innerHTML = html;
+}
+
+/* ---------- Affichage ---------- */
+function meteoRender(data) {
+  var c = data.current, h = data.hourly, dl = data.daily, m = data.minutely_15;
+
+  // Index de l'heure en cours dans les prévisions horaires
+  var key = c.time.slice(0, 13), start = 0;
+  for (var i = 0; i < h.time.length; i++) { if (h.time[i].slice(0, 13) === key) { start = i; break; } }
+
+  /* --- Conditions actuelles --- */
+  var now = weatherInfo(c.weather_code, c.is_day);
+  $("now-icon").textContent = now.icon;
+  $("now-temp").innerHTML = '<span class="grad">' + deg(c.temperature_2m) + "</span>";
+  $("now-desc").textContent = now.desc;
+  $("now-minmax").innerHTML = "Max <b>" + deg(dl.temperature_2m_max[0]) + "</b> · Min <b>" + deg(dl.temperature_2m_min[0]) + "</b>";
+
+  /* --- Pluie dans l'heure (pas de 15 min) --- */
+  var mStart = 0;
+  for (var k = 0; k < m.time.length; k++) { if (m.time[k] >= c.time) { mStart = k; break; } }
+  var first = -1, maxMm = 0;
+  for (k = mStart; k < mStart + 4 && k < m.time.length; k++) {
+    var mm = m.precipitation[k] || 0;
+    if (mm >= 0.1 && first < 0) { first = k; }
+    if (mm > maxMm) { maxMm = mm; }
+  }
+  var nc = $("nowcast");
+  if (first < 0) {
+    nc.className = "";
+    nc.innerHTML = "☂︎ Pas de pluie prévue dans l'heure";
+  } else {
+    var rate = maxMm * 4; // mm/h
+    var force = rate < 2.5 ? "faible" : (rate < 7.6 ? "modérée" : "forte");
+    nc.className = "rain";
+    nc.innerHTML = "☔︎ " + (first === mStart ? "Pluie " + force + " en ce moment"
+                                             : "Pluie " + force + " attendue vers " + hhmm(m.time[first]));
+  }
+
+  /* --- Soleil & lune --- */
+  var dlen = dl.daylight_duration[0] / 60;
+  var mo = moon(new Date());
+  $("astro").innerHTML =
+    "🌅 <b>" + hhmm(dl.sunrise[0]) + "</b> &nbsp; 🌇 <b>" + hhmm(dl.sunset[0]) + "</b> &nbsp; ☀︎ <b>" +
+      Math.floor(dlen / 60) + " h " + pad(Math.round(dlen % 60)) + "</b><br>" +
+    mo.icon + " " + mo.name + " · <b>" + mo.illum + " %</b>";
+
+  /* --- Indicateurs --- */
+  setTile("feels", "Ressenti", deg(c.apparent_temperature), "Réelle " + fr(c.temperature_2m, 1) + "°");
+
+  var rh = c.relative_humidity_2m;
+  setTile("hum", "Humidité", rh + "<small>%</small>",
+    rh < 30 ? "Air sec" : rh < 60 ? "Confortable" : rh < 80 ? "Humide" : "Très humide");
+
+  var dp = c.dew_point_2m;
+  setTile("dew", "Point de rosée", deg(dp),
+    dp < 10 ? "Air sec" : dp < 16 ? "Agréable" : dp < 20 ? "Lourd" : "Étouffant");
+
+  var p3 = start >= 3 ? h.pressure_msl[start - 3] : null, trend = "";
+  if (p3 !== null && p3 !== undefined) {
+    var dpr = h.pressure_msl[start] - p3;
+    trend = (dpr > 1 ? "↗ Hausse " : dpr < -1 ? "↘ Baisse " : "→ Stable ") + (dpr > 0 ? "+" : "") + fr(dpr, 1) + " en 3 h";
+  }
+  setTile("press", "Pression", fr(c.pressure_msl) + "<small>hPa</small>", trend);
+
+  var ws = c.wind_speed_10m;
+  setTile("wind", "Vent", windArrow(c.wind_direction_10m) + " " + fr(ws) + "<small>km/h</small>",
+    "De " + compass(c.wind_direction_10m) + " · Force " + beaufort(ws));
+
+  setTile("gust", "Rafales", fr(c.wind_gusts_10m) + "<small>km/h</small>",
+    "Max du jour " + fr(dl.wind_gusts_10m_max[0]) + " km/h");
+
+  var uv = uvLevel(c.uv_index);
+  setTile("uv", "Indice UV", fr(c.uv_index), uv[0] + " · max " + fr(dl.uv_index_max[0]), uv[1]);
+
+  var vis = c.visibility / 1000;
+  setTile("vis", "Visibilité", (vis >= 10 ? fr(vis) : fr(vis, 1)) + "<small>km</small>",
+    vis >= 10 ? "Excellente" : vis >= 5 ? "Bonne" : vis >= 1 ? "Brume" : "Brouillard");
+
+  var cc = c.cloud_cover;
+  setTile("cloud", "Nuages", cc + "<small>%</small>",
+    cc < 20 ? "Ciel dégagé" : cc < 50 ? "Peu nuageux" : cc < 85 ? "Nuageux" : "Couvert");
+
+  setTile("rain", "Pluie du jour", fr(dl.precipitation_sum[0], 1) + "<small>mm</small>",
+    "Demain " + fr(dl.precipitation_sum[1], 1) + " mm");
+
+  drawTiles();
+  meteoHourly(data, start);
+
+  /* --- 7 jours --- */
+  var lo = 99, hi = -99, d;
+  for (d = 0; d < dl.time.length; d++) {
+    lo = Math.min(lo, dl.temperature_2m_min[d]);
+    hi = Math.max(hi, dl.temperature_2m_max[d]);
+  }
+  var span = Math.max(hi - lo, 1), html = "";
+  for (d = 0; d < dl.time.length; d++) {
+    var day = parseDay(dl.time[d]);
+    var wi = weatherInfo(dl.weather_code[d], 1);
+    var pp = dl.precipitation_probability_max[d];
+    var left = (dl.temperature_2m_min[d] - lo) / span * 100;
+    var width = Math.max((dl.temperature_2m_max[d] - dl.temperature_2m_min[d]) / span * 100, 4);
+    html += '<div class="dr">' +
+      '<div class="d">' + (d === 0 ? "Auj." : JOURS[day.getDay()]) + "</div>" +
+      '<div class="i">' + wi.icon + "</div>" +
+      '<div class="p">' + (pp >= 20 ? pp + "%" : "") + "</div>" +
+      '<div class="mn">' + deg(dl.temperature_2m_min[d]) + "</div>" +
+      '<div class="rng"><div style="left:' + left + "%;width:" + width + '%"></div></div>' +
+      '<div class="mx">' + deg(dl.temperature_2m_max[d]) + "</div>" +
+      "</div>";
+  }
+  $("daily").innerHTML = html;
+}
+
+function meteoHourly(data, start) {
+  var h = data.hourly, STEP = 2, N = 12;
+  var idx = [];
+  for (var j = 0; j < N; j++) { if (start + j * STEP < h.time.length) { idx.push(start + j * STEP); } }
+
+  var top = "", rain = "", temps = [];
+  for (j = 0; j < idx.length; j++) {
+    var a = idx[j];
+    var wi = weatherInfo(h.weather_code[a], h.is_day[a]);
+    // Sur le créneau de 2 h : proba max et cumul de pluie
+    var prob = Math.max(h.precipitation_probability[a] || 0, h.precipitation_probability[a + 1] || 0);
+    var mm = (h.precipitation[a] || 0) + (h.precipitation[a + 1] || 0);
+    temps.push(h.temperature_2m[a]);
+    top += '<div class="hc"><div class="h">' + (j === 0 ? "Maint." : h.time[a].slice(11, 13) + "h") +
+      '</div><div class="i">' + wi.icon + "</div></div>";
+    rain += '<div class="hc"><div class="rb"><div style="height:' + prob + '%"></div></div>' +
+      '<div class="p">' + (prob >= 10 ? prob + "%" + (mm >= 0.1 ? " · " + fr(mm, 1) : "") : "") + "</div>" +
+      '<div class="w">' + windArrow(h.wind_direction_10m[a], "#b9a3d6") + " " + fr(h.wind_speed_10m[a]) + "</div></div>";
+  }
+  $("h-top").innerHTML = top;
+  $("h-rain").innerHTML = rain;
+  meteoCurve(temps);
+}
+
+// Courbe des températures en SVG (dégradé couchant)
+function meteoCurve(temps) {
+  var box = $("h-curve");
+  var W = box.clientWidth, H = box.clientHeight, r = remPx();
+  if (!W || !H || !temps.length) { return; }
+  var n = temps.length, padTop = r * 2.6, padBot = r * 0.8;
+  var lo = Math.min.apply(null, temps), hi = Math.max.apply(null, temps);
+  if (hi - lo < 4) { var mid = (hi + lo) / 2; lo = mid - 2; hi = mid + 2; }
+  var pts = [];
+  for (var i = 0; i < n; i++) {
+    pts.push([(i + 0.5) * W / n, padTop + (hi - temps[i]) / (hi - lo) * (H - padTop - padBot)]);
+  }
+  var d = "M" + pts[0][0] + " " + pts[0][1];
+  for (i = 0; i < n - 1; i++) { // Catmull-Rom -> Bézier
+    var p0 = pts[Math.max(i - 1, 0)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(i + 2, n - 1)];
+    d += " C" + (p1[0] + (p2[0] - p0[0]) / 6) + " " + (p1[1] + (p2[1] - p0[1]) / 6) + " " +
+         (p2[0] - (p3[0] - p1[0]) / 6) + " " + (p2[1] - (p3[1] - p1[1]) / 6) + " " + p2[0] + " " + p2[1];
+  }
+  var area = d + " L" + pts[n - 1][0] + " " + H + " L" + pts[0][0] + " " + H + " Z";
+  var svg = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + " " + H + '">' +
+    "<defs>" +
+    '<linearGradient id="tl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff9e4f"/><stop offset=".55" stop-color="#ff3fa4"/><stop offset="1" stop-color="#a66bff"/></linearGradient>' +
+    '<linearGradient id="ta" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff3fa4" stop-opacity=".3"/><stop offset="1" stop-color="#ff3fa4" stop-opacity="0"/></linearGradient>' +
+    "</defs>" +
+    '<path d="' + area + '" fill="url(#ta)"/>' +
+    '<path d="' + d + '" fill="none" stroke="url(#tl)" stroke-width="' + (r * 0.3) + '" stroke-linecap="round"/>';
+  for (i = 0; i < n; i++) {
+    svg += '<circle cx="' + pts[i][0] + '" cy="' + pts[i][1] + '" r="' + (r * 0.38) + '" fill="#1d1336" stroke="#ff3fa4" stroke-width="' + (r * 0.2) + '"/>' +
+      '<text x="' + pts[i][0] + '" y="' + (pts[i][1] - r * 0.95) + '" fill="#fff3fb" font-size="' + (r * 1.8) +
+      '" font-weight="600" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif">' + deg(temps[i]) + "</text>";
+  }
+  box.innerHTML = svg + "</svg>";
+}
+
+/* ---------- Qualité de l'air & pollens ---------- */
+var POLLENS = { alder_pollen: "Aulne", birch_pollen: "Bouleau", grass_pollen: "Graminées",
+                mugwort_pollen: "Armoise", olive_pollen: "Olivier", ragweed_pollen: "Ambroisie" };
+function meteoAir(a) {
+  if (!a || a.european_aqi === null || a.european_aqi === undefined) {
+    setTile("aqi", "Qualité de l'air", "—", "Indisponible");
+    setTile("pollen", "Pollens", "—", "Indisponible");
+    drawTiles();
+    return;
+  }
+  var lv = aqiLevel(a.european_aqi);
+  setTile("aqi", "Qualité de l'air", lv[0], "Indice " + a.european_aqi + " · PM2,5 " + fr(a.pm2_5, 1), lv[1]);
+
+  var best = null, bestV = -1, hasData = false;
+  for (var k in POLLENS) {
+    if (a[k] !== null && a[k] !== undefined) {
+      hasData = true;
+      if (a[k] > bestV) { bestV = a[k]; best = k; }
+    }
+  }
+  if (!hasData) {
+    setTile("pollen", "Pollens", "—", "Hors saison");
+  } else if (bestV < 1) {
+    setTile("pollen", "Pollens", "Nul", "Aucun pollen notable", "#3ee08f");
+  } else {
+    var pl = bestV < 20 ? ["Faible", "#3ee08f"] : bestV < 80 ? ["Modéré", "#ffd166"] : ["Élevé", "#ff3f6c"];
+    setTile("pollen", "Pollens", pl[0], POLLENS[best] + " · " + fr(bestV) + " grains/m³", pl[1]);
+  }
+  drawTiles();
+}
+
+/* ---------- Carte : nuages (satellite) + pluie (radar) ---------- */
+function meteoInitMap() {
+  if (!leafletOK("map")) { return; }
+  var city = currentCity();
+  var map = meteo.map = makeMap("map", city.latitude, city.longitude, CONFIG.mapZoom);
+
+  // Nuages : infrarouge Meteosat (EUMETSAT), visible jour et nuit.
+  // Le mode "screen" rend le fond noir transparent : seuls les nuages blancs restent.
+  map.createPane("clouds");
+  var cp = map.getPane("clouds");
+  cp.style.zIndex = 350;
+  cp.style.mixBlendMode = "screen";
+  cp.style.webkitFilter = cp.style.filter = "contrast(1.9) blur(3px)"; // sol gris -> noir ; flou pour lisser les pixels
+  meteo.cloudLayer = L.tileLayer.wms("https://view.eumetsat.int/geoserver/wms", {
+    layers: "mtg_fd:ir105_hrfi", format: "image/png", transparent: false, version: "1.3.0",
+    pane: "clouds", opacity: 0.6, t: Date.now(),
+    attribution: "Satellite © EUMETSAT"
+  }).addTo(map);
+
+  map.createPane("radar");
+  map.getPane("radar").style.zIndex = 400;
+
+  meteo.marker = L.circleMarker([city.latitude, city.longitude], {
+    radius: 7, color: "#100a20", weight: 3, fillColor: "#ff3fa4", fillOpacity: 1
+  }).addTo(map);
+  meteoMapInfo();
+  meteoRadar();
+}
+
+function meteoRecenter() {
+  if (!meteo.map) { return; }
+  var city = currentCity();
+  meteo.map.setView([city.latitude, city.longitude], CONFIG.mapZoom);
+  meteo.marker.setLatLng([city.latitude, city.longitude]);
+}
+
+function meteoRadar() {
+  if (!meteo.map) { return; }
+  meteo.cloudLayer.setParams({ t: Date.now() }); // force le rechargement des nuages
+  getJSON("https://api.rainviewer.com/public/weather-maps.json", function (d) {
+    var frames = d.radar && d.radar.past;
+    if (!frames || !frames.length) { return; }
+    var f = frames[frames.length - 1];
+    if (meteo.radarLayer) { meteo.map.removeLayer(meteo.radarLayer); }
+    // Le radar gratuit s'arrête au zoom 7 : il est agrandi au-delà
+    meteo.radarLayer = L.tileLayer(d.host + f.path + "/256/{z}/{x}/{y}/2/1_1.png", {
+      pane: "radar", opacity: 0.85, maxNativeZoom: 7, maxZoom: 12,
+      attribution: 'Radar © <a href="https://www.rainviewer.com/">RainViewer</a>'
+    }).addTo(meteo.map);
+    var t = new Date(f.time * 1000);
+    meteo.radarTime = pad(t.getHours()) + ":" + pad(t.getMinutes());
+    meteoMapInfo();
+  }, function () { meteo.radarTime = "indisponible"; meteoMapInfo(); });
+}
+
+function meteoMapInfo() {
+  $("map-info").innerHTML =
+    '<span class="key" style="background:#e8ecf2"></span><b>Nuages</b> satellite, temps réel<br>' +
+    '<span class="key" style="background:#3b8cff"></span><b>Pluie</b> radar' + (meteo.radarTime ? " · " + meteo.radarTime : "");
+}
+
+/* ---------- Branchement de l'onglet ---------- */
+onCityChange(function () {
+  meteoCityButtons();
+  $("now-desc").textContent = "Chargement…";
+  meteoRecenter();
+  meteoLoad();
+});
+
+registerTab("meteo", {
+  show: function () {
+    if (!meteo.map) { meteoInitMap(); }
+    else { meteo.map.invalidateSize(); }
+    if (meteo.last) { meteoRender(meteo.last); } // la courbe a besoin de la taille réelle
+  },
+  resize: function () {
+    if (meteo.map) { meteo.map.invalidateSize(); }
+    if (meteo.last && currentTab === "meteo") { meteoRender(meteo.last); }
+  }
+});
+
+meteoCityButtons();
+drawTiles();
+meteoLoad();
+setInterval(meteoLoad, CONFIG.refreshMinutes * 60 * 1000);
+</script>
+<script>
+/* =====================================================================
+   ONGLET RADAR — les avions au-dessus de ta position
+   Positions : réseau ADS-B communautaire (adsb.fi / adsb.lol) via le relais
+               (ces services n'autorisent pas l'appel direct depuis une page web)
+   Trajets   : adsbdb.com (compagnie, départ, arrivée) — gratuit, sans clé
+   ===================================================================== */
+
+var radar = {
+  map: null, rings: null, centerMarker: null,
+  planes: {},          // hex -> avion
+  selected: null,      // hex choisi au doigt (sinon : le plus proche)
+  pollTimer: null, animTimer: null, requestId: 0,
+  routes: {}, routePending: {},
+  mode: store.get("radarMode") === "gps" ? "gps" : "city",
+  gps: null, lastOk: null, source: ""
+};
+(function () {
+  try { var g = JSON.parse(store.get("radarGps")); if (g && g.lat) { radar.gps = g; } } catch (e) {}
+  if (radar.mode === "gps" && !radar.gps) { radar.mode = "city"; }
+})();
+
+function radarCenter() {
+  if (radar.mode === "gps" && radar.gps) { return { lat: radar.gps.lat, lon: radar.gps.lon, name: "Ma position" }; }
+  var c = currentCity();
+  return { lat: c.latitude, lon: c.longitude, name: c.name };
+}
+
+/* ---------- Géographie ---------- */
+function rad(x) { return x * Math.PI / 180; }
+function distKm(lat1, lon1, lat2, lon2) {
+  var dLat = rad(lat2 - lat1), dLon = rad(lon2 - lon1);
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+function movePoint(lat, lon, brg, km) {
+  var d = km / 6371, t = rad(brg), p1 = rad(lat), l1 = rad(lon);
+  var p2 = Math.asin(Math.sin(p1) * Math.cos(d) + Math.cos(p1) * Math.sin(d) * Math.cos(t));
+  var l2 = l1 + Math.atan2(Math.sin(t) * Math.sin(d) * Math.cos(p1), Math.cos(d) - Math.sin(p1) * Math.sin(p2));
+  return [p2 * 180 / Math.PI, l2 * 180 / Math.PI];
+}
+function bearing(lat1, lon1, lat2, lon2) {
+  var y = Math.sin(rad(lon2 - lon1)) * Math.cos(rad(lat2));
+  var x = Math.cos(rad(lat1)) * Math.sin(rad(lat2)) - Math.sin(rad(lat1)) * Math.cos(rad(lat2)) * Math.cos(rad(lon2 - lon1));
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+}
+
+/* ---------- Altitude -> couleur (orange au sol, rose, violet, cyan en haut) ---------- */
+var ALT_STOPS = [[0, [255, 158, 79]], [10000, [255, 63, 164]], [25000, [166, 107, 255]], [40000, [45, 226, 230]]];
+function altColor(ft) {
+  if (ft <= 0) { return "rgb(255,158,79)"; }
+  for (var i = 1; i < ALT_STOPS.length; i++) {
+    if (ft <= ALT_STOPS[i][0]) {
+      var a = ALT_STOPS[i - 1], b = ALT_STOPS[i], k = (ft - a[0]) / (b[0] - a[0]);
+      return "rgb(" + Math.round(a[1][0] + (b[1][0] - a[1][0]) * k) + "," +
+        Math.round(a[1][1] + (b[1][1] - a[1][1]) * k) + "," + Math.round(a[1][2] + (b[1][2] - a[1][2]) * k) + ")";
+    }
+  }
+  return "rgb(45,226,230)";
+}
+function altMeters(p) { return p.ground ? 0 : Math.round(p.alt * 0.3048 / 50) * 50; }
+function altLabel(p) { return p.ground ? "au sol" : milliers(altMeters(p)) + " m"; }
+function vario(p) { return p.rate > 300 ? "↗" : p.rate < -300 ? "↘" : "→"; }
+
+/* ---------- Icône d'avion (silhouette vue de dessus, pointe vers le haut) ---------- */
+function planeSVG(color) {
+  return '<svg viewBox="0 0 24 24"><path d="M12 1.5c.9 0 1.4 1 1.4 2.2v5.4l8.1 4.8v2.1l-8.1-2.4v4.9l2.4 1.8v1.8L12 21.2l-3.8.9v-1.8l2.4-1.8v-4.9l-8.1 2.4v-2.1l8.1-4.8V3.7c0-1.2.5-2.2 1.4-2.2z" fill="' +
+    color + '" stroke="#100a20" stroke-width="1" stroke-linejoin="round"/></svg>';
+}
+function planeIcon(p, isSel, withLabel) {
+  var r = remPx(), s = r * 3;
+  var html = '<div class="pl" style="-webkit-transform:rotate(' + p.track + 'deg);transform:rotate(' + p.track + 'deg)">' +
+    planeSVG(altColor(p.alt)) + "</div>" +
+    (withLabel ? '<div class="lab">' + esc(p.call) + "<br><i>" + altLabel(p) + "</i></div>" : "");
+  return L.divIcon({ className: "plane-ic" + (isSel ? " sel" : ""), html: html, iconSize: [s, s], iconAnchor: [s / 2, s / 2] });
+}
+
+/* ---------- Boutons de position ---------- */
+function radarButtons() {
+  var html = "";
+  for (var i = 0; i < CITIES.length; i++) {
+    html += '<button class="city-btn' + (radar.mode === "city" && i === cityIndex ? " on" : "") + '" data-rcity="' + i + '">' +
+      '<img src="' + CITIES[i].logo + '" alt="">' + CITIES[i].name + "</button>";
+  }
+  html += '<button class="city-btn' + (radar.mode === "gps" ? " on" : "") + '" data-rcity="gps"><span class="ic">📍</span>Ici</button>';
+  $("r-cities").innerHTML = html;
+}
+$("r-cities").onclick = function (e) {
+  var el = e.target;
+  while (el && el !== this && !el.getAttribute("data-rcity")) { el = el.parentNode; }
+  if (!el || el === this) { return; }
+  var v = el.getAttribute("data-rcity");
+  if (v === "gps") { radarLocate(); return; }
+  radar.mode = "city";
+  store.set("radarMode", "city");
+  if (parseInt(v, 10) !== cityIndex) { selectCity(parseInt(v, 10)); } // -> onCityChange
+  else { radarMoved(); }
+};
+
+function radarLocate() {
+  if (!navigator.geolocation) { radarStatus("Localisation non disponible sur cet appareil", true); return; }
+  radarStatus("Localisation en cours…");
+  navigator.geolocation.getCurrentPosition(function (pos) {
+    radar.gps = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+    store.set("radarGps", JSON.stringify(radar.gps));
+    radar.mode = "gps";
+    store.set("radarMode", "gps");
+    radarMoved();
+  }, function () {
+    radarStatus("Position refusée ou introuvable", true);
+  }, { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 });
+}
+
+// La position de référence a changé : on repart de zéro
+function radarMoved() {
+  radarButtons();
+  radarClear();
+  if (radar.map) {
+    var c = radarCenter();
+    radar.map.setView([c.lat, c.lon], CONFIG.planeZoom);
+    radar.centerMarker.setLatLng([c.lat, c.lon]);
+    radarRings();
+    radarSweep();
+  }
+  radarRenderSide();
+  if (currentTab === "radar") { radarPoll(); }
+}
+
+/* ---------- Carte ---------- */
+function radarInitMap() {
+  if (!leafletOK("r-map")) { return; }
+  var c = radarCenter();
+  var map = radar.map = makeMap("r-map", c.lat, c.lon, CONFIG.planeZoom);
+  radar.rings = L.layerGroup().addTo(map);
+  radarRings();
+  radar.centerMarker = L.circleMarker([c.lat, c.lon], {
+    radius: 7, color: "#100a20", weight: 3, fillColor: "#ff3fa4", fillOpacity: 1, interactive: false
+  }).addTo(map);
+  map.on("move zoom viewreset", radarSweep);
+  map.attributionControl.addAttribution("Avions : adsb.fi / adsb.lol · Trajets : adsbdb");
+}
+
+function radarRings() {
+  var c = radarCenter();
+  radar.rings.clearLayers();
+  var radii = [10, 25, 50];
+  for (var i = 0; i < radii.length; i++) {
+    L.circle([c.lat, c.lon], {
+      radius: radii[i] * 1000, color: "#2de2e6", weight: 1, opacity: 0.4, fill: false, dashArray: "4 6", interactive: false
+    }).addTo(radar.rings);
+    L.marker(movePoint(c.lat, c.lon, 0, radii[i]), {
+      interactive: false, keyboard: false,
+      icon: L.divIcon({ className: "ring-lab", html: radii[i] + " km", iconSize: [60, 16], iconAnchor: [-4, 16] })
+    }).addTo(radar.rings);
+  }
+}
+
+// Le balayage tourne autour de la position de référence
+function radarSweep() {
+  if (!radar.map) { return; }
+  var c = radarCenter();
+  var p = radar.map.latLngToContainerPoint([c.lat, c.lon]);
+  var el = $("r-sweep");
+  el.style.left = p.x + "px";
+  el.style.top = p.y + "px";
+}
+
+/* ---------- Récupération des avions ---------- */
+function radarPoll() {
+  if (!CONFIG.planeProxy) { radarRenderSide(); return; }
+  var c = radarCenter(), myId = ++radar.requestId;
+  var nm = Math.ceil(CONFIG.planeRadiusKm / 1.852);
+  var url = CONFIG.planeProxy + (CONFIG.planeProxy.indexOf("?") < 0 ? "?" : "&") +
+    "lat=" + c.lat.toFixed(4) + "&lon=" + c.lon.toFixed(4) + "&dist=" + nm;
+  getJSON(url, function (d) {
+    if (myId !== radar.requestId) { return; }
+    if (d.error) { radarStatus("Relais : " + d.error, true); return; }
+    radar.source = d.src || "";
+    radarUpdate(d.ac || d.aircraft || []);
+    radar.lastOk = new Date();
+    radarStatus("");
+  }, function (msg) {
+    if (myId !== radar.requestId) { return; }
+    radarStatus("Avions indisponibles (" + msg + ")", true);
+  });
+}
+
+function radarUpdate(list) {
+  var now = Date.now(), c = radarCenter();
+  for (var i = 0; i < list.length; i++) {
+    var a = list[i];
+    if (a.lat === undefined || a.lat === null || a.lon === undefined) { continue; }
+    var dist = distKm(c.lat, c.lon, a.lat, a.lon);
+    if (dist > CONFIG.planeRadiusKm) { continue; }
+    var p = radar.planes[a.hex];
+    if (!p) { p = radar.planes[a.hex] = { hex: a.hex, trail: [] }; }
+    p.call = (a.flight || "").trim() || a.r || a.hex.toUpperCase();
+    p.reg = a.r || "";
+    p.type = a.t || "";
+    p.desc = a.desc || "";
+    p.ground = a.alt_baro === "ground";
+    p.alt = p.ground ? 0 : (+a.alt_baro || +a.alt_geom || 0);
+    p.gs = a.gs || 0;
+    p.track = a.track !== undefined && a.track !== null ? a.track : (a.true_heading || a.mag_heading || 0);
+    p.rate = a.baro_rate !== undefined && a.baro_rate !== null ? a.baro_rate : (a.geom_rate || 0);
+    p.squawk = a.squawk || "";
+    p.lat0 = a.lat; p.lon0 = a.lon;
+    p.fix = now - (a.seen_pos || 0) * 1000;
+    p.seenAt = now;
+    var last = p.trail[p.trail.length - 1];
+    if (!last || last[0] !== a.lat || last[1] !== a.lon) { p.trail.push([a.lat, a.lon]); }
+    if (p.trail.length > 30) { p.trail.shift(); }
+  }
+  // On oublie les avions qui ne sont plus vus
+  for (var hex in radar.planes) {
+    if (now - radar.planes[hex].seenAt > 45000) { radarRemove(hex); }
+  }
+  radarDraw();
+  radarRenderSide();
+}
+
+// Position estimée maintenant (l'avion continue sur sa lancée entre deux mises à jour)
+function posNow(p) {
+  var dt = Math.min((Date.now() - p.fix) / 1000, 40);
+  if (p.ground || p.gs < 30) { return [p.lat0, p.lon0]; }
+  return movePoint(p.lat0, p.lon0, p.track, p.gs * 1.852 * dt / 3600);
+}
+
+function radarSorted() {
+  var c = radarCenter(), arr = [];
+  for (var hex in radar.planes) {
+    var p = radar.planes[hex], ll = posNow(p);
+    p.dist = distKm(c.lat, c.lon, ll[0], ll[1]);
+    p.dir = bearing(c.lat, c.lon, ll[0], ll[1]);
+    arr.push(p);
+  }
+  arr.sort(function (a, b) { return a.dist - b.dist; });
+  return arr;
+}
+
+function radarCurrentHex(sorted) {
+  if (radar.selected && radar.planes[radar.selected]) { return radar.selected; }
+  radar.selected = null;
+  return sorted.length ? sorted[0].hex : null;
+}
+
+function radarDraw() {
+  if (!radar.map) { return; }
+  var sorted = radarSorted(), cur = radarCurrentHex(sorted);
+  for (var i = 0; i < sorted.length; i++) {
+    var p = sorted[i], ll = posNow(p), isSel = p.hex === cur, lab = i < 10 || isSel;
+    var key = Math.round(p.track / 4) + "|" + Math.round(p.alt / 500) + "|" + isSel + "|" + lab + "|" + p.call;
+    if (!p.marker) {
+      p.marker = L.marker(ll, { icon: planeIcon(p, isSel, lab), keyboard: false });
+      p.marker.on("click", (function (hex) { return function () { radarSelect(hex); }; })(p.hex));
+      p.marker.addTo(radar.map);
+    } else {
+      p.marker.setLatLng(ll);
+      if (key !== p.iconKey) { p.marker.setIcon(planeIcon(p, isSel, lab)); }
+    }
+    p.marker.setZIndexOffset(isSel ? 1000 : -Math.round(p.dist));
+    p.iconKey = key;
+    var pts = p.trail.concat([ll]);
+    if (!p.line) {
+      p.line = L.polyline(pts, { color: altColor(p.alt), weight: 2, opacity: 0.45, interactive: false }).addTo(radar.map);
+    } else {
+      p.line.setLatLngs(pts);
+      p.line.setStyle({ color: altColor(p.alt) });
+    }
+  }
+}
+
+function radarAnimate() {
+  for (var hex in radar.planes) {
+    var p = radar.planes[hex];
+    if (p.marker) {
+      var ll = posNow(p);
+      p.marker.setLatLng(ll);
+      if (p.line) { p.line.setLatLngs(p.trail.concat([ll])); }
+    }
+  }
+}
+
+function radarRemove(hex) {
+  var p = radar.planes[hex];
+  if (radar.map) {
+    if (p.marker) { radar.map.removeLayer(p.marker); }
+    if (p.line) { radar.map.removeLayer(p.line); }
+  }
+  delete radar.planes[hex];
+}
+function radarClear() {
+  for (var hex in radar.planes) { radarRemove(hex); }
+  radar.selected = null;
+}
+
+function radarSelect(hex) {
+  radar.selected = radar.selected === hex ? null : hex; // 2e appui : retour au plus proche
+  radarDraw();
+  radarRenderSide();
+}
+
+/* ---------- Trajets (compagnie, départ -> arrivée) ---------- */
+function radarRoute(p) {
+  var call = p.call;
+  if (!/^[A-Z]{3}[0-9]/.test(call)) { radar.routes[call] = null; return; }
+  if (radar.routes[call] !== undefined || radar.routePending[call]) { return; }
+  radar.routePending[call] = true;
+  getJSON("https://api.adsbdb.com/v0/callsign/" + encodeURIComponent(call), function (d) {
+    var r = d.response && d.response.flightroute;
+    radar.routes[call] = r && r.origin && r.destination ? {
+      airline: r.airline && r.airline.name,
+      from: { code: r.origin.iata_code || r.origin.icao_code, town: r.origin.municipality || r.origin.name },
+      to: { code: r.destination.iata_code || r.destination.icao_code, town: r.destination.municipality || r.destination.name }
+    } : null;
+    delete radar.routePending[call];
+    radarRenderSide();
+  }, function () {
+    radar.routes[call] = null; // inconnu : on ne redemande pas
+    delete radar.routePending[call];
+  });
+}
+
+/* ---------- Panneau de droite ---------- */
+function radarStatus(msg, isErr) {
+  var s = $("r-status");
+  s.className = "status" + (isErr ? " err" : "");
+  if (msg) { s.textContent = msg; return; }
+  var t = radar.lastOk;
+  s.textContent = t ? "Mis à jour " + pad(t.getHours()) + ":" + pad(t.getMinutes()) + ":" + pad(t.getSeconds()) : "";
+}
+
+function radarRenderSide() {
+  var c = radarCenter();
+  $("r-where").textContent = "Autour de " + c.name + " · " + CONFIG.planeRadiusKm + " km";
+
+  if (!CONFIG.planeProxy) {
+    $("r-stats").innerHTML = "";
+    $("r-detail").innerHTML = '<div class="label">Configuration</div><div class="empty">' +
+      "Le radar a besoin d'un petit relais gratuit (Cloudflare) pour récupérer les avions.<br>" +
+      "Suis <code>proxy/LISEZMOI.txt</code>, puis colle son adresse dans <code>js/commun.js</code> " +
+      "(ligne <code>planeProxy</code>).</div>";
+    $("r-list").innerHTML = "";
+    return;
+  }
+
+  var sorted = radarSorted(), cur = radarCurrentHex(sorted);
+
+  /* Statistiques */
+  var hi = null;
+  for (var i = 0; i < sorted.length; i++) { if (!hi || sorted[i].alt > hi.alt) { hi = sorted[i]; } }
+  $("r-stats").innerHTML =
+    '<div class="stat"><div class="v grad">' + sorted.length + '</div><div class="k">Avions</div></div>' +
+    '<div class="stat"><div class="v">' + (sorted.length ? fr(sorted[0].dist, sorted[0].dist < 10 ? 1 : 0) + "<small>km</small>" : "—") +
+      '</div><div class="k">Plus proche</div></div>' +
+    '<div class="stat"><div class="v">' + (hi ? fr(altMeters(hi) / 1000, 1) + "<small>km</small>" : "—") +
+      '</div><div class="k">Plus haut</div></div>';
+
+  /* Liste */
+  var box = $("r-list");
+  var rows = Math.max(1, Math.floor(box.clientHeight / (remPx() * 4.85)) || 7);
+  var html = "";
+  if (!sorted.length) {
+    html = '<div class="empty">' + (radar.lastOk ? "Aucun avion dans le rayon pour le moment." : "Recherche des avions…") + "</div>";
+  }
+  for (i = 0; i < sorted.length && i < rows; i++) {
+    var p = sorted[i];
+    radarRoute(p);
+    var rt = radar.routes[p.call];
+    var sub = rt ? (rt.airline ? rt.airline + " · " : "") + rt.from.code + " → " + rt.to.code : (p.desc || p.type || p.reg || "—");
+    html += '<div class="row' + (p.hex === cur ? " sel" : "") + '" data-hex="' + p.hex + '">' +
+      '<div class="dot" style="background:' + altColor(p.alt) + ";box-shadow:0 0 .6rem " + altColor(p.alt) + '"></div>' +
+      '<div class="mid"><div class="c">' + esc(p.call) + '</div><div class="s">' + esc(sub) + "</div></div>" +
+      '<div class="rt"><div class="a">' + altLabel(p) + " " + vario(p) + '</div><div class="d">' +
+        fr(p.dist, p.dist < 10 ? 1 : 0) + " km · " + compassLong(p.dir) + "</div></div></div>";
+  }
+  box.innerHTML = html;
+
+  /* Fiche détaillée */
+  var s = cur && radar.planes[cur];
+  if (!s) {
+    $("r-detail").innerHTML = '<div class="label">Vol</div><div class="empty">Touchez un avion sur la carte ou dans la liste.</div>';
+    return;
+  }
+  radarRoute(s);
+  var r = radar.routes[s.call];
+  var route = r
+    ? '<div class="route"><div class="ap"><div class="code grad">' + esc(r.from.code || "?") + '</div><div class="town">' + esc(r.from.town || "") + "</div></div>" +
+      '<div class="mid">✈︎</div>' +
+      '<div class="ap r"><div class="code grad">' + esc(r.to.code || "?") + '</div><div class="town">' + esc(r.to.town || "") + "</div></div></div>"
+    : '<div class="route none">' + (radar.routePending[s.call] ? "Recherche du trajet…" : "Trajet inconnu (vol privé, militaire ou non référencé)") + "</div>";
+  var vmin = Math.round(s.rate * 0.3048);
+  $("r-detail").innerHTML =
+    '<div class="dt-top"><div><div class="label">' + (radar.selected ? "Vol choisi" : "Le plus proche") + '</div>' +
+      '<div class="dt-call grad">' + esc(s.call) + '</div><div class="dt-air">' + esc((r && r.airline) || s.desc || s.reg || "") + "</div></div>" +
+      (s.type ? '<div class="badge">' + esc(s.type) + "</div>" : "") + "</div>" +
+    route +
+    '<div class="facts">' +
+      fact("Altitude", s.ground ? "Au sol" : milliers(altMeters(s)) + "<small>m</small>") +
+      fact("Vitesse", milliers(s.gs * 1.852) + "<small>km/h</small>") +
+      fact("Distance", fr(s.dist, s.dist < 10 ? 1 : 0) + "<small>km " + compassLong(s.dir) + "</small>") +
+      fact("Cap", arrowTo(s.track, "#2de2e6") + " " + Math.round(s.track) + "°<small>" + compassLong(s.track) + "</small>") +
+      fact("Vertical", vario(s) + " " + (Math.abs(vmin) < 90 ? "Palier" : (vmin > 0 ? "+" : "−") + milliers(Math.abs(vmin)) + "<small>m/min</small>")) +
+      fact("Immat.", esc(s.reg || "—")) +
+    "</div>";
+}
+function fact(k, v) { return '<div class="fact"><div class="k">' + k + '</div><div class="v">' + v + "</div></div>"; }
+
+$("r-list").onclick = function (e) {
+  var el = e.target;
+  while (el && el !== this && !el.getAttribute("data-hex")) { el = el.parentNode; }
+  if (el && el !== this) { radarSelect(el.getAttribute("data-hex")); }
+};
+
+/* ---------- Branchement de l'onglet ---------- */
+onCityChange(function () {
+  if (radar.mode === "city") { radarMoved(); } else { radarButtons(); }
+});
+
+registerTab("radar", {
+  show: function () {
+    if (!radar.map) { radarInitMap(); } else { radar.map.invalidateSize(); }
+    radarSweep();
+    radarRenderSide();
+    radarPoll();
+    clearInterval(radar.pollTimer);
+    clearInterval(radar.animTimer);
+    radar.pollTimer = setInterval(radarPoll, CONFIG.planeRefreshSeconds * 1000);
+    radar.animTimer = setInterval(radarAnimate, 1000);
+  },
+  hide: function () { // on n'interroge pas le réseau quand l'onglet n'est pas affiché
+    clearInterval(radar.pollTimer);
+    clearInterval(radar.animTimer);
+  },
+  resize: function () {
+    if (radar.map) { radar.map.invalidateSize(); radarSweep(); }
+    if (currentTab === "radar") { radarDraw(); radarRenderSide(); }
+  }
+});
+
+radarButtons();
+
+// Directions en toutes lettres ("O" se confond avec un zéro dans la police condensée)
+function compassLong(d) { return ["Nord", "N-Est", "Est", "S-Est", "Sud", "S-Ouest", "Ouest", "N-Ouest"][Math.round(d / 45) % 8]; }
+</script>
 <script>startApp();</script>
 </body>
 </html>
