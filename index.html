@@ -659,6 +659,22 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
 .frcol .sec { margin-top: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .frcol .nw .nt { font-size: 1.3rem; }
 #page-actus .lc-more { display: none; }
+
+/* ---------- Actus : titres entiers, plus grands ---------- */
+.nw .nt { font-size: 1.55rem; line-height: 1.3; display: block; -webkit-line-clamp: none; overflow: visible; }
+.nw .nd { font-size: 1.3rem; line-height: 1.35; -webkit-line-clamp: 3; }
+.nw .na { font-size: 1.2rem; }
+.frcol .nw .nt { font-size: 1.45rem; }
+.nw.wi { display: flex; align-items: flex-start; }
+.nw .nim { width: 12rem; height: 8rem; border-radius: .9rem; margin-right: 1.1rem; -webkit-flex-shrink: 0; flex-shrink: 0; object-fit: cover; background: var(--card2); }
+.nw .nb { -webkit-flex: 1; flex: 1; min-width: 0; }
+/* Onglet Actus : 3 colonnes de cartes qui défilent */
+#page-actus.on { display: block; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  -webkit-column-count: 3; column-count: 3; -webkit-column-gap: .9rem; column-gap: .9rem; }
+.acard { display: inline-block; width: 100%; padding: 1.1rem 1.3rem .6rem; margin-bottom: .9rem; -webkit-column-break-inside: avoid; break-inside: avoid; }
+#page-actus .lc-title { font-size: 1.9rem; }
+#page-actus .lc-more { display: block; }
+#page-actus .nw .nt { font-size: 1.6rem; }
 </style>
 </head>
 <body>
@@ -1980,8 +1996,9 @@ function loadNews(key, cb) {
         var it = items[i];
         var get = function (tag) { var n = it.getElementsByTagName(tag)[0]; return n ? n.textContent : ""; };
         var desc = get("description"), im = /<img[^>]+src="([^"]+)"/i.exec(desc);
+        var img = im && im[1].indexOf("/1500000000833469/") < 0 ? im[1].replace(/-\d+-\d+-75\//, "-320-213-75/") : "";
         list.push({ title: htmlToText(get("title")), link: get("link"), text: htmlToText(desc),
-                    date: parseRSSDate(get("pubDate")), img: im ? im[1] : "" });
+                    date: parseRSSDate(get("pubDate")), img: img });
       }
     } catch (e) {}
     newsCache[key] = { t: Date.now(), list: list };
@@ -1998,14 +2015,16 @@ function newsAge(d) {
   if (min < 48 * 60) { return "hier"; }
   return d.getDate() + " " + MOIS[d.getMonth()].slice(0, 4) + ".";
 }
-// n articles ; withText : petit paragraphe sous le titre
-function newsHTML(list, n, withText) {
+// n articles ; withText : résumé sous le titre ; withImg : photo à gauche
+function newsHTML(list, n, withText, withImg) {
   if (!list || !list.length) { return '<div class="empty-s">Pas d\'actualité disponible.</div>'; }
   return list.slice(0, n).map(function (a) {
-    return '<a class="nw" href="' + esc(a.link) + '" target="_blank" rel="noopener">' +
+    var img = withImg && a.img;
+    return '<a class="nw' + (img ? " wi" : "") + '" href="' + esc(a.link) + '" target="_blank" rel="noopener">' +
+      (img ? '<img class="nim" src="' + esc(a.img) + '" alt="">' : "") + '<div class="nb">' +
       '<div class="nt">' + esc(a.title) + "</div>" +
       (withText && a.text ? '<div class="nd">' + esc(a.text) + "</div>" : "") +
-      '<div class="na">' + newsAge(a.date) + " · L'Équipe ›</div></a>";
+      '<div class="na">' + newsAge(a.date) + " · Lire sur L'Équipe ›</div></div></a>";
   }).join("");
 }
 
@@ -2018,13 +2037,13 @@ function renderActus() {
   var html = "";
   ACTUS_ORDER.forEach(function (id) {
     var L = leagueById(id);
-    html += '<div class="card lcard"><div class="lc-head" data-go="' + id + '">' + leagueIcon(L) + '<div class="lc-title">' + esc(L.name) +
-      '</div><div class="lc-more">Résultats ›</div></div><div class="scroll" id="ac-' + id + '"><div class="empty-s">Chargement…</div></div></div>';
+    html += '<div class="card acard"><div class="lc-head" data-go="' + id + '">' + leagueIcon(L) + '<div class="lc-title">' + esc(L.name) +
+      '</div><div class="lc-more">Résultats ›</div></div><div id="ac-' + id + '"><div class="empty-s">Chargement…</div></div></div>';
   });
-  html += '<div class="card lcard"><div class="lc-head" data-go="france"><span class="emo">🇫🇷</span><div class="lc-title">Les Bleus</div></div><div class="scroll" id="ac-bleus"></div></div>';
+  html += '<div class="card acard"><div class="lc-head" data-go="france"><span class="emo">🇫🇷</span><div class="lc-title">Les Bleus</div><div class="lc-more">France ›</div></div><div id="ac-bleus"></div></div>';
   $("page-actus").innerHTML = html;
   ACTUS_ORDER.concat(["bleus"]).forEach(function (id) {
-    loadNews(id, function (list) { var el = $("ac-" + id); if (el) { el.innerHTML = newsHTML(list, 5, true); } });
+    loadNews(id, function (list) { var el = $("ac-" + id); if (el) { el.innerHTML = newsHTML(list, 5, true, true); } });
   });
 }
 // Toucher l'en-tête d'une carte : ouvre le championnat dans l'onglet Sports
@@ -2136,7 +2155,7 @@ function shortDay(t) {
 // Mois à interroger (matchs ± une semaine autour d'aujourd'hui)
 function spMonths() {
   var n = new Date(), out = [ym(n)];
-  if (n.getDate() <= 8) { out.unshift(ym(new Date(n.getFullYear(), n.getMonth() - 1, 1))); }
+  out.unshift(ym(new Date(n.getFullYear(), n.getMonth() - 1, 1))); // le mois d'avant : utile pendant les trêves
   if (n.getDate() >= 23) { out.push(ym(new Date(n.getFullYear(), n.getMonth() + 1, 1))); }
   return out;
 }
@@ -2213,13 +2232,17 @@ function classify(L, evs) {
       return;
     }
     if (e.state === "post" && t >= now - 4 * 864e5) { recent.push(e); }
-    else if (e.state === "pre" && t <= now + 6 * 864e5) { next.push(e); }
+    else if (e.state === "pre" && t >= now - 3 * 3600e3 && t <= now + 6 * 864e5) { next.push(e); }
   });
-  if (!L.daily && !recent.length) { // trêve : on remonte plus loin
-    evs.forEach(function (e) { if (e.state === "post" && e.t.getTime() >= now - 15 * 864e5) { recent.push(e); } });
+  if (!L.daily && !recent.length) { // trêve : la dernière journée jouée (matchs à moins de 3 jours du dernier)
+    var lastT = 0;
+    evs.forEach(function (e) { if (e.state === "post" && e.t.getTime() > lastT) { lastT = e.t.getTime(); } });
+    evs.forEach(function (e) { if (e.state === "post" && e.t.getTime() >= lastT - 3 * 864e5) { recent.push(e); } });
   }
-  if (!L.daily && !next.length) {
-    evs.forEach(function (e) { if (e.state === "pre" && e.t.getTime() <= now + 20 * 864e5) { next.push(e); } });
+  if (!L.daily && !next.length) { // et la prochaine journée
+    var firstT = 0;
+    evs.forEach(function (e) { var t = e.t.getTime(); if (e.state === "pre" && t >= now - 3 * 3600e3 && (!firstT || t < firstT)) { firstT = t; } });
+    evs.forEach(function (e) { var t = e.t.getTime(); if (e.state === "pre" && firstT && t >= firstT && t <= firstT + 3 * 864e5) { next.push(e); } });
   }
   recent.reverse();
   return { live: live, recent: recent, next: next };
@@ -2624,7 +2647,7 @@ function detailSoccer(L) {
       '<div class="card pane"><div class="pane-head"><div class="label">Matchs</div></div><div class="scroll">' + col1 + "</div></div>" +
       '<div class="card pane"><div class="pane-head"><div class="label">Classement ' + esc(L.name) + "</div></div>" + tb.html + legendHTML(tb.zones) + "</div>" +
       '<div class="card pane"><div class="scroll">' + col3 + "</div></div></div>";
-    loadNews(L.id, function (list) { var el = $("nw-det"); if (el && sp.view === L.id) { el.innerHTML = newsHTML(list, 3, false); } });
+    loadNews(L.id, function (list) { var el = $("nw-det"); if (el && sp.view === L.id) { el.innerHTML = newsHTML(list, 3, true); } });
   });
 }
 function soccerKPIs(entries) {
@@ -2901,7 +2924,7 @@ function detailF1() {
     '<div class="card pane"><div class="pane-head"><div class="label">Dernier Grand Prix</div></div><div class="scroll">' + col1 + "</div></div>" +
     '<div class="card pane">' + col2 + "</div>" +
     '<div class="card pane"><div class="scroll">' + col3 + '<div class="sec">Actualités</div><div id="nw-f1d"></div></div></div></div>';
-  loadNews("f1", function (list) { var el = $("nw-f1d"); if (el && sp.view === "f1") { el.innerHTML = newsHTML(list, 3, false); } });
+  loadNews("f1", function (list) { var el = $("nw-f1d"); if (el && sp.view === "f1") { el.innerHTML = newsHTML(list, 3, true); } });
 }
 
 /* =====================================================================
@@ -3196,7 +3219,7 @@ function detailRugby(L) {
       '<div class="card pane"><div class="pane-head"><div class="label">Matchs</div></div><div class="scroll">' + col1 + "</div></div>" +
       '<div class="card pane"><div class="pane-head"><div class="label">Classement Top 14</div></div>' + html + "</div>" +
       '<div class="card pane"><div class="scroll">' + kp + '<div class="sec">Actualités</div><div id="nw-top14d"></div></div></div></div>';
-    loadNews("top14", function (list) { var el = $("nw-top14d"); if (el) { el.innerHTML = newsHTML(list, 4, false); } });
+    loadNews("top14", function (list) { var el = $("nw-top14d"); if (el) { el.innerHTML = newsHTML(list, 4, true); } });
   });
 }
 
@@ -3679,7 +3702,7 @@ function frMatches(evs, newsKey, id) {
   html += '<div class="sec">Derniers résultats</div>' + (past.length ? matchList(past, { withDay: true, badge: true, short: true }) : '<div class="empty-s">—</div>');
   html += '<div class="sec">Actualités</div><div id="' + id + '-nw"></div>';
   frSet(id, html);
-  loadNews(newsKey, function (list) { frSet(id + "-nw", newsHTML(list, 3, false)); });
+  loadNews(newsKey, function (list) { frSet(id + "-nw", newsHTML(list, 3, true)); });
 }
 
 function frBleus() {
@@ -3764,7 +3787,7 @@ function frTennis() {
     });
     html += '<div class="sec">Actualités</div><div id="fr-tennis-nw"></div>';
     frSet("fr-tennis", html);
-    loadNews("tennis", function (list) { frSet("fr-tennis-nw", newsHTML(list, 2, false)); });
+    loadNews("tennis", function (list) { frSet("fr-tennis-nw", newsHTML(list, 2, true)); });
   });
 }
 
