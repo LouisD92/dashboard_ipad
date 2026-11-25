@@ -643,6 +643,22 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
 #sp-chips .chip .emo { font-size: 1.5rem; margin-right: .35rem; }
 .ldl .lcat { font-style: normal; font-family: var(--cond); color: var(--muted); font-size: 1.1rem; margin-right: .5rem; display: inline-block; min-width: 3.4rem; }
 #dx-body.f1 { grid-template-columns: minmax(0, 1fr) 28rem; }
+
+/* Vue France (dans l'onglet Sports) */
+.frv { display: grid; height: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); grid-gap: .9rem; }
+.frv .lcard.big { grid-column: span 3; }
+.frv .lc-title { font-size: 1.8rem; }
+.frv .lcard .m .st { width: 5.6rem; }
+.nwcols { -webkit-column-count: 3; column-count: 3; -webkit-column-gap: 2rem; column-gap: 2rem; }
+.nwcols .nw { -webkit-column-break-inside: avoid; break-inside: avoid; border-top: 0; border-bottom: 1px solid var(--line); }
+/* Onglet Actus */
+#page-actus { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); grid-gap: .9rem; }
+#page-actus .lc-title { font-size: 1.6rem; overflow: hidden; text-overflow: ellipsis; }
+#page-actus .lc-more { font-size: 1.15rem; }
+.frcols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-column-gap: 1.6rem; }
+.frcol .sec { margin-top: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.frcol .nw .nt { font-size: 1.3rem; }
+#page-actus .lc-more { display: none; }
 </style>
 </head>
 <body>
@@ -707,11 +723,13 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
       <span>Direct</span>
     </button>
 
-    <button class="tab" data-tab="france">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
-        <path d="M16 3.5l2.2 3.2 3.7-.6.9 3.6 3.5 1.4-1.4 3.4 2.3 2.9-3.1 2 .4 3.7-3.7.3-1.5 3.4-3.3-1.7-3.3 1.7-1.5-3.4-3.7-.3.4-3.7-3.1-2 2.3-2.9-1.4-3.4 3.5-1.4.9-3.6 3.7.6z"/>
+    <button class="tab" data-tab="actus">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M6 6.5h16v19H8.5A2.5 2.5 0 0 1 6 23z"/>
+        <path d="M22 11h4v12a2.5 2.5 0 0 1-2.5 2.5H22"/>
+        <path d="M10 11h8M10 15h8M10 19h5"/>
       </svg>
-      <span>France</span>
+      <span>Actus</span>
     </button>
 
     <div class="side-clock"><div id="s-time" class="grad">--:--</div><div id="s-date"></div></div>
@@ -814,8 +832,8 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
       </div>
     </section>
 
-    <!-- ================= FRANCE ================= -->
-    <section class="page" id="page-france"></section>
+    <!-- ================= ACTUALITÉS ================= -->
+    <section class="page" id="page-actus"></section>
 
   </main>
 </div>
@@ -1920,7 +1938,8 @@ var NEWS_FEEDS = {
   eu: "Football/Ligue-des-champions/", top14: "Rugby/Top-14/", lnb: "Basket/Betclic-Elite/", f1: "Formule-1/",
   nfl: "Football-americain/", nba: "Basket/NBA/", nhl: "Hockey-sur-glace/NHL/",
   bleus: "Football/Bleus/", xv: "Rugby/XV-de-france/", tennis: "Tennis/", cyclisme: "Cyclisme-sur-route/",
-  athle: "Athletisme/", hand: "Handball/", biathlon: "Biathlon/"
+  athle: "Athletisme/", hand: "Handball/", biathlon: "Biathlon/", basketfr: "Basket/Bleus/",
+  natation: "Natation/", judo: "Judo/", ski: "Ski/", escrime: "Escrime/", voile: "Voile/", golf: "Golf/", boxe: "Boxe/"
 };
 var newsCache = {};
 
@@ -1989,6 +2008,38 @@ function newsHTML(list, n, withText) {
       '<div class="na">' + newsAge(a.date) + " · L'Équipe ›</div></a>";
   }).join("");
 }
+
+/* =====================================================================
+   ONGLET ACTUS : une carte par championnat suivi + les Bleus
+   ===================================================================== */
+var ACTUS_ORDER = ["l1", "pl", "eu", "top14", "lnb", "f1", "nfl", "nba", "nhl"];
+var actusTimer = null;
+function renderActus() {
+  var html = "";
+  ACTUS_ORDER.forEach(function (id) {
+    var L = leagueById(id);
+    html += '<div class="card lcard"><div class="lc-head" data-go="' + id + '">' + leagueIcon(L) + '<div class="lc-title">' + esc(L.name) +
+      '</div><div class="lc-more">Résultats ›</div></div><div class="scroll" id="ac-' + id + '"><div class="empty-s">Chargement…</div></div></div>';
+  });
+  html += '<div class="card lcard"><div class="lc-head" data-go="france"><span class="emo">🇫🇷</span><div class="lc-title">Les Bleus</div></div><div class="scroll" id="ac-bleus"></div></div>';
+  $("page-actus").innerHTML = html;
+  ACTUS_ORDER.concat(["bleus"]).forEach(function (id) {
+    loadNews(id, function (list) { var el = $("ac-" + id); if (el) { el.innerHTML = newsHTML(list, 5, true); } });
+  });
+}
+// Toucher l'en-tête d'une carte : ouvre le championnat dans l'onglet Sports
+$("page-actus").addEventListener("click", function (e) {
+  var el = e.target;
+  while (el && el !== this) {
+    var go = el.getAttribute("data-go");
+    if (go) { showTab("sports"); spGo(go); return; }
+    el = el.parentNode;
+  }
+});
+registerTab("actus", {
+  show: function () { renderActus(); clearInterval(actusTimer); actusTimer = setInterval(renderActus, 10 * 60 * 1000); },
+  hide: function () { clearInterval(actusTimer); }
+});
 </script>
 <script>
 /* =====================================================================
@@ -2370,12 +2421,12 @@ function renderChips() {
   LEAGUES.forEach(function (L) {
     html += '<button class="chip' + (sp.view === L.id ? " on" : "") + '" data-sp="' + L.id + '">' + leagueIcon(L) + esc(L.chip || L.name) + "</button>";
   });
-  html += '<button class="chip' + (sp.view === "news" ? " on" : "") + '" data-sp="news"><span class="emo">📰</span>Actus</button>';
+  html += '<button class="chip' + (sp.view === "france" ? " on" : "") + '" data-sp="france"><span class="emo">🇫🇷</span>France</button>';
   html += '<div class="status" id="sp-status"></div>';
   $("sp-chips").innerHTML = html;
 }
 function spGo(view) {
-  if (view !== "home" && view !== "news" && !leagueById(view)) { view = "home"; }
+  if (view !== "home" && view !== "france" && !leagueById(view)) { view = "home"; }
   sp.view = view;
   store.set("spView", view);
   renderChips();
@@ -2393,7 +2444,7 @@ function spRefresh() { loadAllSports(spRender); }
 function spRender() {
   renderTicker();
   if (sp.view === "home") { renderHome(); spStatus(); return; }
-  if (sp.view === "news") { renderNewsView(); spStatus(); return; }
+  if (sp.view === "france") { if (!$("sp-body").querySelector(".frv")) { franceRender(); } spStatus(); return; }
   var L = leagueById(sp.view);
   if (L.kind === "soccer") { detailSoccer(L); }
   else if (L.kind === "europe") { detailEurope(L); }
@@ -3085,24 +3136,6 @@ function lnbKPIs(evs) {
 }
 
 /* =====================================================================
-   ACTUALITÉS PAR CHAMPIONNAT (L'Équipe)
-   ===================================================================== */
-function renderNewsView() {
-  var order = ["l1", "pl", "eu", "top14", "lnb", "f1", "nfl", "nba", "nhl"];
-  var html = '<div class="ov5">';
-  order.forEach(function (id) {
-    var L = leagueById(id);
-    html += '<div class="card lcard"><div class="lc-head" data-sp="' + id + '">' + leagueIcon(L) + '<div class="lc-title">' + esc(L.name) +
-      '</div><div class="lc-more">Détails ›</div></div><div class="scroll" id="nw-' + id + '"><div class="empty-s">Chargement…</div></div></div>';
-  });
-  html += '<div class="card lcard"><div class="lc-head"><span class="emo">🇫🇷</span><div class="lc-title">Les Bleus</div></div><div class="scroll" id="nw-bleus"></div></div>';
-  $("sp-body").innerHTML = html + "</div>";
-  order.concat(["bleus"]).forEach(function (id) {
-    loadNews(id, function (list) { var el = $("nw-" + id); if (el && sp.view === "news") { el.innerHTML = newsHTML(list, 4, true); } });
-  });
-}
-
-/* =====================================================================
    VUE DÉTAILLÉE : TOP 14 (rugby, ESPN)
    1-2 : demi-finales directes · 3-6 : barrages · 13 : access match · 14 : relégation
    ===================================================================== */
@@ -3607,44 +3640,32 @@ registerTab("direct", {
 </script>
 <script>
 /* =====================================================================
-   ONGLET FRANCE — le meilleur du sport français
+   VUE FRANCE (puce "France" de l'onglet Sports) — le meilleur du sport français
    Bleus (foot) et XV de France : ESPN · Clubs en Europe : ESPN
-   Français en NBA : ESPN · F1 : Jolpica · Tennis : classements ESPN
-   Actualités : L'Équipe
+   F1 : Jolpica · Tennis : classements ESPN · Actualités : L'Équipe
    ===================================================================== */
 
-// Joueurs français en NBA (identifiants ESPN, équipe au 25/11/2026)
-var FR_NBA = [
-  [5104157, "Victor Wembanyama", "SAS"], [3032976, "Rudy Gobert", "MIN"], [5211175, "Zaccharie Risacher", "DAL"],
-  [5160992, "Alex Sarr", "WSH"], [5104155, "Bilal Coulibaly", "WSH"], [5211176, "Tidjane Salaün", "CHA"],
-  [4017844, "Guerschon Yabusele", "CHI"], [4997526, "Ousmane Dieng", "MIL"], [4433249, "Moussa Diabaté", "CHA"],
-  [5279130, "Nolan Traoré", "BKN"], [5242496, "Noa Essengue", "CHI"], [5279133, "Joan Beringer", "MIN"],
-  [4898371, "Maxime Raynaud", "SAC"], [5099752, "Rayan Rupert", "PHI"], [3416, "Nicolas Batum", "LAC"],
-  [5081727, "Sidy Cissoko", "POR"], [5289900, "Mohamed Diawara", "NYK"], [5211983, "Pacôme Dadiet", "NYK"]
-];
 var BLEUS_COMPS = [["fifa.world", "CDM"], ["fifa.worldq.uefa", "Qualif"], ["uefa.nations", "LdN"],
                    ["fifa.friendly", "Amical"], ["uefa.euro", "Euro"], ["uefa.euroq", "Qualif"]];
 var XV_COMPS = [["17567", "Nations"], ["180659", "6 Nations"], ["164205", "CDM"]];
 var FR_TEAM_FOOT = "478", FR_TEAM_RUGBY = "9";
 
-var frState = { timer: null };
 
 function frCard(id, title, emoji, extra) {
   return '<div class="card lcard' + (extra || "") + '"><div class="lc-head"><span class="emo">' + emoji + '</span><div class="lc-title">' + title +
     '</div></div><div class="scroll" id="' + id + '"><div class="empty-s">Chargement…</div></div></div>';
 }
-function frSet(id, html) { var el = $(id); if (el) { el.innerHTML = html; } }
+function frSet(id, html) { var el = $(id); if (el && sp.view === "france") { el.innerHTML = html; } }
 
 function franceRender() {
-  $("page-france").innerHTML =
+  $("sp-body").innerHTML = '<div class="frv">' +
     frCard("fr-bleus", "Équipe de France", "⚽️") +
     frCard("fr-xv", "XV de France", "🏉") +
     frCard("fr-europe", "Clubs en Europe", "🏆") +
     frCard("fr-tennis", "Tennis", "🎾") +
-    frCard("fr-nba", "Les Français en NBA", "🏀", " wide") +
     frCard("fr-f1", "Formule 1", "🏎") +
-    frCard("fr-news", "Sport français", "🇫🇷");
-  frBleus(); frXV(); frEurope(); frTennis(); frNBA(); frF1(); frNews();
+    frCard("fr-news", "Sport français", "🇫🇷", " big") + "</div>";
+  frBleus(); frXV(); frEurope(); frTennis(); frF1(); frNews();
 }
 
 /* ---------- Matchs d'une sélection ---------- */
@@ -3747,34 +3768,6 @@ function frTennis() {
   });
 }
 
-/* ---------- Français en NBA ---------- */
-function frNBA() {
-  var urls = FR_NBA.map(function (p) { return "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/" + p[0] + "/overview"; });
-  spAll(urls, 3600, function (res) {
-    var rows = [];
-    res.forEach(function (d, i) {
-      try {
-        var st = d.statistics, sp0 = st.splits[0], lab = st.labels, v = {};
-        if (!/Regular|Season/i.test(sp0.displayName || "")) { return; }
-        lab.forEach(function (l, k) { v[l] = sp0.stats[k]; });
-        if (!+v.GP) { return; }
-        rows.push({ id: FR_NBA[i][0], name: FR_NBA[i][1], team: FR_NBA[i][2], v: v });
-      } catch (e) {}
-    });
-    rows.sort(function (a, b) { return parseFloat(b.v.PTS) - parseFloat(a.v.PTS); });
-    var html = '<table class="tbl tight"><colgroup><col><col style="width:4rem"><col style="width:3rem"><col style="width:3.6rem"><col style="width:3.8rem">' +
-      '<col style="width:3.6rem"><col style="width:3.6rem"><col style="width:3.6rem"><col style="width:4.2rem"></colgroup>' +
-      '<tr><th style="text-align:left">Joueur</th><th>Équipe</th><th>MJ</th><th>Min</th><th>Pts</th><th>Reb</th><th>Pd</th><th>Ctr</th><th>Tirs %</th></tr>';
-    rows.forEach(function (r) {
-      html += '<tr><td class="tn"><img src="https://a.espncdn.com/i/headshots/nba/players/full/' + r.id + '.png" style="border-radius:50%;background:#2a1c4a" alt="">' + esc(r.name) +
-        '</td><td class="mut">' + r.team + '</td><td class="mut">' + r.v.GP + '</td><td class="mut">' + r.v.MIN + '</td><td class="pts">' + r.v.PTS +
-        "</td><td>" + r.v.REB + "</td><td>" + r.v.AST + "</td><td>" + r.v.BLK + '</td><td class="mut">' + r.v["FG%"] + "</td></tr>";
-    });
-    frSet("fr-nba", rows.length ? html + "</table>" + '<div class="legend"><span>Moyennes par match, saison régulière. Équipes au 25 novembre 2026.</span></div>'
-                                : '<div class="empty-s">Statistiques indisponibles.</div>');
-  });
-}
-
 /* ---------- Pilotes français en F1 ---------- */
 function frF1() {
   loadF1(900, function (f) {
@@ -3801,28 +3794,30 @@ function frF1() {
   });
 }
 
-/* ---------- Actualités du sport français (hors foot / rugby / F1) ---------- */
+/* ---------- Sport français : une colonne par sport (actualités L'Équipe) ---------- */
+var FR_SPORTS = [
+  ["🏀", "Basket · les Bleus", ["basketfr"]],
+  ["🤾", "Handball", ["hand"]],
+  ["🚴", "Cyclisme", ["cyclisme"]],
+  ["🏅", "Autres sports", ["athle", "biathlon", "ski", "natation", "judo", "escrime", "voile", "golf", "boxe"]]
+];
 function frNews() {
-  var keys = ["tennis", "cyclisme", "athle", "hand", "biathlon"], all = [], left = keys.length;
-  keys.forEach(function (k) {
-    loadNews(k, function (list) {
-      all = all.concat(list.slice(0, 6));
-      if (--left === 0) {
-        all.sort(function (a, b) { return (b.date || 0) - (a.date || 0); });
-        frSet("fr-news", newsHTML(all, 7, true));
-      }
+  var html = '<div class="frcols">';
+  FR_SPORTS.forEach(function (x, i) { html += '<div class="frcol"><div class="sec">' + x[0] + " " + x[1] + '</div><div id="fr-news-' + i + '"><div class="empty-s">Chargement…</div></div></div>'; });
+  frSet("fr-news", html + "</div>");
+  FR_SPORTS.forEach(function (x, i) {
+    var all = [], left = x[2].length;
+    x[2].forEach(function (k) {
+      loadNews(k, function (list) {
+        all = all.concat(list.slice(0, 5));
+        if (--left === 0) {
+          all.sort(function (a, b) { return (b.date || 0) - (a.date || 0); });
+          frSet("fr-news-" + i, newsHTML(all, 4, true));
+        }
+      });
     });
   });
 }
-
-registerTab("france", {
-  show: function () {
-    franceRender();
-    clearInterval(frState.timer);
-    frState.timer = setInterval(franceRender, 10 * 60 * 1000);
-  },
-  hide: function () { clearInterval(frState.timer); }
-});
 </script>
 <script>startApp();</script>
 </body>
