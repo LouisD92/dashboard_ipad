@@ -541,6 +541,108 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
 .lcard[data-sp="eu"] .m .st { width: 5.4rem; }
 /* Bande des leaders : titre toujours sur une ligne, pour garder les 3 joueurs visibles */
 .lstrip .ldr .sec { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .06rem; }
+
+/* ---------- Actualités ---------- */
+.nw { display: block; text-decoration: none; color: inherit; padding: .7rem 0; border-top: 1px solid var(--line); -webkit-tap-highlight-color: transparent; }
+.nw:first-child { border-top: 0; }
+.nw .nt { font-size: 1.4rem; font-weight: 600; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.nw .nd { font-size: 1.2rem; color: var(--muted); line-height: 1.3; margin-top: .3rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.nw .na { font-family: var(--cond); font-size: 1.15rem; color: var(--pink); margin-top: .3rem; }
+.ov5 { display: grid; height: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); grid-gap: .9rem; }
+.lc-head .emo { font-size: 2.2rem; width: 2.6rem; margin-right: .7rem; text-align: center; }
+.chip .emo { font-style: normal; font-size: 1.7rem; margin-right: .5rem; }
+
+/* =====================================================================
+   PAGE FRANCE
+   ===================================================================== */
+#page-france {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  grid-gap: .9rem;
+}
+#page-france .lcard.wide { grid-column: span 2; }
+#page-france .lc-title { font-size: 1.8rem; }
+#page-france .lcard .m .st { width: 5.6rem; }
+
+/* =====================================================================
+   PAGE DIRECT
+   ===================================================================== */
+#page-direct { grid-template-columns: 1fr; grid-template-rows: 3.8rem minmax(0, 1fr); grid-gap: .9rem; }
+#dx-chips { display: flex; align-items: center; }
+#dx-status { margin-left: auto; }
+.livepill { display: inline-block; margin-left: .5rem; background: var(--pink); color: #100a20; border-radius: .8rem; padding: 0 .55rem; font-style: normal; font-size: 1.2rem; line-height: 1.8rem; }
+#dx-body { display: grid; grid-template-columns: 46rem minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); grid-gap: .9rem; min-height: 0; }
+#dx-list { overflow-y: auto; -webkit-overflow-scrolling: touch; min-height: 0; padding-right: .2rem; }
+#dx-detail { display: flex; flex-direction: column; padding: 1.2rem 1.4rem; min-height: 0; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; grid-gap: .7rem; margin-bottom: .4rem; }
+.tile2 { background: var(--card); border: 1px solid rgba(166, 107, 255, .18); border-radius: 1.3rem; padding: .7rem 1rem .8rem; -webkit-tap-highlight-color: transparent; }
+.tile2.live { border-color: rgba(255, 63, 164, .55); }
+.tile2.sel { border-color: var(--cyan); box-shadow: 0 0 1.2rem rgba(45, 226, 230, .35); }
+.tile2.redzone { border-color: #ff2d4a; -webkit-animation: rzpulse 1.6s ease-in-out infinite; animation: rzpulse 1.6s ease-in-out infinite; }
+@-webkit-keyframes rzpulse { 0%, 100% { box-shadow: 0 0 .4rem rgba(255, 45, 74, .4); } 50% { box-shadow: 0 0 1.8rem rgba(255, 45, 74, .95); } }
+@keyframes rzpulse { 0%, 100% { box-shadow: 0 0 .4rem rgba(255, 45, 74, .4); } 50% { box-shadow: 0 0 1.8rem rgba(255, 45, 74, .95); } }
+.tt { display: flex; justify-content: space-between; font-family: var(--cond); font-size: 1.15rem; color: var(--muted); margin-bottom: .2rem; white-space: nowrap; }
+.tt .tlg { overflow: hidden; text-overflow: ellipsis; margin-right: .5rem; }
+.tclk.on { color: var(--pink); font-weight: 700; }
+.tl { display: flex; align-items: center; min-height: 2.6rem; }
+.tl img { height: 2rem; width: 2rem; margin-right: .6rem; }
+.tl .tn2 { -webkit-flex: 1; flex: 1; min-width: 0; font-size: 1.4rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tl .tn2.fr { color: var(--cyan); }
+.tl .ball { font-size: 1.3rem; margin: 0 .4rem; }
+.tl .ts { font-family: var(--cond); font-weight: 700; font-size: 2.1rem; min-width: 2.6rem; text-align: right; }
+.tl .ts.lose { color: var(--muted); }
+.sit { font-family: var(--cond); font-weight: 600; font-size: 1.35rem; color: var(--yellow, #ffd166); margin-top: .3rem; }
+.rz { display: inline-block; background: #ff2d4a; color: #fff; font-family: var(--cond); font-weight: 800; font-style: italic; font-size: 1.1rem; letter-spacing: .08rem; border-radius: .4rem; padding: 0 .5rem; margin-right: .5rem; }
+.lp { font-size: 1.15rem; color: var(--muted); line-height: 1.3; margin-top: .25rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.dh { display: flex; align-items: center; }
+.dteam { -webkit-flex: 1; flex: 1; text-align: center; font-family: var(--cond); font-weight: 700; font-size: 1.7rem; }
+.dteam img { height: 5rem; width: 5rem; display: block; margin: 0 auto .3rem; }
+.dscore { text-align: center; padding: 0 1rem; }
+.dscore .big { font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 4.6rem; line-height: 1; white-space: nowrap; padding-right: .4rem; }
+.dclk { font-family: var(--cond); font-size: 1.4rem; color: var(--muted); margin-top: .3rem; }
+.dclk.on { color: var(--pink); font-weight: 700; }
+.nflsit { margin: 1rem 0 .2rem; padding: .7rem 1rem; border-radius: 1rem; background: var(--card2); font-family: var(--cond); font-size: 1.7rem; text-align: center; }
+.nflsit.redzone { background: rgba(255, 45, 74, .18); border: 1px solid #ff2d4a; -webkit-animation: rzpulse 1.6s ease-in-out infinite; animation: rzpulse 1.6s ease-in-out infinite; }
+#dx-sum { margin-top: .4rem; }
+.wp { display: flex; align-items: center; font-family: var(--cond); font-size: 1.35rem; }
+.wpbar { -webkit-flex: 1; flex: 1; height: .8rem; margin: 0 .8rem; border-radius: .4rem; background: var(--cyan); overflow: hidden; }
+.wpbar i { display: block; height: 100%; background: var(--pink); }
+.play { font-size: 1.25rem; line-height: 1.35; padding: .4rem 0; border-top: 1px solid var(--line); }
+.play b { font-family: var(--cond); color: var(--pink); margin-right: .3rem; }
+.sb { display: flex; align-items: center; min-height: 3rem; border-top: 1px solid var(--line); }
+.sbv { width: 6.4rem; text-align: center; font-family: var(--cond); font-weight: 700; font-size: 1.6rem; }
+.sbm { -webkit-flex: 1; flex: 1; }
+.sbl { text-align: center; font-size: 1.15rem; color: var(--muted); }
+.sbbar { display: flex; height: .55rem; margin-top: .25rem; border-radius: .3rem; overflow: hidden; }
+.sbbar .l { background: var(--pink); }
+.sbbar .r { background: var(--cyan); }
+.ldx { display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 1.2rem; }
+.ldt { font-family: var(--cond); font-weight: 700; color: var(--cyan); font-size: 1.3rem; margin: .3rem 0; }
+.ldl { display: flex; justify-content: space-between; font-size: 1.25rem; padding: .25rem 0; border-top: 1px solid var(--line); }
+.ldl span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: .5rem; }
+.ldl b { font-family: var(--cond); white-space: nowrap; }
+/* F1 */
+.f1t td.tn b { font-family: var(--cond); font-size: 1.55rem; margin-right: .3rem; }
+.f1c { display: inline-block; width: .45rem; height: 1.7rem; border-radius: .3rem; vertical-align: middle; margin-right: .6rem; }
+.tyre { display: inline-block; width: 2rem; height: 2rem; line-height: 1.7rem; border-radius: 50%; border: .2rem solid; font-weight: 800; font-size: 1.15rem; text-align: center; }
+#dx-list .f1t { background: var(--card); border-radius: 1.4rem; }
+/* Accueil à 5 colonnes : abréviations sans logos, titres plus petits */
+.ov5 .lcard { padding: .9rem .9rem .3rem; }
+.ov5 .lc-title { font-size: 1.6rem; overflow: hidden; text-overflow: ellipsis; }
+.ov5 .lc-head img, .ov5 .lc-head .emo { height: 2.2rem; width: 2.2rem; font-size: 1.9rem; margin-right: .5rem; }
+.ov5 .lc-more { display: none; }
+.ov5 .m .tm img { display: none; }
+.ov5 .m .tm span { padding: 0 .3rem; }
+.ov5 .m .st { width: 3.7rem; }
+.ov5 .m .sc { width: 4rem; }
+.ov5 .lcard[data-sp="eu"] .m .st { width: 5rem; }
+/* Puces plus compactes (12 boutons) */
+#sp-chips .chip { padding: 0 .75rem 0 .55rem; margin-right: .4rem; font-size: 1.4rem; height: 3.4rem; }
+#sp-chips .chip img { height: 1.9rem; width: 1.9rem; margin-right: .4rem; }
+#sp-chips .chip .emo { font-size: 1.5rem; margin-right: .35rem; }
+.ldl .lcat { font-style: normal; font-family: var(--cond); color: var(--muted); font-size: 1.1rem; margin-right: .5rem; display: inline-block; min-width: 3.4rem; }
+#dx-body.f1 { grid-template-columns: minmax(0, 1fr) 28rem; }
 </style>
 </head>
 <body>
@@ -594,6 +696,22 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
         <path d="M16 17.5v4M12 27h8M13.5 21.5h5l1 5.5h-7z"/>
       </svg>
       <span>Sports</span>
+    </button>
+
+    <button class="tab" data-tab="direct">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="16" cy="16" r="3.2" fill="currentColor" stroke="none"/>
+        <path d="M10.3 10.3a8 8 0 0 0 0 11.4M21.7 10.3a8 8 0 0 1 0 11.4"/>
+        <path d="M6.1 6.1a14 14 0 0 0 0 19.8M25.9 6.1a14 14 0 0 1 0 19.8"/>
+      </svg>
+      <span>Direct</span>
+    </button>
+
+    <button class="tab" data-tab="france">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+        <path d="M16 3.5l2.2 3.2 3.7-.6.9 3.6 3.5 1.4-1.4 3.4 2.3 2.9-3.1 2 .4 3.7-3.7.3-1.5 3.4-3.3-1.7-3.3 1.7-1.5-3.4-3.7-.3.4-3.7-3.1-2 2.3-2.9-1.4-3.4 3.5-1.4.9-3.6 3.7.6z"/>
+      </svg>
+      <span>France</span>
     </button>
 
     <div class="side-clock"><div id="s-time" class="grad">--:--</div><div id="s-date"></div></div>
@@ -686,6 +804,18 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
       <div id="sp-chips"></div>
       <div id="sp-body"></div>
     </section>
+
+    <!-- ================= DIRECT ================= -->
+    <section class="page" id="page-direct">
+      <div id="dx-chips"></div>
+      <div id="dx-body">
+        <div id="dx-list"></div>
+        <div class="card" id="dx-detail"></div>
+      </div>
+    </section>
+
+    <!-- ================= FRANCE ================= -->
+    <section class="page" id="page-france"></section>
 
   </main>
 </div>
@@ -1782,6 +1912,86 @@ function compassLong(d) { return ["Nord", "N-Est", "Est", "S-Est", "Sud", "S-Oue
 </script>
 <script>
 /* =====================================================================
+   ACTUALITÉS — flux RSS de L'Équipe (en français, lecture autorisée
+   depuis une page web). Quelques titres courts + un lien pour lire la suite.
+   ===================================================================== */
+var NEWS_FEEDS = {
+  l1: "Football/Ligue-1/", pl: "Football/Championnat-d-angleterre/", champ: "Football/Championnat-d-angleterre/",
+  eu: "Football/Ligue-des-champions/", top14: "Rugby/Top-14/", lnb: "Basket/Betclic-Elite/", f1: "Formule-1/",
+  nfl: "Football-americain/", nba: "Basket/NBA/", nhl: "Hockey-sur-glace/NHL/",
+  bleus: "Football/Bleus/", xv: "Rugby/XV-de-france/", tennis: "Tennis/", cyclisme: "Cyclisme-sur-route/",
+  athle: "Athletisme/", hand: "Handball/", biathlon: "Biathlon/"
+};
+var newsCache = {};
+
+function getText(url, ok, ko) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", url, true);
+  xhr.timeout = 20000;
+  xhr.onload = function () { if (xhr.status === 200) { ok(xhr.responseText); } else if (ko) { ko("HTTP " + xhr.status); } };
+  xhr.onerror = xhr.ontimeout = function () { if (ko) { ko("pas de connexion"); } };
+  xhr.send();
+}
+
+// "Wed, 25 Nov 2026 16:03:00 +0100" -> Date
+var RSS_MOIS = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+function parseRSSDate(s) {
+  var m = /(\d{1,2}) (\w{3}) (\d{4}) (\d\d):(\d\d):(\d\d) ([+-])(\d\d)(\d\d)/.exec(s || "");
+  if (!m) { return null; }
+  var t = Date.UTC(+m[3], RSS_MOIS[m[2]] || 0, +m[1], +m[4], +m[5], +m[6]);
+  var off = (+m[8] * 60 + +m[9]) * 60000;
+  return new Date(m[7] === "+" ? t - off : t + off);
+}
+function htmlToText(h) {
+  var d = document.createElement("div");
+  d.innerHTML = String(h || "").replace(/<img[^>]*>/gi, " ");
+  return (d.textContent || "").replace(/\s+/g, " ").trim();
+}
+
+// cb(liste d'articles {title, link, text, date, img}) ; cache 10 min
+function loadNews(key, cb) {
+  var c = newsCache[key];
+  if (c && Date.now() - c.t < 600000) { cb(c.list); return; }
+  getText("https://dwh.lequipe.fr/api/edito/rss?path=/" + NEWS_FEEDS[key], function (txt) {
+    var list = [];
+    try {
+      var doc = new DOMParser().parseFromString(txt, "text/xml");
+      var items = doc.getElementsByTagName("item");
+      for (var i = 0; i < items.length && i < 15; i++) {
+        var it = items[i];
+        var get = function (tag) { var n = it.getElementsByTagName(tag)[0]; return n ? n.textContent : ""; };
+        var desc = get("description"), im = /<img[^>]+src="([^"]+)"/i.exec(desc);
+        list.push({ title: htmlToText(get("title")), link: get("link"), text: htmlToText(desc),
+                    date: parseRSSDate(get("pubDate")), img: im ? im[1] : "" });
+      }
+    } catch (e) {}
+    newsCache[key] = { t: Date.now(), list: list };
+    cb(list);
+  }, function () { cb(c ? c.list : []); });
+}
+
+function newsAge(d) {
+  if (!d) { return ""; }
+  var min = Math.round((Date.now() - d.getTime()) / 60000);
+  if (min < 1) { return "à l'instant"; }
+  if (min < 60) { return "il y a " + min + " min"; }
+  if (min < 24 * 60) { return "il y a " + Math.round(min / 60) + " h"; }
+  if (min < 48 * 60) { return "hier"; }
+  return d.getDate() + " " + MOIS[d.getMonth()].slice(0, 4) + ".";
+}
+// n articles ; withText : petit paragraphe sous le titre
+function newsHTML(list, n, withText) {
+  if (!list || !list.length) { return '<div class="empty-s">Pas d\'actualité disponible.</div>'; }
+  return list.slice(0, n).map(function (a) {
+    return '<a class="nw" href="' + esc(a.link) + '" target="_blank" rel="noopener">' +
+      '<div class="nt">' + esc(a.title) + "</div>" +
+      (withText && a.text ? '<div class="nd">' + esc(a.text) + "</div>" : "") +
+      '<div class="na">' + newsAge(a.date) + " · L'Équipe ›</div></a>";
+  }).join("");
+}
+</script>
+<script>
+/* =====================================================================
    ONGLET SPORTS
    Scores, classements, leaders : ESPN (site.api.espn.com) — gratuit, sans clé
    Formule 1                     : Jolpica / Ergast (api.jolpi.ca) — gratuit, sans clé
@@ -1796,8 +2006,10 @@ var ESPN = "https://site.api.espn.com/apis/";
 var LEAGUES = [
   { id: "l1", name: "Ligue 1", kind: "soccer", sport: "soccer", slug: "fra.1",
     logo: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/9.png" },
-  { id: "pl", name: "Premier League", kind: "soccer", sport: "soccer", slug: "eng.1",
+  { id: "pl", name: "Premier League", chip: "Premier L.", kind: "soccer", sport: "soccer", slug: "eng.1",
     logo: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png" },
+  { id: "champ", name: "Championship", chip: "Champ.", kind: "soccer", sport: "soccer", slug: "eng.2",
+    logo: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/24.png" },
   { id: "eu", name: "Coupes d'Europe", chip: "Europe", kind: "europe",
     logo: "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/2.png",
     comps: [
@@ -1805,7 +2017,8 @@ var LEAGUES = [
       { sport: "soccer", slug: "uefa.europa", short: "LE", name: "Ligue Europa" },
       { sport: "soccer", slug: "uefa.europa.conf", short: "LC", name: "Ligue Conférence" }
     ] },
-  { id: "lnb", name: "Betclic Élite", kind: "lnb",
+  { id: "top14", name: "Top 14", kind: "rugby", sport: "rugby", slug: "270559", emoji: "🏉" },
+  { id: "lnb", name: "Betclic Élite", chip: "Betclic", kind: "lnb",
     logo: "https://r2.thesportsdb.com/images/media/league/badge/60detm1757608684.png/tiny" },
   { id: "f1", name: "Formule 1", chip: "F1", kind: "f1", logo: "https://a.espncdn.com/i/teamlogos/leagues/500-dark/f1.png" },
   { id: "nfl", name: "NFL", kind: "us", sport: "football", slug: "nfl",
@@ -1889,7 +2102,8 @@ function normEvent(ev, comp, req) {
   if (!c) { return null; }
   var st = ev.status || c.status || {}, ty = st.type || {};
   var e = { id: ev.id, comp: comp, req: req, t: parseISO(ev.date), state: ty.state, name: ty.name || "",
-            detail: ty.shortDetail || "", clock: st.displayClock || "", home: null, away: null, goals: [] };
+            detail: ty.shortDetail || "", clock: st.displayClock || "", period: st.period || 0, home: null, away: null, goals: [],
+            sit: c.situation || null };
   (c.competitors || []).forEach(function (x) {
     var tm = x.team || {};
     var side = { id: tm.id, name: tm.shortDisplayName || tm.displayName || tm.name || "?", abbr: tm.abbreviation || "",
@@ -1923,7 +2137,11 @@ function loadEvents(L, ttl, cb) {
         if (seen[ev.id]) { return; }
         seen[ev.id] = 1;
         var e = normEvent(ev, tags[i][0], tags[i][1]);
-        if (e) { out.push(e); }
+        if (e) {
+          e.lid = L.id; e.sport = tags[i][0].sport; e.slug = tags[i][0].slug;
+          if (e.sport === "rugby") { rugbyClean(e.home); rugbyClean(e.away); }
+          out.push(e);
+        }
       });
     });
     out.sort(function (a, b) { return a.t - b.t; });
@@ -2072,7 +2290,7 @@ function loadAllSports(cb) {
 }
 
 /* ---------- Panneau LED ---------- */
-var TICKER_RESULTS = 5, TICKER_NEXT = 3;   // matchs par championnat dans le bandeau
+var TICKER_RESULTS = 4, TICKER_NEXT = 2;   // matchs par championnat dans le bandeau
 function tickerName(s, us) { return us ? s.abbr || s.name : s.name; }
 function tickerHTML() {
   var parts = [], since = dayStart(new Date(), -1).getTime(), until = dayStart(new Date(), 1).getTime() + 7 * 3600e3;
@@ -2146,16 +2364,18 @@ function tickerSpeed() {
 /* =====================================================================
    NAVIGATION
    ===================================================================== */
+function leagueIcon(L) { return L.emoji ? '<span class="emo">' + L.emoji + "</span>" : '<img src="' + L.logo + '" alt="">'; }
 function renderChips() {
-  var html = '<button class="chip' + (sp.view === "home" ? " on" : "") + '" data-sp="home"><span class="ic">🏟</span>Accueil</button>';
+  var html = '<button class="chip' + (sp.view === "home" ? " on" : "") + '" data-sp="home"><span class="emo" style="margin:0">🏟</span></button>';
   LEAGUES.forEach(function (L) {
-    html += '<button class="chip' + (sp.view === L.id ? " on" : "") + '" data-sp="' + L.id + '"><img src="' + L.logo + '" alt="">' + esc(L.chip || L.name) + "</button>";
+    html += '<button class="chip' + (sp.view === L.id ? " on" : "") + '" data-sp="' + L.id + '">' + leagueIcon(L) + esc(L.chip || L.name) + "</button>";
   });
+  html += '<button class="chip' + (sp.view === "news" ? " on" : "") + '" data-sp="news"><span class="emo">📰</span>Actus</button>';
   html += '<div class="status" id="sp-status"></div>';
   $("sp-chips").innerHTML = html;
 }
 function spGo(view) {
-  if (view !== "home" && !leagueById(view)) { view = "home"; }
+  if (view !== "home" && view !== "news" && !leagueById(view)) { view = "home"; }
   sp.view = view;
   store.set("spView", view);
   renderChips();
@@ -2173,11 +2393,13 @@ function spRefresh() { loadAllSports(spRender); }
 function spRender() {
   renderTicker();
   if (sp.view === "home") { renderHome(); spStatus(); return; }
+  if (sp.view === "news") { renderNewsView(); spStatus(); return; }
   var L = leagueById(sp.view);
   if (L.kind === "soccer") { detailSoccer(L); }
   else if (L.kind === "europe") { detailEurope(L); }
   else if (L.kind === "us") { detailUS(L); }
   else if (L.kind === "lnb") { detailLNB(); }
+  else if (L.kind === "rugby") { detailRugby(L); }
   else if (L.kind === "f1") { detailF1(); }
   spStatus();
 }
@@ -2186,7 +2408,7 @@ function spRender() {
    ACCUEIL
    ===================================================================== */
 function cardHead(L) {
-  return '<div class="lc-head"><img src="' + L.logo + '" alt=""><div class="lc-title">' + esc(L.name) + '</div><div class="lc-more">Détails ›</div></div>';
+  return '<div class="lc-head">' + leagueIcon(L) + '<div class="lc-title">' + esc(L.name) + '</div><div class="lc-more">Détails ›</div></div>';
 }
 function homeCard(L) {
   if (L.kind === "f1") { return '<div class="card lcard" data-sp="f1">' + cardHead(L) + '<div class="scroll">' + f1Summary() + "</div></div>"; }
@@ -2213,7 +2435,7 @@ function stableSort(arr, cmp) {
     .map(function (x) { return x[0]; });
 }
 function renderHome() {
-  var order = ["l1", "pl", "eu", "lnb", "nba", "nfl", "nhl", "f1"], html = '<div class="ov">';
+  var order = ["l1", "pl", "champ", "eu", "top14", "lnb", "nba", "nfl", "nhl", "f1"], html = '<div class="ov5">';
   order.forEach(function (id) { html += homeCard(leagueById(id)); });
   $("sp-body").innerHTML = html + "</div>";
 }
@@ -2276,7 +2498,8 @@ var ZONES = [
   [/playoffs - seeded/i, "Barrages (tête de série)", "#a66bff"],
   [/playoffs/i, "Barrages", "#d1b3ff"],
   [/Eliminated/i, "Éliminé", "#ff3f6c"],
-  [/Promotion/i, "Promotion", "#3ee08f"]
+  [/Promotion playoff/i, "Barrages de promotion", "#a6f4c5"],
+  [/Promotion/i, "Montée directe", "#3ee08f"]
 ];
 function zoneOf(note) {
   if (!note || !note.description) { return null; }
@@ -2344,12 +2567,13 @@ function detailSoccer(L) {
     col1 += '<div class="sec">À venir</div>' + (c.next.length ? matchList(c.next, { dayHeads: true }) : '<div class="empty-s">—</div>');
 
     var tb = soccerTable(entries, entries.length > 18, false);
-    var col3 = soccerLeaders(r[1], 5) + soccerKPIs(entries);
+    var col3 = soccerLeaders(r[1], 5) + soccerKPIs(entries) + '<div class="sec">Actualités</div><div id="nw-det"></div>';
 
     $("sp-body").innerHTML = '<div class="dv dv-soccer">' +
       '<div class="card pane"><div class="pane-head"><div class="label">Matchs</div></div><div class="scroll">' + col1 + "</div></div>" +
       '<div class="card pane"><div class="pane-head"><div class="label">Classement ' + esc(L.name) + "</div></div>" + tb.html + legendHTML(tb.zones) + "</div>" +
       '<div class="card pane"><div class="scroll">' + col3 + "</div></div></div>";
+    loadNews(L.id, function (list) { var el = $("nw-det"); if (el && sp.view === L.id) { el.innerHTML = newsHTML(list, 3, false); } });
   });
 }
 function soccerKPIs(entries) {
@@ -2625,7 +2849,8 @@ function detailF1() {
   $("sp-body").innerHTML = '<div class="dv dv-f1">' +
     '<div class="card pane"><div class="pane-head"><div class="label">Dernier Grand Prix</div></div><div class="scroll">' + col1 + "</div></div>" +
     '<div class="card pane">' + col2 + "</div>" +
-    '<div class="card pane"><div class="scroll">' + col3 + "</div></div></div>";
+    '<div class="card pane"><div class="scroll">' + col3 + '<div class="sec">Actualités</div><div id="nw-f1d"></div></div></div></div>';
+  loadNews("f1", function (list) { var el = $("nw-f1d"); if (el && sp.view === "f1") { el.innerHTML = newsHTML(list, 3, false); } });
 }
 
 /* =====================================================================
@@ -2860,6 +3085,89 @@ function lnbKPIs(evs) {
 }
 
 /* =====================================================================
+   ACTUALITÉS PAR CHAMPIONNAT (L'Équipe)
+   ===================================================================== */
+function renderNewsView() {
+  var order = ["l1", "pl", "eu", "top14", "lnb", "f1", "nfl", "nba", "nhl"];
+  var html = '<div class="ov5">';
+  order.forEach(function (id) {
+    var L = leagueById(id);
+    html += '<div class="card lcard"><div class="lc-head" data-sp="' + id + '">' + leagueIcon(L) + '<div class="lc-title">' + esc(L.name) +
+      '</div><div class="lc-more">Détails ›</div></div><div class="scroll" id="nw-' + id + '"><div class="empty-s">Chargement…</div></div></div>';
+  });
+  html += '<div class="card lcard"><div class="lc-head"><span class="emo">🇫🇷</span><div class="lc-title">Les Bleus</div></div><div class="scroll" id="nw-bleus"></div></div>';
+  $("sp-body").innerHTML = html + "</div>";
+  order.concat(["bleus"]).forEach(function (id) {
+    loadNews(id, function (list) { var el = $("nw-" + id); if (el && sp.view === "news") { el.innerHTML = newsHTML(list, 4, true); } });
+  });
+}
+
+/* =====================================================================
+   VUE DÉTAILLÉE : TOP 14 (rugby, ESPN)
+   1-2 : demi-finales directes · 3-6 : barrages · 13 : access match · 14 : relégation
+   ===================================================================== */
+// Noms et sigles d'usage des clubs de Top 14 (ceux d'ESPN sont incohérents)
+var RUGBY_CLUBS = {
+  "Montpellier Herault": ["Montpellier", "MHR"], "Castres Olympique": ["Castres", "CO"], "Pau": ["Pau", "PAU"], "Section Paloise": ["Pau", "PAU"],
+  "Stade Toulousain": ["Toulouse", "ST"], "Clermont Auvergne": ["Clermont", "ASM"], "Perpignan": ["Perpignan", "USAP"], "Racing 92": ["Racing 92", "R92"],
+  "Lyon": ["Lyon", "LOU"], "Toulon": ["Toulon", "RCT"], "Stade Francais Paris": ["Stade Français", "SF"], "Vannes": ["Vannes", "RCV"],
+  "Bordeaux Begles": ["Bordeaux-Bègles", "UBB"], "La Rochelle": ["La Rochelle", "SR"], "Bayonne": ["Bayonne", "AB"], "Montauban": ["Montauban", "USM"],
+  "Grenoble": ["Grenoble", "FCG"], "Oyonnax": ["Oyonnax", "USO"], "Brive": ["Brive", "CAB"], "Agen": ["Agen", "SUA"]
+};
+function rugbyClean(side) { var m = RUGBY_CLUBS[side.name]; if (m) { side.name = m[0]; side.abbr = m[1]; } return side; }
+
+var Z_R_DEMI = { label: "Demi-finale directe", color: "#2de2e6" };
+var Z_R_BARR = { label: "Barrages", color: "#a66bff" };
+var Z_R_ACCESS = { label: "Access match", color: "#ff8fc8" };
+var Z_R_REL = { label: "Relégation", color: "#ff3f6c" };
+function rugbySeason() { var d = new Date(); return d.getMonth() >= 6 ? d.getFullYear() + 1 : d.getFullYear(); }
+
+function detailRugby(L) {
+  spAll([ESPN + "v2/sports/rugby/" + L.slug + "/standings?season=" + rugbySeason()], 600, function (r) {
+    if (sp.view !== L.id) { return; }
+    var groups = parseStandings(r[0]), entries = groups[0] ? groups[0].entries.slice() : [];
+    entries.forEach(function (e) { rugbyClean(e.team); });
+    entries.sort(function (a, b) { return (b.s.points || 0) - (a.s.points || 0) || (b.s.pointsDifference || 0) - (a.s.pointsDifference || 0); });
+    var n = entries.length, c = classify(L, sp.events[L.id] || []);
+
+    var col1 = "";
+    if (c.live.length) { col1 += '<div class="sec live">● En direct</div>' + matchList(c.live, {}); }
+    col1 += '<div class="sec">Derniers résultats</div>' + (c.recent.length ? matchList(c.recent, { dayHeads: true }) : '<div class="empty-s">—</div>');
+    col1 += '<div class="sec">À venir</div>' + (c.next.length ? matchList(c.next, { dayHeads: true }) : '<div class="empty-s">—</div>');
+
+    var zones = [];
+    var html = '<table class="tbl"><colgroup><col style="width:1.4rem"><col style="width:2.6rem"><col><col style="width:2.8rem"><col style="width:2.8rem">' +
+      '<col style="width:2.8rem"><col style="width:2.8rem"><col style="width:4.2rem"><col style="width:3rem"><col style="width:3.8rem"></colgroup>' +
+      '<tr><th></th><th>#</th><th style="text-align:left">Club</th><th>J</th><th>G</th><th>N</th><th>P</th><th>Diff</th><th>Bon.</th><th>Pts</th></tr>';
+    entries.forEach(function (e, i) {
+      var rk = i + 1, z = rk <= 2 ? Z_R_DEMI : rk <= 6 ? Z_R_BARR : rk === n - 1 ? Z_R_ACCESS : rk === n ? Z_R_REL : null;
+      zones.push(z);
+      html += '<tr class="' + (isFav(e.team.name) ? "fav" : "") + (rk === 7 || rk === n - 1 ? " cut" : "") + '">' + zCell(z) + '<td class="rk">' + rk + "</td>" + teamCell(e.team) +
+        '<td class="mut">' + (e.v.gamesPlayed || 0) + "</td><td>" + (e.v.gamesWon || 0) + "</td><td>" + (e.v.gamesDrawn || 0) + "</td><td>" + (e.v.gamesLost || 0) +
+        '</td><td class="mut">' + (e.v.pointsDifference || 0) + '</td><td class="mut">' + (e.v.bonusPoints || 0) + '</td><td class="pts">' + (e.v.points || 0) + "</td></tr>";
+    });
+    html += "</table>" + legendHTML([Z_R_DEMI, Z_R_BARR, Z_R_ACCESS, Z_R_REL]);
+
+    var kp = "";
+    if (entries.length) {
+      var best = function (k, dir) { var b = entries[0]; entries.forEach(function (e) { if ((e.s[k] || 0) * dir > (b.s[k] || 0) * dir) { b = e; } }); return b; };
+      var att = best("pointsFor", 1), def = best("pointsAgainst", -1), bon = best("bonusPoints", 1);
+      var k = function (label, t, v) { return '<div class="kpi">' + label + " <b>" + esc(t) + " · " + v + "</b></div>"; };
+      kp = '<div class="sec">Indicateurs</div>' +
+        k("Meilleure attaque", att.team.name, (att.s.pointsFor || 0) + " pts") +
+        k("Meilleure défense", def.team.name, (def.s.pointsAgainst || 0) + " encaissés") +
+        k("Plus de bonus", bon.team.name, bon.s.bonusPoints || 0) +
+        k("Meilleure moyenne", best("avgPointsFor", 1).team.name, fr(best("avgPointsFor", 1).s.avgPointsFor || 0, 1) + " pts/m");
+    }
+    $("sp-body").innerHTML = '<div class="dv dv-soccer">' +
+      '<div class="card pane"><div class="pane-head"><div class="label">Matchs</div></div><div class="scroll">' + col1 + "</div></div>" +
+      '<div class="card pane"><div class="pane-head"><div class="label">Classement Top 14</div></div>' + html + "</div>" +
+      '<div class="card pane"><div class="scroll">' + kp + '<div class="sec">Actualités</div><div id="nw-top14d"></div></div></div></div>';
+    loadNews("top14", function (list) { var el = $("nw-top14d"); if (el) { el.innerHTML = newsHTML(list, 4, false); } });
+  });
+}
+
+/* =====================================================================
    BRANCHEMENT DE L'ONGLET
    ===================================================================== */
 $("page-sports").addEventListener("click", function (e) {
@@ -2881,6 +3189,639 @@ registerTab("sports", {
   },
   hide: function () { clearInterval(sp.timer); },
   resize: function () { tickerSpeed(); }
+});
+</script>
+<script>
+/* =====================================================================
+   ONGLET DIRECT — suivre les matchs en cours, sport par sport
+   NFL / NBA / NHL / foot / rugby : ESPN (scoreboard + résumé du match)
+   F1 : OpenF1 (positions, écarts, pneus, arrêts, dépassements, direction de course)
+   ===================================================================== */
+var DIRECT_SPORTS = [
+  { id: "nfl", name: "NFL", leagues: ["nfl"], logo: "https://a.espncdn.com/i/teamlogos/leagues/500-dark/nfl.png" },
+  { id: "nba", name: "NBA", leagues: ["nba"], logo: "https://a.espncdn.com/i/teamlogos/leagues/500-dark/nba.png" },
+  { id: "nhl", name: "NHL", leagues: ["nhl"], logo: "https://a.espncdn.com/i/teamlogos/leagues/500-dark/nhl.png" },
+  { id: "foot", name: "Foot", leagues: ["l1", "pl", "champ", "eu"], emoji: "⚽️" },
+  { id: "rugby", name: "Rugby", leagues: ["top14"], emoji: "🏉" },
+  { id: "f1", name: "F1", f1: true, logo: "https://a.espncdn.com/i/teamlogos/leagues/500-dark/f1.png" }
+];
+var dx = { sport: store.get("dxSport") || "nfl", sel: null, timer: null, detailTimer: null, evs: [] };
+function dxSport() { for (var i = 0; i < DIRECT_SPORTS.length; i++) { if (DIRECT_SPORTS[i].id === dx.sport) { return DIRECT_SPORTS[i]; } } return DIRECT_SPORTS[0]; }
+
+/* ---------- Petites traductions ---------- */
+function frDown(s) { // "3rd & 4 at KC 18" -> "3e & 4 · KC 18"
+  return String(s || "").replace(/(\d)(st|nd|rd|th)\b/g, function (m, n) { return n === "1" ? "1re" : n + "e"; }).replace(/ at /, " · ");
+}
+function frPeriod(e) {
+  if (e.state !== "in") { return statusFR(e, e.sport !== "soccer" && e.sport !== "rugby"); }
+  if (e.sport === "soccer" || e.sport === "rugby") { return /HALFTIME/.test(e.name) ? "Mi-temps" : e.clock; }
+  if (/HALFTIME/.test(e.name)) { return "Mi-temps"; }
+  var p = e.period, lab = e.sport === "hockey" ? (p > 3 ? "Prol." : p + "e pér.") : (p > 4 ? "Prol." : "QT" + p);
+  if (/END_PERIOD/.test(e.name)) { return "Fin " + lab; }
+  return lab + " · " + e.clock;
+}
+
+/* =====================================================================
+   NAVIGATION + LISTE DES MATCHS
+   ===================================================================== */
+function dxChips() {
+  var html = "";
+  DIRECT_SPORTS.forEach(function (S) {
+    var live = S.f1 ? 0 : dxLiveCount(S);
+    html += '<button class="chip' + (S.id === dx.sport ? " on" : "") + '" data-dx="' + S.id + '">' +
+      (S.emoji ? '<span class="emo">' + S.emoji + "</span>" : '<img src="' + S.logo + '" alt="">') + S.name +
+      (live ? ' <span class="livepill">' + live + "</span>" : "") + "</button>";
+  });
+  html += '<div class="status" id="dx-status"></div>';
+  $("dx-chips").innerHTML = html;
+}
+function dxLiveCount(S) {
+  var n = 0;
+  S.leagues.forEach(function (id) { (sp.events[id] || []).forEach(function (e) { if (e.state === "in") { n++; } }); });
+  return n;
+}
+
+// Matchs à afficher : en cours, puis ceux d'aujourd'hui (jusqu'à 8 h demain), puis les terminés du jour
+function dxGames(S) {
+  var from = dayStart(new Date()).getTime() - 2 * 3600e3, to = dayStart(new Date(), 1).getTime() + 8 * 3600e3, all = [];
+  S.leagues.forEach(function (id) { all = all.concat(sp.events[id] || []); });
+  var live = [], next = [], done = [];
+  all.forEach(function (e) {
+    var t = e.t.getTime();
+    if (e.state === "in") { live.push(e); }
+    else if (t >= from && t <= to) { (e.state === "pre" ? next : done).push(e); }
+  });
+  live.sort(function (a, b) { return (b.sit && b.sit.isRedZone ? 1 : 0) - (a.sit && a.sit.isRedZone ? 1 : 0) || a.t - b.t; });
+  next.sort(function (a, b) { return a.t - b.t; });
+  done.sort(function (a, b) { return b.t - a.t; });
+  return { live: live, next: next, done: done };
+}
+
+function dxLoad(cb) {
+  var S = dxSport();
+  if (S.f1) { cb(); return; }
+  var left = S.leagues.length;
+  if (S.id === "foot") { left++; loadFrIds(function () { if (--left === 0) { cb(); } }); }
+  S.leagues.forEach(function (id) { loadEvents(leagueById(id), 15, function () { if (--left === 0) { cb(); } }); });
+}
+
+function dxRefresh() {
+  var S = dxSport();
+  dxChips();
+  $("dx-body").className = S.f1 ? "f1" : ""; // F1 : grand tableau à gauche
+  if (S.f1) { f1Live(); return; }
+  dx.f1At = 0;
+  dxLoad(function () {
+    if (dxSport() !== S) { return; }
+    dxChips();
+    dxRenderList(S);
+    var t = new Date();
+    $("dx-status").textContent = "Màj " + pad(t.getHours()) + ":" + pad(t.getMinutes()) + ":" + pad(t.getSeconds());
+  });
+}
+
+function dxRenderList(S) {
+  var g = dxGames(S), html = "";
+  var us = S.id === "nfl" || S.id === "nba" || S.id === "nhl";
+  function tiles(list) { return '<div class="tiles">' + list.map(function (e) { return dxTile(e, us); }).join("") + "</div>"; }
+  if (g.live.length) { html += '<div class="sec live">● En direct · ' + g.live.length + "</div>" + tiles(g.live); }
+  if (g.next.length) { html += '<div class="sec">À venir aujourd\'hui</div>' + tiles(g.next); }
+  if (g.done.length) { html += '<div class="sec">Terminés</div>' + tiles(g.done); }
+  if (!html) {
+    // Rien aujourd'hui : prochains matchs
+    var up = [];
+    S.leagues.forEach(function (id) { up = up.concat((sp.events[id] || []).filter(function (e) { return e.state === "pre"; })); });
+    up.sort(function (a, b) { return a.t - b.t; });
+    html = '<div class="empty-s">Pas de match aujourd\'hui.</div>' + (up.length ? '<div class="sec">Prochains matchs</div>' + tiles(up.slice(0, 8)) : "");
+  }
+  var keep = $("dx-list").scrollTop;
+  $("dx-list").innerHTML = html;
+  $("dx-list").scrollTop = keep;
+
+  // Match affiché à droite : celui choisi, sinon le premier en direct (en red zone d'abord), sinon le premier
+  var all = g.live.concat(g.next, g.done);
+  var cur = null;
+  all.forEach(function (e) { if (e.id === dx.sel) { cur = e; } });
+  if (!cur) { cur = all[0] || null; }
+  if (cur) {
+    var tl = $("dx-list").querySelector('[data-ev="' + cur.id + '"]');
+    if (tl) { tl.className += " sel"; }
+    dxDetail(cur);
+  } else {
+    $("dx-detail").innerHTML = '<div class="empty-s" style="padding:2rem">Aucun match à suivre.</div>';
+  }
+}
+
+function dxTile(e, us) {
+  var A = us ? e.away : e.home, B = us ? e.home : e.away, sit = e.sit, rz = e.state === "in" && sit && sit.isRedZone;
+  var L = leagueById(e.lid) || {};
+  function line(s) {
+    var poss = e.state === "in" && sit && sit.possession && sit.possession === s.id;
+    return '<div class="tl"><img src="' + s.logo + '" alt=""><span class="tn2' + (isFr(s) ? " fr" : "") + '">' + esc(s.name) + "</span>" +
+      (poss ? '<span class="ball">🏈</span>' : "") +
+      '<span class="ts' + (e.state === "post" && !s.win && (A.win || B.win) ? " lose" : "") + '">' + (e.state === "pre" ? "" : esc(s.score)) + "</span></div>";
+  }
+  var top = '<div class="tt"><span class="tlg">' + esc(L.chip || L.name || "") + (e.comp && e.comp.short ? " · " + e.comp.short : "") + "</span>" +
+    '<span class="tclk' + (e.state === "in" ? " on" : "") + '">' + (e.state === "in" ? "● " : "") + esc(e.state === "pre" ? shortDay(e.t) + " " + hm(e.t) : frPeriod(e)) + "</span></div>";
+  var extra = "";
+  if (e.state === "in" && sit) {
+    if (sit.downDistanceText) { extra += '<div class="sit">' + (rz ? '<span class="rz">RED ZONE</span>' : "") + esc(frDown(sit.downDistanceText)) + "</div>"; }
+    if (sit.lastPlay && sit.lastPlay.text) { extra += '<div class="lp">' + esc(sit.lastPlay.text) + "</div>"; }
+  } else if (e.state === "in" && e.goals.length) {
+    var g = e.goals[e.goals.length - 1];
+    extra += '<div class="lp">⚽︎ ' + esc(g.who) + " " + (g.min || "") + "</div>";
+  }
+  return '<div class="tile2' + (e.state === "in" ? " live" : "") + (rz ? " redzone" : "") + '" data-ev="' + e.id + '">' + top + line(A) + line(B) + extra + "</div>";
+}
+
+/* =====================================================================
+   DÉTAIL D'UN MATCH (résumé ESPN)
+   ===================================================================== */
+var DX_STATS = {
+  football: [["totalYards", "Yards totaux"], ["netPassingYards", "Yards à la passe"], ["rushingYards", "Yards à la course"],
+             ["firstDowns", "1ers downs"], ["thirdDownEff", "3e tentatives"], ["redZoneAttempts", "Red zone (réussies)"],
+             ["turnovers", "Pertes de balle"], ["sacksYardsLost", "Sacks subis"], ["totalPenaltiesYards", "Pénalités"], ["possessionTime", "Possession"]],
+  basketball: [["fieldGoalPct", "Tirs %"], ["threePointFieldGoalPct", "3 pts %"], ["freeThrowPct", "Lancers francs %"],
+               ["totalRebounds", "Rebonds"], ["assists", "Passes déc."], ["steals", "Interceptions"], ["blocks", "Contres"], ["turnovers", "Balles perdues"]],
+  hockey: [["shotsTotal", "Tirs"], ["powerPlayGoals", "Buts en supériorité"], ["powerPlayOpportunities", "Supériorités"],
+           ["faceoffPercent", "Mises en jeu %"], ["hits", "Mises en échec"], ["blockedShots", "Tirs bloqués"], ["giveaways", "Revirements"], ["penaltyMinutes", "Min. de pénalité"]],
+  soccer: [["possessionPct", "Possession %"], ["totalShots", "Tirs"], ["shotsOnTarget", "Tirs cadrés"], ["wonCorners", "Corners"],
+           ["foulsCommitted", "Fautes"], ["yellowCards", "Cartons jaunes"], ["redCards", "Cartons rouges"], ["offsides", "Hors-jeu"], ["accuratePasses", "Passes réussies"]]
+};
+
+function dxDetail(e) {
+  var old = $("dx-sum");
+  dx.sumScroll = old && dx.cur && dx.cur.id === e.id ? old.scrollTop : 0;
+  dx.cur = e;
+  var us = e.sport !== "soccer" && e.sport !== "rugby", A = us ? e.away : e.home, B = us ? e.home : e.away;
+  var head = '<div class="dh"><div class="dteam"><img src="' + A.logo + '" alt=""><div>' + esc(A.name) + "</div></div>" +
+    '<div class="dscore"><div class="big grad">' + (e.state === "pre" ? hm(e.t) : esc(A.score) + " – " + esc(B.score)) + "</div>" +
+    '<div class="dclk' + (e.state === "in" ? " on" : "") + '">' + (e.state === "in" ? "● " : "") + esc(e.state === "pre" ? dayLabel(e.t) : frPeriod(e)) + "</div></div>" +
+    '<div class="dteam"><img src="' + B.logo + '" alt=""><div>' + esc(B.name) + "</div></div></div>";
+  var sitHTML = "";
+  if (e.state === "in" && e.sit && e.sit.downDistanceText) {
+    var poss = e.sit.possession === e.home.id ? e.home : e.sit.possession === e.away.id ? e.away : null;
+    sitHTML = '<div class="nflsit' + (e.sit.isRedZone ? " redzone" : "") + '">' + (e.sit.isRedZone ? '<span class="rz">RED ZONE</span>' : "") +
+      (poss ? "🏈 <b>" + esc(poss.name) + "</b> · " : "") + esc(frDown(e.sit.downDistanceText)) + "</div>";
+  }
+  $("dx-detail").innerHTML = head + sitHTML + '<div id="dx-sum" class="scroll"><div class="empty-s">Chargement des statistiques…</div></div>';
+  if (e.sport === "rugby" || e.state === "pre") { dxNoSummary(e); return; }
+  var url = ESPN + "site/v2/sports/" + e.sport + "/" + e.slug + "/summary?event=" + e.id;
+  spGet(url, e.state === "in" ? 15 : 300, function (d) { if (dx.cur && dx.cur.id === e.id) { dxSummary(e, d, us); } },
+    function () { $("dx-sum").innerHTML = '<div class="empty-s">Statistiques indisponibles.</div>'; });
+}
+
+function dxNoSummary(e) {
+  var html = "";
+  if (e.goals.length) { html += '<div class="sec">Marqueurs</div><div class="goals" style="padding-left:0">' + e.goals.map(function (g) { return esc(g.who) + " " + (g.min || ""); }).join(" · ") + "</div>"; }
+  if (e.state === "pre") { html += '<div class="empty-s">Le match n\'a pas commencé : les statistiques apparaîtront au coup d\'envoi.</div>'; }
+  else if (e.sport === "rugby") { html += '<div class="empty-s">Pour le rugby, ESPN ne fournit que le score et le temps de jeu.</div>'; }
+  $("dx-sum").innerHTML = html;
+}
+
+function dxSummary(e, d, us) {
+  var A = us ? e.away : e.home, B = us ? e.home : e.away, html = "";
+  // Probabilité de victoire (NFL, NBA)
+  var wp = d.winprobability && d.winprobability[d.winprobability.length - 1];
+  if (wp && e.state !== "post") {
+    var hp = Math.round(wp.homeWinPercentage * 100), ap = 100 - hp, pa = us ? ap : hp;
+    html += '<div class="sec">Probabilité de victoire</div><div class="wp"><span>' + esc(A.abbr || A.name) + " " + pa + '%</span><div class="wpbar"><i style="width:' + pa +
+      '%"></i></div><span>' + (100 - pa) + "% " + esc(B.abbr || B.name) + "</span></div>";
+  }
+  // NFL : série en cours + actions
+  if (e.sport === "football" && d.drives) {
+    var dr = d.drives.current || (d.drives.previous && d.drives.previous[d.drives.previous.length - 1]);
+    if (dr) {
+      html += '<div class="sec">' + (d.drives.current ? "Série en cours" : "Dernière série") + " · " + esc((dr.team && dr.team.abbreviation) || "") + "</div>" +
+        '<div class="kpi">' + esc(dr.description || "") + " <b>" + esc(dr.displayResult || "En cours") + "</b></div>";
+      (dr.plays || []).slice(-4).reverse().forEach(function (p) {
+        html += '<div class="play"><b>' + esc(frDown((p.start && p.start.downDistanceText) || "")) + "</b> " + esc(p.text || "") + "</div>";
+      });
+    }
+  }
+  // NBA / NHL : dernières actions
+  if ((e.sport === "basketball" || e.sport === "hockey") && d.plays && d.plays.length) {
+    html += '<div class="sec">Dernières actions</div>';
+    d.plays.slice(-5).reverse().forEach(function (p) {
+      html += '<div class="play"><b>' + esc((p.period && p.period.number ? (e.sport === "hockey" ? p.period.number + "e" : "QT" + p.period.number) : "") + " " + ((p.clock && p.clock.displayValue) || "")) + "</b> " + esc(p.text || "") + "</div>";
+    });
+  }
+  // Foot : temps forts
+  if (e.sport === "soccer" && d.keyEvents) {
+    var ke = d.keyEvents.filter(function (k) { return /Goal|Card|Penalty|Substitution/i.test((k.type && k.type.text) || "") && k.text; }).slice(-6).reverse();
+    if (ke.length) {
+      html += '<div class="sec">Temps forts</div>';
+      ke.forEach(function (k) {
+        var ic = /Goal/i.test(k.type.text) ? "⚽︎" : /Red/i.test(k.type.text) ? "🟥" : /Card/i.test(k.type.text) ? "🟨" : /Substitution/i.test(k.type.text) ? "🔁" : "•";
+        html += '<div class="play"><b>' + esc((k.clock && k.clock.displayValue) || "") + "</b> " + ic + " " + esc(k.text) + "</div>";
+      });
+    }
+  }
+  // Statistiques d'équipe comparées
+  var teams = (d.boxscore && d.boxscore.teams) || [], tA = null, tB = null;
+  teams.forEach(function (t) { if (t.team && t.team.id === A.id) { tA = t; } else if (t.team && t.team.id === B.id) { tB = t; } });
+  if (tA && tB && DX_STATS[e.sport]) {
+    var va = {}, vb = {};
+    (tA.statistics || []).forEach(function (s) { va[s.name] = s.displayValue; });
+    (tB.statistics || []).forEach(function (s) { vb[s.name] = s.displayValue; });
+    html += '<div class="sec">Statistiques</div>';
+    DX_STATS[e.sport].forEach(function (k) {
+      if (va[k[0]] === undefined) { return; }
+      html += statBar(k[1], va[k[0]], vb[k[0]]);
+    });
+  }
+  // NFL : actions décisives (scores)
+  if (e.sport === "football" && d.scoringPlays && d.scoringPlays.length) {
+    html += '<div class="sec">Points marqués</div>';
+    d.scoringPlays.slice(-5).reverse().forEach(function (p) {
+      html += '<div class="play"><b>' + esc((p.team && p.team.abbreviation) || "") + " · QT" + ((p.period && p.period.number) || "") + "</b> " + esc(p.text || "") + "</div>";
+    });
+  }
+  // Meilleurs joueurs du match
+  if (d.leaders && d.leaders.length) {
+    html += '<div class="sec">Meilleurs joueurs</div><div class="ldx">';
+    d.leaders.forEach(function (t) {
+      html += '<div class="ldc"><div class="ldt">' + esc((t.team && (t.team.abbreviation || t.team.displayName)) || "") + "</div>";
+      (t.leaders || []).slice(0, 3).forEach(function (c) {
+        var l = c.leaders && c.leaders[0];
+        var cat = { passingYards: "Passe", rushingYards: "Course", receivingYards: "Récep.", points: "Pts", rebounds: "Reb", assists: "Pd",
+                    goals: "Buts", totalShots: "Tirs", accuratePasses: "Passes", defensiveInterventions: "Déf." }[c.name] || c.shortDisplayName || "";
+        if (l && l.athlete) { html += '<div class="ldl"><span><i class="lcat">' + esc(cat) + "</i>" + esc(l.athlete.shortName || l.athlete.displayName) + "</span><b>" + esc(l.displayValue) + "</b></div>"; }
+      });
+      html += "</div>";
+    });
+    html += "</div>";
+  }
+  $("dx-sum").innerHTML = html || '<div class="empty-s">Pas encore de statistiques.</div>';
+  $("dx-sum").scrollTop = dx.sumScroll || 0;
+}
+
+// Barre de comparaison : valeur A à gauche, B à droite
+function statBar(label, a, b) {
+  var na = parseFloat(String(a).replace(",", ".")), nb = parseFloat(String(b).replace(",", "."));
+  if (/:/.test(a)) { na = toSec(a); nb = toSec(b); }           // temps de possession
+  if (/^\d+-\d+$/.test(a)) { na = +a.split("-")[0]; nb = +b.split("-")[0]; } // "4-12"
+  var tot = (na || 0) + (nb || 0), pa = tot ? Math.round((na || 0) / tot * 100) : 50;
+  return '<div class="sb"><div class="sbv">' + esc(a) + '</div><div class="sbm"><div class="sbl">' + esc(label) + '</div><div class="sbbar"><i class="l" style="width:' + pa +
+    '%"></i><i class="r" style="width:' + (100 - pa) + '%"></i></div></div><div class="sbv">' + esc(b) + "</div></div>";
+}
+function toSec(s) { var p = String(s).split(":"); return (+p[0] || 0) * 60 + (+p[1] || 0); }
+
+/* =====================================================================
+   F1 EN DIRECT (OpenF1)
+   ===================================================================== */
+var OF1 = "https://api.openf1.org/v1/";
+var TYRES = { SOFT: ["S", "#ff3b3b"], MEDIUM: ["M", "#ffd23f"], HARD: ["H", "#f2f2f2"], INTERMEDIATE: ["I", "#3ee08f"], WET: ["W", "#3fa0ff"] };
+function isoMinus(t, sec) { return new Date(t - sec * 1000).toISOString().slice(0, 19); }
+function last(list, key) { var m = {}; (list || []).forEach(function (x) { m[x[key]] = x; }); return m; }
+
+var of1Q = [], of1Busy = false;
+function of1Get(url, ttl, cb) {
+  var c = spCache[url];
+  if (c && Date.now() - c.t < ttl * 1000) { cb(c.d); return; }
+  of1Q.push([url, cb, c]); of1Pump();
+}
+function of1Pump() {
+  if (of1Busy || !of1Q.length) { return; }
+  of1Busy = true;
+  var j = of1Q.shift();
+  function done(d) { j[1](d); setTimeout(function () { of1Busy = false; of1Pump(); }, 400); }
+  getJSON(j[0], function (d) { spCache[j[0]] = { t: Date.now(), d: d }; done(d); }, function () { done(j[2] ? j[2].d : null); });
+}
+function of1All(list, cb) { // list : [[url, ttl], ...]
+  var res = [], left = list.length;
+  list.forEach(function (x, i) { of1Get(x[0], x[1], function (d) { res[i] = d; if (--left === 0) { cb(res); } }); });
+}
+
+function f1Live() {
+  if (dx.f1At && Date.now() - dx.f1At < 28000) { return; } // au plus toutes les 30 s
+  dx.f1At = Date.now();
+  if (!$("dx-list").querySelector(".f1t")) { $("dx-list").innerHTML = '<div class="empty-s">Chargement des données F1…</div>'; $("dx-detail").innerHTML = ""; }
+  var q = "?session_key=latest";
+  of1All([[OF1 + "sessions" + q, 300], [OF1 + "meetings?meeting_key=latest", 3600], [OF1 + "drivers" + q, 600], [OF1 + "race_control" + q, 25],
+          [OF1 + "position" + q, 25], [OF1 + "stints" + q, 25], [OF1 + "pit" + q, 25], [OF1 + "overtakes" + q, 25]], function (r) {
+    if (dx.sport !== "f1") { return; }
+    var sess = r[0] && r[0][0], meet = r[1] && r[1][0];
+    if (!sess) { $("dx-list").innerHTML = '<div class="empty-s">Données F1 indisponibles. Le temps réel OpenF1 peut être réservé aux abonnés pendant les séances : les données apparaîtront à la fin de la séance.</div>'; return; }
+    var rc = r[3] || [], maxLap = 0;
+    rc.forEach(function (m) { if (m.lap_number > maxLap) { maxLap = m.lap_number; } });
+    var isRace = /Race|Sprint/i.test(sess.session_type || "");
+    var lapsURL = OF1 + "laps" + q + (isRace && maxLap > 2 ? "&lap_number>=" + (maxLap - 1) : "");
+    of1Get(lapsURL, 25, function (laps) {
+      laps = laps || [];
+      var tRef = 0;
+      laps.forEach(function (l) { var t = l.date_start ? Date.parse(l.date_start) : 0; if (t > tRef) { tRef = t; } });
+      if (!tRef) { tRef = Date.now(); }
+      var ivURL = OF1 + "intervals" + q + "&date>=" + isoMinus(tRef, 45);
+      var wURL = OF1 + "weather" + q + "&date>=" + isoMinus(tRef, 600);
+      of1All([[ivURL, 25], [wURL, 120]], function (r2) {
+        if (dx.sport !== "f1") { return; }
+        f1Render(sess, meet, r[2] || [], rc, r[4] || [], r[5] || [], r[6] || [], r[7] || [], laps, r2[0] || [], r2[1] || [], maxLap, isRace);
+      });
+    });
+  });
+}
+
+function f1Render(sess, meet, drivers, rc, pos, stints, pits, ovt, laps, iv, weather, maxLap, isRace) {
+  var D = last(drivers, "driver_number"), P = last(pos, "driver_number"), I = last(iv, "driver_number");
+  var stint = {}, pitN = {}, ovN = {}, lapMax = {}, lastLap = {}, best = {};
+  stints.forEach(function (s) { if (!stint[s.driver_number] || s.stint_number > stint[s.driver_number].stint_number) { stint[s.driver_number] = s; } });
+  pits.forEach(function (p) { pitN[p.driver_number] = (pitN[p.driver_number] || 0) + 1; });
+  ovt.forEach(function (o) { ovN[o.overtaking_driver_number] = (ovN[o.overtaking_driver_number] || 0) + 1; });
+  laps.forEach(function (l) {
+    var n = l.driver_number;
+    if (!lapMax[n] || l.lap_number > lapMax[n]) { lapMax[n] = l.lap_number; }
+    if (l.lap_duration && (!lastLap[n] || l.lap_number > lastLap[n].lap_number)) { lastLap[n] = l; }
+    if (l.lap_duration && (!best[n] || l.lap_duration < best[n])) { best[n] = l.lap_duration; }
+  });
+  var nums = Object.keys(D).map(Number).sort(function (a, b) { return ((P[a] && P[a].position) || 99) - ((P[b] && P[b].position) || 99); });
+  var now = Date.now(), live = Date.parse(sess.date_start) <= now && Date.parse(sess.date_end) >= now;
+  function lapTime(s) { if (!s) { return "—"; } var m = Math.floor(s / 60); return (m ? m + ":" : "") + (s % 60 < 10 && m ? "0" : "") + (s % 60).toFixed(3); }
+  function gap(v) { return v === null || v === undefined ? "—" : typeof v === "number" ? "+" + v.toFixed(3) : esc(String(v)); }
+
+  var html = '<table class="tbl tight f1t"><colgroup><col style="width:2.6rem"><col><col style="width:6.4rem"><col style="width:6rem"><col style="width:6.4rem">' +
+    '<col style="width:3.4rem"><col style="width:3.6rem"><col style="width:3.6rem"><col style="width:6.8rem"></colgroup>' +
+    '<tr><th>#</th><th style="text-align:left">Pilote</th><th>' + (isRace ? "Écart" : "Meilleur") + "</th><th>" + (isRace ? "Interv." : "") +
+    "</th><th>Pneu</th><th>Tour</th><th>Arrêts</th><th>Dépass.</th><th>Dernier tour</th></tr>";
+  nums.forEach(function (n) {
+    var d = D[n], st = stint[n], ty = st && TYRES[st.compound] || ["?", "#888"], cur = lapMax[n] || maxLap;
+    var age = st ? (st.tyre_age_at_start || 0) + Math.max(0, cur - (st.lap_start || cur)) : "";
+    html += "<tr><td class=\"pts\">" + ((P[n] && P[n].position) || "") + '</td><td class="tn"><i class="f1c" style="background:#' + (d.team_colour || "888") + '"></i><b>' +
+      esc(d.name_acronym || "") + "</b> <span class=\"mut\">" + esc(d.team_name || "") + "</span></td>" +
+      "<td>" + (isRace ? gap(I[n] && I[n].gap_to_leader) : lapTime(best[n])) + '</td><td class="mut">' + (isRace ? gap(I[n] && I[n].interval) : "") + "</td>" +
+      '<td><span class="tyre" style="border-color:' + ty[1] + ";color:" + ty[1] + '">' + ty[0] + '</span> <span class="mut">' + age + " t.</span></td>" +
+      '<td class="mut">' + (cur || "") + "</td><td>" + (pitN[n] || 0) + "</td><td>" + (ovN[n] || 0) + '</td><td class="mut">' + lapTime(lastLap[n] && lastLap[n].lap_duration) + "</td></tr>";
+  });
+  html += "</table>";
+  $("dx-list").innerHTML = '<div class="pane-head"><div class="label">Classement en direct</div></div>' + html;
+
+  // Colonne de droite : séance, drapeaux, météo, direction de course, dépassements
+  var w = weather[weather.length - 1], flag = null;
+  rc.forEach(function (m) { if (m.category === "Flag" && m.scope === "Track" || m.category === "SafetyCar") { flag = m; } });
+  var ovTop = Object.keys(ovN).sort(function (a, b) { return ovN[b] - ovN[a]; }).slice(0, 3);
+  var side = '<div class="gp-name grad">' + esc(meet ? gpName(meet.meeting_name || "") : sess.location) + '</div><div class="gp-sub">' + esc(sess.session_name) + " · " +
+    (live ? '<span style="color:#ff3fa4">● EN DIRECT</span>' : "Terminée") + (maxLap ? " · Tour " + maxLap : "") + "</div>";
+  if (!live) { side += '<div class="empty-s">Pas de séance en cours : affichage de la dernière séance. Pendant une séance, le temps réel OpenF1 peut être réservé aux abonnés (les données arrivent alors à la fin).</div>'; }
+  if (flag) { side += '<div class="kpi">Piste <b>' + esc(flag.message) + "</b></div>"; }
+  if (w) { side += '<div class="kpi">Météo <b>Air ' + fr(w.air_temperature, 1) + "° · Piste " + fr(w.track_temperature, 1) + "°" + (w.rainfall ? " · Pluie" : "") + "</b></div>"; }
+  side += '<div class="kpi">Dépassements <b>' + ovt.length + "</b></div>";
+  ovTop.forEach(function (n) { if (D[n]) { side += '<div class="kpi">&nbsp;&nbsp;' + esc(D[n].full_name || D[n].name_acronym) + " <b>" + ovN[n] + "</b></div>"; } });
+  side += '<div class="kpi">Arrêts aux stands <b>' + pits.length + "</b></div>";
+  side += '<div class="sec">Direction de course</div>';
+  rc.slice(-7).reverse().forEach(function (m) {
+    side += '<div class="play"><b>' + (m.lap_number ? "T" + m.lap_number : "") + "</b> " + esc(m.message) + "</div>";
+  });
+  $("dx-detail").innerHTML = '<div class="scroll">' + side + "</div>";
+  var t = new Date();
+  $("dx-status").textContent = "Màj " + pad(t.getHours()) + ":" + pad(t.getMinutes()) + ":" + pad(t.getSeconds());
+}
+
+/* =====================================================================
+   BRANCHEMENT
+   ===================================================================== */
+$("page-direct").addEventListener("click", function (e) {
+  var el = e.target;
+  while (el && el !== this) {
+    var s = el.getAttribute("data-dx"), ev = el.getAttribute("data-ev");
+    if (s) { dx.sport = s; dx.sel = null; store.set("dxSport", s); dxRefresh(); return; }
+    if (ev) {
+      dx.sel = ev;
+      var tiles = this.querySelectorAll(".tile2");
+      for (var i = 0; i < tiles.length; i++) { tiles[i].className = tiles[i].className.replace(" sel", "") + (tiles[i].getAttribute("data-ev") === ev ? " sel" : ""); }
+      var S = dxSport(), g = dxGames(S), all = g.live.concat(g.next, g.done);
+      all.forEach(function (x) { if (x.id === ev) { dxDetail(x); } });
+      return;
+    }
+    el = el.parentNode;
+  }
+});
+
+registerTab("direct", {
+  show: function () {
+    dxRefresh();
+    clearInterval(dx.timer);
+    dx.timer = setInterval(dxRefresh, 15000); // toutes les 15 s
+  },
+  hide: function () { clearInterval(dx.timer); }
+});
+</script>
+<script>
+/* =====================================================================
+   ONGLET FRANCE — le meilleur du sport français
+   Bleus (foot) et XV de France : ESPN · Clubs en Europe : ESPN
+   Français en NBA : ESPN · F1 : Jolpica · Tennis : classements ESPN
+   Actualités : L'Équipe
+   ===================================================================== */
+
+// Joueurs français en NBA (identifiants ESPN, équipe au 25/11/2026)
+var FR_NBA = [
+  [5104157, "Victor Wembanyama", "SAS"], [3032976, "Rudy Gobert", "MIN"], [5211175, "Zaccharie Risacher", "DAL"],
+  [5160992, "Alex Sarr", "WSH"], [5104155, "Bilal Coulibaly", "WSH"], [5211176, "Tidjane Salaün", "CHA"],
+  [4017844, "Guerschon Yabusele", "CHI"], [4997526, "Ousmane Dieng", "MIL"], [4433249, "Moussa Diabaté", "CHA"],
+  [5279130, "Nolan Traoré", "BKN"], [5242496, "Noa Essengue", "CHI"], [5279133, "Joan Beringer", "MIN"],
+  [4898371, "Maxime Raynaud", "SAC"], [5099752, "Rayan Rupert", "PHI"], [3416, "Nicolas Batum", "LAC"],
+  [5081727, "Sidy Cissoko", "POR"], [5289900, "Mohamed Diawara", "NYK"], [5211983, "Pacôme Dadiet", "NYK"]
+];
+var BLEUS_COMPS = [["fifa.world", "CDM"], ["fifa.worldq.uefa", "Qualif"], ["uefa.nations", "LdN"],
+                   ["fifa.friendly", "Amical"], ["uefa.euro", "Euro"], ["uefa.euroq", "Qualif"]];
+var XV_COMPS = [["17567", "Nations"], ["180659", "6 Nations"], ["164205", "CDM"]];
+var FR_TEAM_FOOT = "478", FR_TEAM_RUGBY = "9";
+
+var frState = { timer: null };
+
+function frCard(id, title, emoji, extra) {
+  return '<div class="card lcard' + (extra || "") + '"><div class="lc-head"><span class="emo">' + emoji + '</span><div class="lc-title">' + title +
+    '</div></div><div class="scroll" id="' + id + '"><div class="empty-s">Chargement…</div></div></div>';
+}
+function frSet(id, html) { var el = $(id); if (el) { el.innerHTML = html; } }
+
+function franceRender() {
+  $("page-france").innerHTML =
+    frCard("fr-bleus", "Équipe de France", "⚽️") +
+    frCard("fr-xv", "XV de France", "🏉") +
+    frCard("fr-europe", "Clubs en Europe", "🏆") +
+    frCard("fr-tennis", "Tennis", "🎾") +
+    frCard("fr-nba", "Les Français en NBA", "🏀", " wide") +
+    frCard("fr-f1", "Formule 1", "🏎") +
+    frCard("fr-news", "Sport français", "🇫🇷");
+  frBleus(); frXV(); frEurope(); frTennis(); frNBA(); frF1(); frNews();
+}
+
+/* ---------- Matchs d'une sélection ---------- */
+function frMatches(evs, newsKey, id) {
+  var past = evs.filter(function (e) { return e.state === "post"; }).slice(-3).reverse();
+  var live = evs.filter(function (e) { return e.state === "in"; });
+  var next = evs.filter(function (e) { return e.state === "pre"; }).slice(0, 2);
+  var html = "";
+  if (live.length) { html += '<div class="sec live">● En direct</div>' + matchList(live, { badge: true, short: true }); }
+  html += '<div class="sec">Prochains matchs</div>' + (next.length ? matchList(next, { withDay: true, badge: true, short: true }) : '<div class="empty-s">Pas de match programmé pour l\'instant.</div>');
+  html += '<div class="sec">Derniers résultats</div>' + (past.length ? matchList(past, { withDay: true, badge: true, short: true }) : '<div class="empty-s">—</div>');
+  html += '<div class="sec">Actualités</div><div id="' + id + '-nw"></div>';
+  frSet(id, html);
+  loadNews(newsKey, function (list) { frSet(id + "-nw", newsHTML(list, 3, false)); });
+}
+
+function frBleus() {
+  var urls = BLEUS_COMPS.map(function (c) { return ESPN + "site/v2/sports/soccer/" + c[0] + "/teams/" + FR_TEAM_FOOT + "/schedule"; });
+  spAll(urls, 3600, function (res) {
+    var seen = {}, evs = [];
+    res.forEach(function (d, i) {
+      ((d && d.events) || []).forEach(function (ev) {
+        if (seen[ev.id]) { return; }
+        seen[ev.id] = 1;
+        var e = normEvent(ev, { short: BLEUS_COMPS[i][1] });
+        if (e) { evs.push(e); }
+      });
+    });
+    evs.sort(function (a, b) { return a.t - b.t; });
+    frMatches(evs, "bleus", "fr-bleus");
+  });
+}
+
+function frXV() {
+  var n = new Date(), months = [];
+  for (var k = -1; k <= 3; k++) { months.push(ym(new Date(n.getFullYear(), n.getMonth() + k, 1))); }
+  var urls = [], tags = [];
+  XV_COMPS.forEach(function (c) { months.forEach(function (m) { urls.push(sbURL("rugby", c[0], m)); tags.push(c[1]); }); });
+  spAll(urls, 3 * 3600, function (res) {
+    var seen = {}, evs = [];
+    res.forEach(function (d, i) {
+      ((d && d.events) || []).forEach(function (ev) {
+        if (seen[ev.id]) { return; }
+        var e = normEvent(ev, { short: tags[i] });
+        if (e && (e.home.id === FR_TEAM_RUGBY || e.away.id === FR_TEAM_RUGBY)) { seen[ev.id] = 1; evs.push(e); }
+      });
+    });
+    evs.sort(function (a, b) { return a.t - b.t; });
+    frMatches(evs, "xv", "fr-xv");
+  });
+}
+
+/* ---------- Clubs français en coupes d'Europe ---------- */
+function frEurope() {
+  var L = leagueById("eu");
+  loadFrIds(function () {
+    loadEvents(L, 300, function (evs) {
+      spAll(L.comps.map(function (c) { return ESPN + "v2/sports/soccer/" + c.slug + "/standings"; }), 600, function (res) {
+        var html = "";
+        L.comps.forEach(function (c, i) {
+          var entries = [];
+          parseStandings(res[i]).forEach(function (g) { entries = entries.concat(g.entries); });
+          var fr = entries.filter(function (e) { return sp.frIds[e.team.id]; }).sort(function (a, b) { return (a.s.rank || 99) - (b.s.rank || 99); });
+          if (!fr.length) { return; }
+          html += '<div class="sec">' + esc(c.name) + "</div>";
+          fr.forEach(function (e) {
+            var z = zoneOf(e.note);
+            var next = evs.filter(function (x) { return x.comp.slug === c.slug && x.state === "pre" && (x.home.id === e.team.id || x.away.id === e.team.id); })[0];
+            html += '<div class="kpi"><span style="color:#fff3fb">' + (e.team.logo ? '<img src="' + e.team.logo + '" style="height:1.7rem;width:1.7rem;vertical-align:middle;margin-right:.4rem" alt="">' : "") +
+              esc(e.team.name) + "</span><b>" + (e.s.rank || "?") + "e · " + (e.v.points || 0) + " pts" +
+              (z ? ' <i style="display:inline-block;width:.9rem;height:.9rem;border-radius:.3rem;background:' + z.color + '"></i>' : "") + "</b></div>" +
+              (next ? '<div class="goals" style="padding-left:2.1rem">Prochain : ' + esc(next.home.name) + " – " + esc(next.away.name) + ", " + shortDay(next.t) + " " + hm(next.t) + "</div>" : "");
+          });
+        });
+        frSet("fr-europe", html || '<div class="empty-s">Aucun club français engagé.</div>');
+      });
+    });
+  });
+}
+
+/* ---------- Tennis : Français dans les classements ATP / WTA ---------- */
+function frTennis() {
+  spAll([ESPN + "site/v2/sports/tennis/atp/rankings", ESPN + "site/v2/sports/tennis/wta/rankings"], 6 * 3600, function (res) {
+    var html = "";
+    ["ATP", "WTA"].forEach(function (tour, i) {
+      var ranks = [];
+      try { ranks = res[i].rankings[0].ranks; } catch (e) {}
+      var fr = ranks.filter(function (r) { return /\/fra\.png/.test((r.athlete && r.athlete.flag) || ""); }).slice(0, 5);
+      html += '<div class="sec">Classement ' + tour + "</div>";
+      if (!fr.length) { html += '<div class="empty-s">Aucun Français dans le top ' + (ranks.length || 150) + ".</div>"; }
+      fr.forEach(function (r) {
+        var tr = r.current < r.previous ? '<span style="color:#3ee08f">▲</span>' : r.current > r.previous ? '<span style="color:#ff3f6c">▼</span>' : "";
+        html += '<div class="f1r"><div class="p">' + r.current + '</div><div class="n">' + esc(r.athlete.displayName) + "</div>" +
+          '<div class="g">' + tr + " " + milliers(r.points) + " pts</div></div>";
+      });
+    });
+    html += '<div class="sec">Actualités</div><div id="fr-tennis-nw"></div>';
+    frSet("fr-tennis", html);
+    loadNews("tennis", function (list) { frSet("fr-tennis-nw", newsHTML(list, 2, false)); });
+  });
+}
+
+/* ---------- Français en NBA ---------- */
+function frNBA() {
+  var urls = FR_NBA.map(function (p) { return "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/" + p[0] + "/overview"; });
+  spAll(urls, 3600, function (res) {
+    var rows = [];
+    res.forEach(function (d, i) {
+      try {
+        var st = d.statistics, sp0 = st.splits[0], lab = st.labels, v = {};
+        if (!/Regular|Season/i.test(sp0.displayName || "")) { return; }
+        lab.forEach(function (l, k) { v[l] = sp0.stats[k]; });
+        if (!+v.GP) { return; }
+        rows.push({ id: FR_NBA[i][0], name: FR_NBA[i][1], team: FR_NBA[i][2], v: v });
+      } catch (e) {}
+    });
+    rows.sort(function (a, b) { return parseFloat(b.v.PTS) - parseFloat(a.v.PTS); });
+    var html = '<table class="tbl tight"><colgroup><col><col style="width:4rem"><col style="width:3rem"><col style="width:3.6rem"><col style="width:3.8rem">' +
+      '<col style="width:3.6rem"><col style="width:3.6rem"><col style="width:3.6rem"><col style="width:4.2rem"></colgroup>' +
+      '<tr><th style="text-align:left">Joueur</th><th>Équipe</th><th>MJ</th><th>Min</th><th>Pts</th><th>Reb</th><th>Pd</th><th>Ctr</th><th>Tirs %</th></tr>';
+    rows.forEach(function (r) {
+      html += '<tr><td class="tn"><img src="https://a.espncdn.com/i/headshots/nba/players/full/' + r.id + '.png" style="border-radius:50%;background:#2a1c4a" alt="">' + esc(r.name) +
+        '</td><td class="mut">' + r.team + '</td><td class="mut">' + r.v.GP + '</td><td class="mut">' + r.v.MIN + '</td><td class="pts">' + r.v.PTS +
+        "</td><td>" + r.v.REB + "</td><td>" + r.v.AST + "</td><td>" + r.v.BLK + '</td><td class="mut">' + r.v["FG%"] + "</td></tr>";
+    });
+    frSet("fr-nba", rows.length ? html + "</table>" + '<div class="legend"><span>Moyennes par match, saison régulière. Équipes au 25 novembre 2026.</span></div>'
+                                : '<div class="empty-s">Statistiques indisponibles.</div>');
+  });
+}
+
+/* ---------- Pilotes français en F1 ---------- */
+function frF1() {
+  loadF1(900, function (f) {
+    var fr = (f.drivers || []).filter(function (d) { return d.Driver.nationality === "French"; });
+    var html = '<div class="sec">Pilotes français · après ' + f.round + " manches</div>";
+    fr.forEach(function (d) {
+      var t = d.Constructors[0] || {};
+      html += '<div class="f1r"><div class="p">' + d.position + '</div><div class="c" style="background:' + f1Color(t.constructorId) + '"></div><div class="n">' +
+        esc(d.Driver.givenName + " " + d.Driver.familyName) + "<small>" + esc(t.name || "") + '</small></div><div class="pt">' + d.points + "</div></div>";
+    });
+    if (f.last && f.last.Results) {
+      var best = f.last.Results.filter(function (r) { return r.Driver.nationality === "French"; });
+      if (best.length) {
+        html += '<div class="sec">' + esc(gpName(f.last.raceName)) + "</div>" + best.map(function (r) {
+          return '<div class="kpi">' + esc(r.Driver.familyName) + " <b>" + r.position + "e" + (+r.points ? " · " + r.points + " pts" : "") + "</b></div>";
+        }).join("");
+      }
+    }
+    if (f.next) {
+      var nt = f1Date(f.next);
+      html += '<div class="sec">Prochain Grand Prix</div><div class="kpi">' + esc(gpName(f.next.raceName)) + " <b>" + shortDay(nt) + " " + hm(nt) + "</b></div>";
+    }
+    frSet("fr-f1", html);
+  });
+}
+
+/* ---------- Actualités du sport français (hors foot / rugby / F1) ---------- */
+function frNews() {
+  var keys = ["tennis", "cyclisme", "athle", "hand", "biathlon"], all = [], left = keys.length;
+  keys.forEach(function (k) {
+    loadNews(k, function (list) {
+      all = all.concat(list.slice(0, 6));
+      if (--left === 0) {
+        all.sort(function (a, b) { return (b.date || 0) - (a.date || 0); });
+        frSet("fr-news", newsHTML(all, 7, true));
+      }
+    });
+  });
+}
+
+registerTab("france", {
+  show: function () {
+    franceRender();
+    clearInterval(frState.timer);
+    frState.timer = setInterval(franceRender, 10 * 60 * 1000);
+  },
+  hide: function () { clearInterval(frState.timer); }
 });
 </script>
 <script>startApp();</script>
