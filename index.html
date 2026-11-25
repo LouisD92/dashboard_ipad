@@ -539,6 +539,8 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
 .lcard .m .sc { width: 4.2rem; font-size: 1.55rem; }
 .lcard.wide .m .st { width: 5.4rem; }
 .lcard[data-sp="eu"] .m .st { width: 5.4rem; }
+/* Bande des leaders : titre toujours sur une ligne, pour garder les 3 joueurs visibles */
+.lstrip .ldr .sec { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .06rem; }
 </style>
 </head>
 <body>
@@ -2427,13 +2429,13 @@ var US_NAMES = {
 };
 function usName(n) { return US_NAMES[n] || n; }
 
-var US_LEADERS = {
-  nba: [["pointsPerGame", "Points / match"], ["reboundsPerGame", "Rebonds / match"], ["assistsPerGame", "Passes / match"],
-        ["stealsPerGame", "Interceptions"], ["blocksPerGame", "Contres"], ["3PointsMadePerGame", "Paniers à 3 pts"]],
+var US_LEADERS = {   // titres courts : une seule ligne dans la bande du bas
+  nba: [["pointsPerGame", "Points / m."], ["reboundsPerGame", "Rebonds / m."], ["assistsPerGame", "Passes / m."],
+        ["stealsPerGame", "Intercept."], ["blocksPerGame", "Contres"], ["3PointsMadePerGame", "Tirs à 3 pts"]],
   nhl: [["points", "Points"], ["goals", "Buts"], ["assists", "Passes"], ["plusMinus", "+/−"],
-        ["savePct", "% d'arrêts (gardiens)"], ["wins", "Victoires (gardiens)"]],
-  nfl: [["passingYards", "Yards à la passe"], ["rushingYards", "Yards à la course"], ["receivingYards", "Yards en réception"],
-        ["totalTouchdowns", "Touchdowns"], ["sacks", "Sacks"], ["interceptions", "Interceptions"]]
+        ["savePct", "% d'arrêts"], ["wins", "Vict. gardiens"]],
+  nfl: [["passingYards", "Yards passe"], ["rushingYards", "Yards course"], ["receivingYards", "Yards récep."],
+        ["totalTouchdowns", "Touchdowns"], ["sacks", "Sacks"], ["interceptions", "Intercept."]]
 };
 var Z_PLAY = { label: "Playoffs", color: "#2de2e6" };
 var Z_DIV = { label: "Vainqueur de division", color: "#2de2e6" };
