@@ -675,6 +675,46 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
 #page-actus .lc-title { font-size: 1.9rem; }
 #page-actus .lc-more { display: block; }
 #page-actus .nw .nt { font-size: 1.6rem; }
+#saint { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Barre latérale : 7 onglets */
+.tab { padding: .85rem 0 .8rem; }
+.tab svg { width: 3.1rem; height: 3.1rem; }
+.logo { margin-bottom: 1.2rem; }
+
+/* =====================================================================
+   PAGES TV et CINÉ
+   ===================================================================== */
+#page-tv { grid-template-columns: 1fr; grid-template-rows: 3.6rem 3.6rem minmax(0, 1fr); grid-gap: .7rem; }
+#page-cine { grid-template-columns: 1fr; grid-template-rows: 3.6rem minmax(0, 1fr); grid-gap: .9rem; }
+.chiprow { display: flex; align-items: center; overflow: hidden; }
+.chiprow .chip { height: 3.3rem; font-size: 1.45rem; padding: 0 1rem; margin-right: .45rem; }
+.chiprow .status { margin-left: auto; }
+#tv-grid, #cine-grid { overflow-y: auto; -webkit-overflow-scrolling: touch; min-height: 0; }
+#tv-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-gap: .8rem; align-content: start; }
+.tvc { padding: .9rem 1.1rem 1rem; }
+.tvh { display: flex; align-items: center; font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 1.7rem; text-transform: uppercase; margin-bottom: .5rem; }
+.tvh img { height: 2.8rem; width: 2.8rem; object-fit: contain; margin-right: .7rem; background: #fff; border-radius: .6rem; padding: .2rem; }
+.tvp { border-radius: .8rem; }
+.tvp.hl { background: rgba(255, 63, 164, .1); box-shadow: 0 0 0 .5rem rgba(255, 63, 164, .1); }
+.tvm { font-family: var(--cond); font-size: 1.3rem; color: var(--muted); }
+.tvm b { color: var(--cyan); font-size: 1.45rem; }
+.tvt { font-size: 1.55rem; font-weight: 600; line-height: 1.25; margin-top: .15rem; }
+.tvp.main .tvt { font-size: 1.75rem; }
+.tvs { font-size: 1.25rem; color: var(--purple); margin-top: .15rem; }
+.tvd { font-size: 1.25rem; color: var(--muted); line-height: 1.35; margin-top: .3rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.tvsep { font-family: var(--cond); font-size: 1.1rem; letter-spacing: .1rem; text-transform: uppercase; color: var(--dim); border-top: 1px solid var(--line); margin: .7rem 0 .35rem; padding-top: .4rem; }
+.csa { display: inline-block; margin-left: .5rem; background: #ffffff; color: #100a20; border-radius: 50%; width: 2rem; height: 2rem; line-height: 2rem; text-align: center; font-weight: 800; font-size: 1rem; vertical-align: .05rem; }
+#cine-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-gap: .9rem; align-content: start; }
+.film { display: flex; padding: 1rem; }
+.film .poster { width: 9.6rem; height: 14.4rem; border-radius: .8rem; object-fit: cover; background: var(--card2); -webkit-flex-shrink: 0; flex-shrink: 0; margin-right: 1.1rem; }
+.film .fb { -webkit-flex: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.film .ft { font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 1.9rem; line-height: 1.1; text-transform: uppercase; }
+.film .fm { font-size: 1.2rem; color: var(--muted); margin-top: .3rem; }
+.film .star { color: #ffd166; font-weight: 700; margin-left: .3rem; }
+.film .fo { font-size: 1.25rem; line-height: 1.35; color: var(--text); opacity: .85; margin-top: .4rem; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.film .fl { margin-top: auto; padding-top: .4rem; font-family: var(--cond); font-size: 1.25rem; color: var(--pink); text-decoration: none; }
+#tv-grid, #cine-grid { grid-auto-rows: max-content; }
 </style>
 </head>
 <body>
@@ -746,6 +786,22 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
         <path d="M10 11h8M10 15h8M10 19h5"/>
       </svg>
       <span>Actus</span>
+    </button>
+
+    <button class="tab" data-tab="tv">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+        <rect x="4" y="8" width="24" height="16" rx="2.5"/>
+        <path d="M12 3.5l4 4.5 4-4.5M11 28h10"/>
+      </svg>
+      <span>TV</span>
+    </button>
+
+    <button class="tab" data-tab="cine">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+        <rect x="4" y="12" width="24" height="15" rx="2"/>
+        <path d="M4.5 12l22-5.5-1-4-22 5.5zM9.5 10.8l2.6-5.4M16 9.2l2.6-5.4M22.5 7.6l2.4-5"/>
+      </svg>
+      <span>Ciné</span>
     </button>
 
     <div class="side-clock"><div id="s-time" class="grad">--:--</div><div id="s-date"></div></div>
@@ -848,6 +904,19 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
       </div>
     </section>
 
+    <!-- ================= TV ================= -->
+    <section class="page" id="page-tv">
+      <div class="chiprow" id="tv-days"></div>
+      <div class="chiprow" id="tv-cats"></div>
+      <div id="tv-grid"></div>
+    </section>
+
+    <!-- ================= CINÉ ================= -->
+    <section class="page" id="page-cine">
+      <div class="chiprow" id="cine-tabs"></div>
+      <div id="cine-grid"></div>
+    </section>
+
     <!-- ================= ACTUALITÉS ================= -->
     <section class="page" id="page-actus"></section>
 
@@ -872,7 +941,8 @@ var CONFIG = {
   planeProxy: "https://radar-avions.louisdemaison.workers.dev/",           // adresse du relais avions (voir proxy/LISEZMOI.txt)
   planeRadiusKm: 60,        // rayon de recherche des avions
   planeZoom: 9,
-  planeRefreshSeconds: 10
+  planeRefreshSeconds: 10,
+  tmdbKey: ""               // clé d'API TMDB (gratuite) pour l'onglet Ciné
 };
 // Pour tester un autre relais : ajouter ?proxy=https://... à l'adresse de la page
 (function () {
@@ -1143,6 +1213,23 @@ var meteo = {
   radarTime: "", requestId: 0, last: null, retry: null, timer: null, tiles: {}
 };
 
+/* ---------- Saint du jour (Nominis, Église catholique en France) ---------- */
+function loadSaint() {
+  var d = new Date(), key = "saint_" + ymd(d);
+  function show(html) { meteo.saint = html; var el = $("saint"); if (el) { el.innerHTML = html; } }
+  var c = store.get(key);
+  if (c) { show(c); return; }
+  getJSON("https://nominis.cef.fr/json/nominis.php?jour=" + d.getDate() + "&mois=" + (d.getMonth() + 1) + "&annee=" + d.getFullYear(), function (j) {
+    try {
+      var r = j.response, saints = Object.keys((r.saints && r.saints.majeurs) || {}), pren = Object.keys((r.prenoms && r.prenoms.majeurs) || {});
+      var first = saints.length ? htmlToText(r.saints.majeurs[saints[0]].valeur) : "";
+      var html = "✝︎ <b>" + esc(first || "—") + "</b>" + (pren.length ? " · Bonne fête aux " + esc(pren.slice(0, 3).join(", ")) : "");
+      store.set(key, html);
+      show(html);
+    } catch (e) {}
+  }, function () {});
+}
+
 /* ---------- Horloge principale ---------- */
 onTick(function (d) {
   $("time").innerHTML = '<span class="grad">' + pad(d.getHours()) + ":" + pad(d.getMinutes()) +
@@ -1254,7 +1341,8 @@ function meteoRender(data) {
   $("astro").innerHTML =
     "🌅 <b>" + hhmm(dl.sunrise[0]) + "</b> &nbsp; 🌇 <b>" + hhmm(dl.sunset[0]) + "</b> &nbsp; ☀︎ <b>" +
       Math.floor(dlen / 60) + " h " + pad(Math.round(dlen % 60)) + "</b><br>" +
-    mo.icon + " " + mo.name + " · <b>" + mo.illum + " %</b>";
+    mo.icon + " " + mo.name + " · <b>" + mo.illum + " %</b>" + '<div id="saint">' + (meteo.saint || "") + "</div>";
+  loadSaint();
 
   /* --- Indicateurs --- */
   setTile("feels", "Ressenti", deg(c.apparent_temperature), "Réelle " + fr(c.temperature_2m, 1) + "°");
@@ -3841,6 +3929,246 @@ function frNews() {
     });
   });
 }
+</script>
+<script>
+/* =====================================================================
+   ONGLET TV — programme de la TNT, 1re et 2e parties de soirée
+   Source : xmltvfr.fr (guide XMLTV gratuit, ~9 jours, lecture autorisée).
+   Le fichier (~840 Ko compressé) est téléchargé une fois par jour ; on n'en
+   garde que les soirées, mémorisées sur l'iPad.
+   ===================================================================== */
+var TV_URL = "https://xmltvfr.fr/xmltv/xmltv_tnt.xml";
+// Chaînes gratuites de la TNT, dans l'ordre du guide (chaînes payantes exclues)
+var TV_SKIP = { "CanalPlusSport.fr": 1, "CanalPlusCinema.fr": 1, "PlanetePlus.fr": 1, "ParisPremiere.fr": 1 };
+var TV_CATS = [
+  ["all", "Tout", null], ["film", "Films", /Film|Téléfilm/i], ["serie", "Séries", /Série|Feuilleton/i],
+  ["sport", "Sport", /Sport|Football|Rugby|Tennis|Cyclisme|Basket|Handball/i],
+  ["divert", "Divertissement", /Divertissement|Jeu|Variétés|Spectacle|Musique|Humour|Téléréalité/i],
+  ["doc", "Docs & magazines", /Documentaire|Magazine|Reportage|Débat|Information/i]
+];
+var tv = { data: null, day: null, cat: store.get("tvCat") || "all", loading: false };
+
+function xmlDecode(s) {
+  return String(s || "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#039;|&apos;/g, "'").replace(/&amp;/g, "&");
+}
+function tag(block, name) {
+  var m = new RegExp("<" + name + "[^>]*>([\\s\\S]*?)</" + name + ">").exec(block);
+  return m ? xmlDecode(m[1].trim()) : "";
+}
+
+// Extraction légère (expressions régulières, pas d'arbre XML : plus sûr pour la mémoire d'un vieil iPad)
+function tvParse(xml) {
+  var chans = [], keep = {}, m;
+  var reC = /<channel id="([^"]+)">([\s\S]*?)<\/channel>/g;
+  while ((m = reC.exec(xml))) {
+    if (TV_SKIP[m[1]]) { continue; }
+    var icon = /<icon src="([^"]+)"/.exec(m[2]);
+    keep[m[1]] = true;
+    chans.push({ id: m[1], name: tag(m[2], "display-name"),
+                 logo: icon ? icon[1].replace("/480x480/quality/100/", "/80x80/quality/80/").replace(/^http:/, "https:") : "" });
+  }
+  var days = {};
+  var reP = /<programme start="(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)\d\d [+-]\d{4}" stop="(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)\d\d [+-]\d{4}" channel="([^"]+)">([\s\S]*?)<\/programme>/g;
+  while ((m = reP.exec(xml))) {
+    var h = +m[4];
+    if (!keep[m[11]] || (h < 20 && h > 1)) { continue; } // soirée : 20 h -> 1 h du matin
+    var start = new Date(+m[1], +m[2] - 1, +m[3], h, +m[5]), stop = new Date(+m[6], +m[7] - 1, +m[8], +m[9], +m[10]);
+    var eve = h <= 1 ? dayStart(start, -1) : dayStart(start), key = ymd(eve), b = m[12];
+    var ep = /<episode-num system="xmltv_ns">\s*(\d*)\.(\d*)\./.exec(b), rating = /<rating[^>]*>\s*<value>([^<]*)<\/value>/.exec(b);
+    var p = { s: start.getTime(), e: stop.getTime(), ti: tag(b, "title"), st: tag(b, "sub-title"), c: tag(b, "category"),
+              de: tag(b, "desc").slice(0, 280), r: rating ? rating[1] : "",
+              ep: ep && ep[2] !== "" ? (ep[1] !== "" ? "S" + (+ep[1] + 1) + " " : "") + "É" + (+ep[2] + 1) : "" };
+    ((days[key] = days[key] || {})[m[11]] = days[key][m[11]] || []).push(p);
+  }
+  // Pour chaque soirée et chaque chaîne : 1re partie (début entre 20 h 35 et 21 h 45, 25 min mini) puis 2e partie
+  var out = {};
+  Object.keys(days).forEach(function (k) {
+    out[k] = {};
+    Object.keys(days[k]).forEach(function (ch) {
+      var list = days[k][ch].sort(function (a, b) { return a.s - b.s; }), p1 = null, p2 = null;
+      // 1) début entre 20 h 50 et 21 h 45, au moins 40 min (évite les séries d'avant-soirée de 20 h 45)
+      function pick(minDur) {
+        var r = null;
+        list.forEach(function (p) {
+          var t = new Date(p.s), mn = t.getHours() * 60 + t.getMinutes();
+          if (!r && t.getHours() >= 20 && mn >= 20 * 60 + 50 && mn <= 21 * 60 + 45 && (p.e - p.s) >= minDur * 60000) { r = p; }
+        });
+        return r;
+      }
+      p1 = pick(40) || pick(25);
+      // 2) sinon : le programme diffusé à 21 h 15
+      if (!p1) { list.forEach(function (p) { var t = new Date(p.s), at = new Date(t.getFullYear(), t.getMonth(), t.getDate(), 21, 15).getTime(); if (!p1 && t.getHours() >= 20 && p.s <= at && p.e > at) { p1 = p; } }); }
+      if (p1) {
+        list.forEach(function (p) { if (!p2 && p.s >= p1.e - 10 * 60000 && p.s > p1.s && (p.e - p.s) >= 20 * 60000) { p2 = p; } });
+        out[k][ch] = [p1, p2];
+      }
+    });
+  });
+  return { chans: chans, days: out, at: Date.now() };
+}
+
+function tvLoad(cb) {
+  if (!tv.data) { try { tv.data = JSON.parse(store.get("tvData2") || "null"); } catch (e) {} }
+  var fresh = tv.data && Date.now() - tv.data.at < 12 * 3600e3 && tv.data.days[ymd(new Date())];
+  if (fresh) { cb(); return; }
+  if (tv.loading) { return; }
+  tv.loading = true;
+  if (!tv.data) { $("tv-grid").innerHTML = '<div class="sp-loading">Téléchargement du programme TV (une fois par jour)…</div>'; }
+  getText(TV_URL, function (xml) {
+    tv.loading = false;
+    try { tv.data = tvParse(xml); store.set("tvData2", JSON.stringify(tv.data)); try { localStorage.removeItem("tvData"); } catch (e) {} } catch (e) {}
+    cb();
+  }, function () { tv.loading = false; if (tv.data) { cb(); } else { $("tv-grid").innerHTML = '<div class="sp-loading">Programme TV indisponible (pas de connexion ?).</div>'; } });
+}
+
+function tvDur(p) { var m = Math.round((p.e - p.s) / 60000); return m >= 60 ? Math.floor(m / 60) + "h" + pad(m % 60) : m + " min"; }
+function tvRating(r) {
+  var m = /-?\s?(10|12|16|18)/.exec(r || "");
+  return m ? '<span class="csa">-' + m[1] + "</span>" : "";
+}
+function tvMatch(p) {
+  if (tv.cat === "all" || !p) { return true; }
+  for (var i = 0; i < TV_CATS.length; i++) { if (TV_CATS[i][0] === tv.cat) { return TV_CATS[i][2].test(p.c); } }
+  return true;
+}
+
+function tvRender() {
+  var d = tv.data;
+  if (!d) { return; }
+  var keys = Object.keys(d.days).sort().filter(function (k) { return k >= ymd(new Date()); });
+  if (!tv.day || keys.indexOf(tv.day) < 0) { tv.day = keys[0]; }
+  // Jours
+  var html = "";
+  keys.forEach(function (k, i) {
+    var dt = new Date(+k.slice(0, 4), +k.slice(4, 6) - 1, +k.slice(6, 8));
+    html += '<button class="chip' + (k === tv.day ? " on" : "") + '" data-day="' + k + '">' + (i === 0 ? "Ce soir" : i === 1 ? "Demain" : JOURS[dt.getDay()] + " " + dt.getDate()) + "</button>";
+  });
+  $("tv-days").innerHTML = html;
+  $("tv-cats").innerHTML = TV_CATS.map(function (c) { return '<button class="chip' + (c[0] === tv.cat ? " on" : "") + '" data-cat="' + c[0] + '">' + c[1] + "</button>"; }).join("");
+
+  // Chaînes
+  var day = d.days[tv.day] || {}, out = "";
+  d.chans.forEach(function (ch) {
+    var pp = day[ch.id];
+    if (!pp) { return; }
+    var p1 = pp[0], p2 = pp[1];
+    if (!tvMatch(p1) && !tvMatch(p2)) { return; }
+    function part(p, main) {
+      if (!p) { return ""; }
+      var hl = tv.cat !== "all" && tvMatch(p) ? " hl" : "", t = new Date(p.s);
+      return '<div class="tvp' + (main ? " main" : "") + hl + '"><div class="tvm"><b>' + pad(t.getHours()) + ":" + pad(t.getMinutes()) + "</b> · " + tvDur(p) +
+        (p.c ? " · " + esc(p.c) : "") + tvRating(p.r) + '</div><div class="tvt">' + esc(p.ti) + "</div>" +
+        (p.st || p.ep ? '<div class="tvs">' + esc([p.ep, p.st].filter(Boolean).join(" · ")) + "</div>" : "") +
+        (main && p.de ? '<div class="tvd">' + esc(p.de) + "</div>" : "") + "</div>";
+    }
+    out += '<div class="card tvc"><div class="tvh">' + (ch.logo ? '<img src="' + ch.logo + '" alt="">' : "") + "<span>" + esc(ch.name) + "</span></div>" +
+      part(p1, true) + (p2 ? '<div class="tvsep">Ensuite</div>' + part(p2, false) : "") + "</div>";
+  });
+  var keep = $("tv-grid").scrollTop;
+  $("tv-grid").innerHTML = out || '<div class="sp-loading">Rien dans cette catégorie ce soir-là.</div>';
+  $("tv-grid").scrollTop = keep;
+}
+
+$("page-tv").addEventListener("click", function (e) {
+  var el = e.target;
+  while (el && el !== this) {
+    var dday = el.getAttribute("data-day"), cat = el.getAttribute("data-cat");
+    if (dday) { tv.day = dday; $("tv-grid").scrollTop = 0; tvRender(); return; }
+    if (cat) { tv.cat = cat; store.set("tvCat", cat); tvRender(); return; }
+    el = el.parentNode;
+  }
+});
+
+registerTab("tv", { show: function () { tvLoad(tvRender); } });
+</script>
+<script>
+/* =====================================================================
+   ONGLET CINÉ — films à l'affiche + sorties du mois et du mois prochain
+   Source : TMDB (The Movie Database), en français, avec affiches.
+   Il faut une clé gratuite : CONFIG.tmdbKey dans js/commun.js.
+   "This product uses the TMDB API but is not endorsed or certified by TMDB."
+   Les séances près de chez soi : lien vers la recherche AlloCiné.
+   ===================================================================== */
+var TMDB = "https://api.themoviedb.org/3/";
+var cine = { view: store.get("cineView") || "now", genres: null };
+
+function tmdbURL(path, params) {
+  var q = "?api_key=" + encodeURIComponent(CONFIG.tmdbKey) + "&language=fr-FR&region=FR";
+  for (var k in params) { q += "&" + k + "=" + encodeURIComponent(params[k]); }
+  return TMDB + path + q;
+}
+function monthBounds(off) {
+  var n = new Date(), a = new Date(n.getFullYear(), n.getMonth() + off, 1), b = new Date(n.getFullYear(), n.getMonth() + off + 1, 0);
+  function iso(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  return { from: iso(a), to: iso(b), name: MOIS[a.getMonth()] };
+}
+
+function cineRender() {
+  var m0 = monthBounds(0), m1 = monthBounds(1);
+  var views = [["now", "À l'affiche"], ["m0", "Sorties de " + m0.name], ["m1", "Sorties de " + m1.name]];
+  $("cine-tabs").innerHTML = views.map(function (v) {
+    return '<button class="chip' + (v[0] === cine.view ? " on" : "") + '" data-cv="' + v[0] + '">' + v[1] + "</button>";
+  }).join("") + '<div class="status">Données : TMDB</div>';
+
+  if (!CONFIG.tmdbKey) {
+    $("cine-grid").innerHTML = '<div class="card" style="padding:2rem;max-width:70rem"><div class="label">Une clé gratuite est nécessaire</div><div class="empty-s" style="font-size:1.5rem;line-height:1.5">' +
+      "Les films à l'affiche et les sorties viennent de TMDB (The Movie Database). Il faut une clé d'accès gratuite : " +
+      "crée un compte sur <b>themoviedb.org</b>, puis Paramètres → API → « Créer » (usage personnel). " +
+      "Donne-moi la « Clé d'API » et je l'ajoute dans <code>js/commun.js</code> (ligne <code>tmdbKey</code>).</div></div>";
+    return;
+  }
+
+  var urls = [tmdbURL("genre/movie/list", {})];
+  if (cine.view === "now") {
+    urls.push(tmdbURL("movie/now_playing", { page: 1 }), tmdbURL("movie/now_playing", { page: 2 }));
+  } else {
+    var mb = cine.view === "m0" ? m0 : m1;
+    [1, 2].forEach(function (pg) {
+      urls.push(tmdbURL("discover/movie", { "with_release_type": "2|3", "release_date.gte": mb.from, "release_date.lte": mb.to,
+                                            "sort_by": "popularity.desc", page: pg }));
+    });
+  }
+  var view = cine.view;
+  spAll(urls, 6 * 3600, function (r) {
+    if (cine.view !== view) { return; }
+    if (!r[1]) { $("cine-grid").innerHTML = '<div class="sp-loading">Films indisponibles (clé TMDB refusée ou pas de connexion).</div>'; return; }
+    var G = {};
+    ((r[0] && r[0].genres) || []).forEach(function (g) { G[g.id] = g.name; });
+    var seen = {}, films = [];
+    r.slice(1).forEach(function (d) {
+      ((d && d.results) || []).forEach(function (f) { if (!seen[f.id]) { seen[f.id] = 1; films.push(f); } });
+    });
+    if (view === "now") { films.sort(function (a, b) { return b.popularity - a.popularity; }); }
+    else { films.sort(function (a, b) { return (a.release_date || "").localeCompare(b.release_date || "") || b.popularity - a.popularity; }); }
+    var html = "";
+    films.forEach(function (f) {
+      var d = f.release_date ? parseDay(f.release_date) : null;
+      var genres = (f.genre_ids || []).slice(0, 2).map(function (id) { return G[id]; }).filter(Boolean).join(", ");
+      var note = f.vote_count >= 20 ? '<span class="star">★ ' + fr(f.vote_average, 1) + "</span>" : "";
+      html += '<div class="card film">' +
+        (f.poster_path ? '<img class="poster" src="https://image.tmdb.org/t/p/w185' + f.poster_path + '" alt="">' : '<div class="poster"></div>') +
+        '<div class="fb"><div class="ft">' + esc(f.title) + "</div>" +
+        '<div class="fm">' + (d ? (d > new Date() ? "Sortie le " : "Sorti le ") + d.getDate() + " " + MOIS[d.getMonth()] : "") + (genres ? " · " + esc(genres) : "") + " " + note + "</div>" +
+        '<div class="fo">' + esc(f.overview || "Pas de résumé en français.") + "</div>" +
+        '<a class="fl" href="https://www.allocine.fr/rechercher/?q=' + encodeURIComponent(f.title) + '" target="_blank" rel="noopener">Séances près de chez moi (AlloCiné) ›</a>' +
+        "</div></div>";
+    });
+    var keep = $("cine-grid").scrollTop;
+    $("cine-grid").innerHTML = html || '<div class="sp-loading">Aucun film trouvé.</div>';
+    $("cine-grid").scrollTop = keep;
+  });
+}
+
+$("page-cine").addEventListener("click", function (e) {
+  var el = e.target;
+  while (el && el !== this) {
+    var v = el.getAttribute("data-cv");
+    if (v) { cine.view = v; store.set("cineView", v); $("cine-grid").scrollTop = 0; cineRender(); return; }
+    el = el.parentNode;
+  }
+});
+
+registerTab("cine", { show: cineRender });
 </script>
 <script>startApp();</script>
 </body>
