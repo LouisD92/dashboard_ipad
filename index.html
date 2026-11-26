@@ -763,6 +763,50 @@ input, textarea { -webkit-user-select: text; user-select: text; }
 .ag-key p { font-size: 1.4rem; color: var(--muted); line-height: 1.4; margin-bottom: 1rem; }
 .ag-key input { width: 100%; font: inherit; font-size: 1.8rem; color: var(--text); background: var(--card2); border: .2rem solid var(--line); border-radius: 1rem; padding: .8rem 1rem; margin-bottom: 1.2rem; text-align: center; -webkit-appearance: none; }
 .ag-key .chip { display: inline-flex; margin: 0; }
+
+/* ---------- NFL : mini-terrain ---------- */
+.tl.poss { border-left: .35rem solid; margin-left: -1rem; padding-left: .65rem; background: linear-gradient(90deg, rgba(255, 255, 255, .07), transparent 70%); }
+.fld { position: relative; display: flex; height: 3.4rem; margin-top: .6rem; border-radius: .6rem; overflow: visible; }
+.fld.big { height: 7rem; margin-top: 1rem; }
+.fld .ez { width: 8%; display: flex; align-items: center; justify-content: center; border-radius: .6rem 0 0 .6rem; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25); }
+.fld .ez.r { border-radius: 0 .6rem .6rem 0; }
+.fld .ez span { font-family: var(--cond); font-weight: 800; font-style: italic; color: #fff; font-size: .95rem; letter-spacing: .05rem; -webkit-transform: rotate(-90deg); transform: rotate(-90deg); white-space: nowrap; text-shadow: 0 0 .3rem rgba(0, 0, 0, .8); }
+.fld.big .ez span { font-size: 1.5rem; }
+.fld .turf { position: relative; -webkit-flex: 1; flex: 1; background: linear-gradient(180deg, #164f2c, #0f3d22); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25); }
+.turf .yl { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(255, 255, 255, .28); }
+.turf .yl.mid { background: rgba(255, 255, 255, .55); }
+.turf .yn { position: absolute; bottom: .3rem; font-style: normal; font-family: var(--cond); font-weight: 700; font-size: 1.15rem; color: rgba(255, 255, 255, .55); -webkit-transform: translateX(-50%); transform: translateX(-50%); }
+.turf .rzb { position: absolute; top: 0; bottom: 0; width: 20%; background: rgba(255, 45, 74, .14); }
+.fld.rz .turf .rzb { background: rgba(255, 45, 74, .38); -webkit-animation: rzfade 1.4s ease-in-out infinite; animation: rzfade 1.4s ease-in-out infinite; }
+@-webkit-keyframes rzfade { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes rzfade { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+.turf .trail { position: absolute; top: 42%; height: 16%; opacity: .55; border-radius: .3rem; }
+.turf .los { position: absolute; top: 0; bottom: 0; width: .2rem; margin-left: -.1rem; background: #4fa3ff; box-shadow: 0 0 .4rem #4fa3ff; }
+.turf .fdl { position: absolute; top: 0; bottom: 0; width: .25rem; margin-left: -.12rem; background: #ffd400; box-shadow: 0 0 .5rem #ffd400; }
+.turf .bl { position: absolute; top: 50%; width: 1.5rem; height: .95rem; margin: -.475rem 0 0 -.75rem; border-radius: 50%; background: #8a4b1f; border: 1px solid #f3d3b0; box-shadow: 0 0 .6rem rgba(255, 255, 255, .7); z-index: 2; }
+.turf .bl:after { content: ""; position: absolute; left: 30%; right: 30%; top: 45%; height: 1px; background: #fff; }
+.fld.big .turf .bl { width: 2.4rem; height: 1.5rem; margin: -.75rem 0 0 -1.2rem; }
+.turf .arr { position: absolute; top: 50%; margin-top: -.75rem; line-height: 1.5rem; font-size: 1.1rem; font-weight: 800; letter-spacing: -.1rem; text-shadow: 0 0 .4rem rgba(0, 0, 0, .9); -webkit-animation: arrgo 1.2s ease-in-out infinite; animation: arrgo 1.2s ease-in-out infinite; white-space: nowrap; }
+.turf .arr.r { padding-left: 1rem; }
+.turf .arr.l { -webkit-transform: translateX(-100%); transform: translateX(-100%); padding-right: 1rem; }
+.fld.big .turf .arr { font-size: 1.8rem; line-height: 2.4rem; margin-top: -1.2rem; }
+.turf .arr.r { padding-left: 1rem; }
+.fld.big .turf .arr.r { padding-left: 1.6rem; }
+.fld.big .turf .arr.l { padding-right: 1.6rem; }
+.fld .ez.tgt { -webkit-animation: eztgt 1.2s ease-in-out infinite; animation: eztgt 1.2s ease-in-out infinite; }
+@-webkit-keyframes eztgt { 0%, 100% { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25); } 50% { box-shadow: inset 0 0 0 .25rem #fff, 0 0 1rem rgba(255, 255, 255, .6); } }
+@keyframes eztgt { 0%, 100% { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25); } 50% { box-shadow: inset 0 0 0 .25rem #fff, 0 0 1rem rgba(255, 255, 255, .6); } }
+@-webkit-keyframes arrgo { 0%, 100% { opacity: .6; } 50% { opacity: 1; } }
+@keyframes arrgo { 0%, 100% { opacity: .6; } 50% { opacity: 1; } }
+.fld .flag { position: absolute; top: -.9rem; background: #ff2d4a; color: #fff; font-family: var(--cond); font-weight: 800; font-style: italic; font-size: 1rem; letter-spacing: .08rem; padding: .05rem .5rem; border-radius: .3rem; box-shadow: 0 0 .8rem rgba(255, 45, 74, .8); z-index: 3; }
+.fld.big .flag { font-size: 1.4rem; top: -1.2rem; padding: .1rem .8rem; }
+.fcap { font-family: var(--cond); font-size: 1.3rem; color: var(--muted); margin-top: .35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fcap .who { font-weight: 800; font-style: italic; }
+.fcap b { color: #ffd166; }
+.fcap .tg { color: var(--text); }
+.fcap .drv { display: block; color: var(--dim); font-size: 1.2rem; }
+#dx-field .fcap { font-size: 1.7rem; text-align: center; white-space: normal; }
+#dx-field .fcap .drv { font-size: 1.35rem; }
 </style>
 </head>
 <body>
@@ -2338,7 +2382,8 @@ function normEvent(ev, comp, req) {
     var tm = x.team || {};
     var side = { id: tm.id, name: tm.shortDisplayName || tm.displayName || tm.name || "?", abbr: tm.abbreviation || "",
                  logo: tm.logo || (tm.logos && tm.logos[0] && tm.logos[0].href) || "", score: scoreOf(x),
-                 win: x.winner === true, rec: x.records && x.records[0] && x.records[0].summary };
+                 win: x.winner === true, rec: x.records && x.records[0] && x.records[0].summary,
+                 color: tm.color || "", alt: tm.alternateColor || "" };
     if (x.homeAway === "home") { e.home = side; } else { e.away = side; }
   });
   (c.details || []).forEach(function (d) {
@@ -3566,7 +3611,7 @@ function dxTile(e, us) {
   var L = leagueById(e.lid) || {};
   function line(s) {
     var poss = e.state === "in" && sit && sit.possession && sit.possession === s.id;
-    return '<div class="tl"><img src="' + s.logo + '" alt=""><span class="tn2' + (isFr(s) ? " fr" : "") + '">' + esc(s.name) + "</span>" +
+    return '<div class="tl' + (poss ? ' poss" style="border-left-color:' + nflColor(s) : "") + '"><img src="' + s.logo + '" alt=""><span class="tn2' + (isFr(s) ? " fr" : "") + '">' + esc(s.name) + "</span>" +
       (poss ? '<span class="ball">🏈</span>' : "") +
       '<span class="ts' + (e.state === "post" && !s.win && (A.win || B.win) ? " lose" : "") + '">' + (e.state === "pre" ? "" : esc(s.score)) + "</span></div>";
   }
@@ -3574,7 +3619,8 @@ function dxTile(e, us) {
     '<span class="tclk' + (e.state === "in" ? " on" : "") + '">' + (e.state === "in" ? "● " : "") + esc(e.state === "pre" ? shortDay(e.t) + " " + hm(e.t) : frPeriod(e)) + "</span></div>";
   var extra = "";
   if (e.state === "in" && sit) {
-    if (sit.downDistanceText) { extra += '<div class="sit">' + (rz ? '<span class="rz">RED ZONE</span>' : "") + esc(frDown(sit.downDistanceText)) + "</div>"; }
+    if (e.sport === "football" && sit.yardLine !== undefined) { extra += nflField(e, false); }
+    else if (sit.downDistanceText) { extra += '<div class="sit">' + (rz ? '<span class="rz">RED ZONE</span>' : "") + esc(frDown(sit.downDistanceText)) + "</div>"; }
     if (sit.lastPlay && sit.lastPlay.text) { extra += '<div class="lp">' + esc(sit.lastPlay.text) + "</div>"; }
   } else if (e.state === "in" && e.goals.length) {
     var g = e.goals[e.goals.length - 1];
@@ -3598,6 +3644,62 @@ var DX_STATS = {
            ["foulsCommitted", "Fautes"], ["yellowCards", "Cartons jaunes"], ["redCards", "Cartons rouges"], ["offsides", "Hors-jeu"], ["accuratePasses", "Passes réussies"]]
 };
 
+/* ---------- NFL : mini-terrain (ballon, sens d'attaque, 1er down, red zone) ---------- */
+function nflLum(hex) { var n = parseInt(hex, 16); return 0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255); }
+// Couleur d'équipe assez claire pour ressortir sur le fond sombre
+function nflColor(t) {
+  var c = /^[0-9a-f]{6}$/i.test(t.color) ? t.color : "", a = /^[0-9a-f]{6}$/i.test(t.alt) ? t.alt : "";
+  if (c && nflLum(c) >= 70) { return "#" + c; }
+  if (a && nflLum(a) >= 70) { return "#" + a; }
+  return "#e9e3f5";
+}
+function nflBg(t) { return /^[0-9a-f]{6}$/i.test(t.color) ? "#" + t.color : "#2a1c4a"; }
+// ESPN : yardLine = distance (en yards) depuis la ligne de but de l'équipe à domicile
+// (ex. DET à domicile : « DET 38 » = 38, « CHI 10 » = 90).
+// Sur le dessin : en-but des visiteurs à gauche, en-but de l'équipe à domicile à droite.
+function nflField(e, big, driveStart, driveText) {
+  var s = e.sit, y = +s.yardLine, x = 100 - y;
+  var home = s.possession === e.home.id, away = s.possession === e.away.id, att = home ? e.home : away ? e.away : null;
+  var dir = home ? -1 : 1;                                       // visiteurs attaquent vers la droite
+  var toGo = home ? 100 - y : y;                                 // yards restants jusqu'à l'en-but adverse
+  var rz = !!s.isRedZone || (att && toGo <= 20 && toGo > 0);
+  var goal = att && s.distance && s.distance >= toGo;
+  var fd = att && s.distance ? Math.max(0, Math.min(100, x + dir * s.distance)) : null;
+  var col = att ? nflColor(att) : "#ffd166";
+  var html = '<div class="fld' + (big ? " big" : "") + (rz ? " rz" : "") + '">';
+  html += '<div class="ez l' + (att && dir < 0 ? " tgt" : "") + '" style="background:' + nflBg(e.away) + '"><span>' + esc(e.away.abbr) + "</span></div>";
+  html += '<div class="turf">';
+  for (var i = 10; i < 100; i += 10) { html += '<i class="yl' + (i === 50 ? " mid" : "") + '" style="left:' + i + '%"></i>'; }
+  if (big) {
+    for (i = 10; i < 100; i += 10) { html += '<em class="yn" style="left:' + i + '%">' + (i <= 50 ? i : 100 - i) + "</em>"; }
+  }
+  if (att) {
+    // Zone rouge (20 derniers yards avant l'en-but attaqué)
+    html += '<i class="rzb" style="' + (dir > 0 ? "right:0" : "left:0") + '"></i>';
+    // Progression de la série en cours
+    if (driveStart !== undefined && driveStart !== null) {
+      var x0 = 100 - driveStart, a = Math.min(x0, x), b = Math.max(x0, x);
+      if (b - a > 0.5) { html += '<i class="trail" style="left:' + a + "%;width:" + (b - a) + "%;background:" + col + '"></i>'; }
+    }
+    if (fd !== null && !goal) { html += '<i class="fdl" style="left:' + fd + '%"></i>'; }
+    html += '<i class="los" style="left:' + x + '%"></i>';
+    html += '<b class="arr ' + (dir > 0 ? "r" : "l") + '" style="left:' + x + "%;color:" + col + '">' + (dir > 0 ? "▶\uFE0E▶\uFE0E" : "◀\uFE0E◀\uFE0E") + "</b>";
+  }
+  html += '<b class="bl" style="left:' + x + '%"></b>';
+  html += "</div>";
+  html += '<div class="ez r' + (att && dir > 0 ? " tgt" : "") + '" style="background:' + nflBg(e.home) + '"><span>' + esc(e.home.abbr) + "</span></div>";
+  if (rz) { html += '<div class="flag" style="' + (dir > 0 ? "right:9%" : "left:9%") + '">' + (goal ? "GOAL TO GO" : "RED ZONE") + "</div>"; }
+  html += "</div>";
+  // Légende : qui attaque, vers où, à quel down
+  var where = s.possessionText || "", dd = s.shortDownDistanceText || (s.downDistanceText ? frDown(s.downDistanceText).split(" · ")[0] : "");
+  dd = frDown(dd);
+  html += '<div class="fcap">' + (att ? '<span class="who" style="color:' + col + '">' + (dir < 0 ? "◀\uFE0E " : "") + esc(big ? att.name : att.abbr) + (dir > 0 ? " ▶\uFE0E" : "") + "</span>" : "") +
+    (dd ? " <b>" + esc(dd) + "</b>" : "") + (where ? " · " + esc(where) : "") +
+    (att ? ' · <span class="tg">' + (toGo > 0 ? toGo + " yds de l'en-but" : "") + "</span>" : "") +
+    (big && driveText ? '<span class="drv">Série : ' + esc(driveText) + "</span>" : "") + "</div>";
+  return html;
+}
+
 function dxDetail(e) {
   var old = $("dx-sum");
   dx.sumScroll = old && dx.cur && dx.cur.id === e.id ? old.scrollTop : 0;
@@ -3608,7 +3710,9 @@ function dxDetail(e) {
     '<div class="dclk' + (e.state === "in" ? " on" : "") + '">' + (e.state === "in" ? "● " : "") + esc(e.state === "pre" ? dayLabel(e.t) : frPeriod(e)) + "</div></div>" +
     '<div class="dteam"><img src="' + B.logo + '" alt=""><div>' + esc(B.name) + "</div></div></div>";
   var sitHTML = "";
-  if (e.state === "in" && e.sit && e.sit.downDistanceText) {
+  if (e.state === "in" && e.sit && e.sport === "football" && e.sit.yardLine !== undefined) {
+    sitHTML = '<div id="dx-field">' + nflField(e, true) + "</div>";
+  } else if (e.state === "in" && e.sit && e.sit.downDistanceText) {
     var poss = e.sit.possession === e.home.id ? e.home : e.sit.possession === e.away.id ? e.away : null;
     sitHTML = '<div class="nflsit' + (e.sit.isRedZone ? " redzone" : "") + '">' + (e.sit.isRedZone ? '<span class="rz">RED ZONE</span>' : "") +
       (poss ? "🏈 <b>" + esc(poss.name) + "</b> · " : "") + esc(frDown(e.sit.downDistanceText)) + "</div>";
@@ -3640,6 +3744,9 @@ function dxSummary(e, d, us) {
   // NFL : série en cours + actions
   if (e.sport === "football" && d.drives) {
     var dr = d.drives.current || (d.drives.previous && d.drives.previous[d.drives.previous.length - 1]);
+    if (d.drives.current && d.drives.current.start && $("dx-field") && e.sit && e.sit.yardLine !== undefined) {
+      $("dx-field").innerHTML = nflField(e, true, d.drives.current.start.yardLine, d.drives.current.description);
+    }
     if (dr) {
       html += '<div class="sec">' + (d.drives.current ? "Série en cours" : "Dernière série") + " · " + esc((dr.team && dr.team.abbreviation) || "") + "</div>" +
         '<div class="kpi">' + esc(dr.description || "") + " <b>" + esc(dr.displayResult || "En cours") + "</b></div>";
