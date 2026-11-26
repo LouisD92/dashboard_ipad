@@ -728,28 +728,36 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
 /* ---------- Agenda ---------- */
 input, textarea { -webkit-user-select: text; user-select: text; }
 #page-agenda { grid-template-columns: 1fr; grid-template-rows: 3.6rem minmax(0, 1fr); grid-gap: .8rem; }
-#ag-grid { min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr); grid-gap: .6rem; }
-#ag-grid.first { grid-template-columns: minmax(0, 1.6fr) repeat(6, minmax(0, 1fr)); }
+#ag-grid { min-height: 0; display: grid; grid-template-columns: 3.2rem repeat(7, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr); grid-gap: .5rem; }
+#ag-grid.first { grid-template-columns: 3.2rem minmax(0, 1.5fr) repeat(6, minmax(0, 1fr)); }
 .chip.agc i { display: inline-block; width: 1.1rem; height: 1.1rem; border-radius: 50%; margin-right: .5rem; }
 .chip.agc.off { opacity: .4; text-decoration: line-through; }
 .chip.agk { margin: 0 0 0 .6rem; padding: 0 .8rem; font-style: normal; }
-.agday { display: flex; flex-direction: column; min-height: 0; padding: .8rem .7rem; overflow: hidden; }
+.aghrs { display: flex; flex-direction: column; padding-bottom: .8rem; border: 1px solid transparent; }
+.aghrs span { position: absolute; right: .3rem; font-family: var(--cond); font-size: 1.1rem; color: var(--dim); -webkit-transform: translateY(-50%); transform: translateY(-50%); }
+.agday { display: flex; flex-direction: column; min-height: 0; padding: .8rem .5rem; overflow: hidden; }
 .agday.today { border-color: var(--pink); box-shadow: 0 0 1.4rem rgba(255, 63, 164, .3); }
 .agday.we .agd b { color: var(--orange); }
-.agd { font-family: var(--cond); font-style: italic; text-transform: uppercase; border-bottom: 1px solid var(--line); padding-bottom: .4rem; margin-bottom: .5rem; -webkit-flex-shrink: 0; flex-shrink: 0; }
-.agd b { display: block; font-weight: 800; font-size: 1.7rem; line-height: 1.05; color: var(--cyan); }
-.agday.today .agd b { font-size: 2.1rem; color: var(--pink); }
+.agd { height: 4.6rem; font-family: var(--cond); font-style: italic; text-transform: uppercase; border-bottom: 1px solid var(--line); padding: 0 .2rem .4rem; -webkit-flex-shrink: 0; flex-shrink: 0; overflow: hidden; }
+.agd b { display: block; font-weight: 800; font-size: 1.7rem; line-height: 1.2; color: var(--cyan); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.agday.today .agd b { color: var(--pink); }
 .agd span { font-size: 1.25rem; color: var(--muted); letter-spacing: .08rem; }
-.agb { -webkit-flex: 1; flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.agall { color: #100a20; font-weight: 700; font-size: 1.2rem; line-height: 1.25; border-radius: .5rem; padding: .25rem .5rem; margin-bottom: .4rem; }
-.agev { border-left: .4rem solid var(--muted); background: rgba(255, 255, 255, .04); border-radius: 0 .6rem .6rem 0; padding: .35rem .5rem .4rem .6rem; margin-bottom: .45rem; }
-.agev.past { opacity: .4; }
-.agev.now { background: rgba(255, 63, 164, .14); box-shadow: 0 0 1rem rgba(255, 63, 164, .35); }
-.agh { font-family: var(--cond); font-weight: 700; font-size: 1.25rem; }
-.agt { font-size: 1.3rem; font-weight: 600; line-height: 1.25; word-wrap: break-word; }
-.agday.today .agt { font-size: 1.55rem; }
-.agl { font-size: 1.1rem; color: var(--muted); line-height: 1.25; margin-top: .1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.agnone { font-size: 1.2rem; color: var(--dim); font-style: italic; margin-top: .3rem; }
+.agalls { -webkit-flex-shrink: 0; flex-shrink: 0; overflow: hidden; }
+.agalls .agall:first-child { margin-top: .3rem; }
+.agall { color: #100a20; font-weight: 700; font-size: 1.15rem; line-height: 1.6rem; height: 2rem; border-radius: .5rem; padding: .2rem .5rem; margin-bottom: .3rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.agtl { position: relative; -webkit-flex: 1; flex: 1; min-height: 0; margin-top: .5rem; }
+.agln { position: absolute; left: 0; right: 0; border-top: 1px dashed rgba(125, 106, 160, .22); }
+.agln.ev { border-top-style: solid; }
+.agev { position: absolute; border-left: .35rem solid; border-radius: .4rem; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(16, 10, 32, .8); }
+.agin { padding: .15rem .3rem; font-size: 1.15rem; font-weight: 600; line-height: 1.25; color: var(--text); }
+.agin b { font-family: var(--cond); font-size: 1.15rem; margin-right: .15rem; }
+.agev.short .agin { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-top: 0; line-height: 1.3; }
+.agl { display: block; font-size: 1rem; font-weight: 400; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.agev.past { opacity: .5; }
+.agev.now { box-shadow: 0 0 1rem rgba(255, 63, 164, .6), inset 0 0 0 1px rgba(255, 255, 255, .5); z-index: 2; }
+.agnow { position: absolute; left: -.5rem; right: 0; height: .2rem; background: var(--pink); box-shadow: 0 0 .6rem var(--pink); z-index: 3; }
+.agnow:before { content: ""; position: absolute; left: 0; top: -.35rem; width: .9rem; height: .9rem; border-radius: 50%; background: var(--pink); }
+.agnone { position: absolute; top: 40%; left: 0; right: 0; text-align: center; font-size: 1.2rem; color: var(--dim); font-style: italic; }
 .ag-key { grid-column: 1 / -1; max-width: 50rem; margin: 6rem auto 0; padding: 2rem 2.4rem; text-align: center; align-self: start; }
 .ag-kt { font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 2.6rem; text-transform: uppercase; color: var(--pink); margin-bottom: .6rem; }
 .ag-key p { font-size: 1.4rem; color: var(--muted); line-height: 1.4; margin-bottom: 1rem; }
@@ -4536,38 +4544,77 @@ function agRender() {
   $("ag-chips").innerHTML = html;
 
   if (!ag.ev) { $("ag-grid").className = ""; $("ag-grid").innerHTML = '<div class="sp-loading">' + esc(ag.msg || "Chargement des agendas…") + "</div>"; return; }
-  var now = Date.now(), today = dayStart(new Date()), out = "";
-  for (var i = 0; i < 7; i++) {
-    var off = ag.view + i, d0 = new Date(today.getFullYear(), today.getMonth(), today.getDate() + off), d1 = new Date(today.getFullYear(), today.getMonth(), today.getDate() + off + 1);
-    var a = d0.getTime(), b = d1.getTime(), alls = "", timed = "", nb = 0;
+  var now = Date.now(), today = dayStart(new Date()), days = [], i;
+  // 1) Événements de chaque jour
+  for (i = 0; i < 7; i++) {
+    var off = ag.view + i, d0 = new Date(today.getFullYear(), today.getMonth(), today.getDate() + off);
+    var a = d0.getTime(), b = new Date(today.getFullYear(), today.getMonth(), today.getDate() + off + 1).getTime();
+    var day = { off: off, d: d0, a: a, b: b, all: [], seg: [] };
     ag.ev.forEach(function (e) {
       if (ag.hide[e.c]) { return; }
-      var col = agCal(e.c).couleur;
-      if (e.all) {
-        if (e.s < b && Math.max(e.e, e.s + 1) > a) {
-          alls += '<div class="agall" style="background:' + col + '">' + esc(e.t) + "</div>"; nb++;
-        }
-        return;
-      }
-      if (!(e.s < b && (e.e > a || (e.e === e.s && e.s >= a)))) { return; }
-      var h = e.s < a ? "… → " + agHM(e.e) : e.e > b ? agHM(e.s) + " → …" : e.e > e.s ? agHM(e.s) + " – " + agHM(e.e) : agHM(e.s);
-      var cls = e.e <= now && e.e > e.s || e.e === e.s && e.s < now - 3600e3 ? " past" : e.s <= now && e.e > now ? " now" : "";
-      timed += '<div class="agev' + cls + '" style="border-left-color:' + col + '"><div class="agh" style="color:' + col + '">' + h + "</div>" +
-        '<div class="agt">' + esc(e.t) + "</div>" + (e.l ? '<div class="agl">' + esc(e.l) + "</div>" : "") + "</div>";
-      nb++;
+      if (e.all) { if (e.s < b && Math.max(e.e, e.s + 1) > a) { day.all.push(e); } return; }
+      var end = e.e > e.s ? e.e : e.s + 30 * 60e3; // sans durée : 30 min à l'écran
+      if (e.s < b && end > a) { day.seg.push({ e: e, s: Math.max(e.s, a), f: Math.min(end, b), h0: (Math.max(e.s, a) - a) / 3600e3, h1: (Math.min(end, b) - a) / 3600e3 }); }
     });
-    var name = off === 0 ? "Aujourd'hui" : off === 1 ? "Demain" : JOURS_LONG[d0.getDay()];
-    out += '<div class="card agday' + (off === 0 ? " today" : "") + (d0.getDay() === 0 || d0.getDay() === 6 ? " we" : "") + '">' +
-      '<div class="agd"><b>' + name + "</b><span>" + d0.getDate() + " " + AG_MO[d0.getMonth()] + "</span></div>" +
-      '<div class="agb">' + alls + timed + (nb ? "" : '<div class="agnone">Rien de prévu</div>') + "</div></div>";
+    days.push(day);
   }
-  var keep = [];
-  var cols = $("ag-grid").querySelectorAll(".agb");
-  for (i = 0; i < cols.length; i++) { keep.push(cols[i].scrollTop); }
+  // 2) Plage horaire commune à la semaine (au moins 7 h -> 21 h)
+  var H0 = 7, H1 = 21, maxAll = 0;
+  days.forEach(function (d) {
+    maxAll = Math.max(maxAll, d.all.length);
+    d.seg.forEach(function (s) { H0 = Math.min(H0, Math.floor(s.h0)); H1 = Math.max(H1, Math.ceil(s.h1)); });
+  });
+  var span = H1 - H0;
+  function pct(h) { return (Math.max(H0, Math.min(H1, h)) - H0) / span * 100; }
+  var allH = maxAll ? maxAll * 2.3 + 0.3 : 0; // rem
+  // 3) Colonne des heures
+  var out = '<div class="aghrs" style="padding-top:' + (5.9 + allH) + 'rem"><div class="agtl">';
+  for (var h = H0; h <= H1; h++) { out += '<span style="top:' + pct(h) + '%">' + h + "h</span>"; }
+  out += "</div></div>";
+  // 4) Les jours
+  days.forEach(function (d) {
+    var alls = d.all.map(function (e) {
+      return '<div class="agall" style="background:' + agCal(e.c).couleur + '">' + esc(e.t) + "</div>";
+    }).join("");
+    var lines = "";
+    for (var h = H0; h <= H1; h++) { lines += '<i class="agln' + (h % 2 ? "" : " ev") + '" style="top:' + pct(h) + '%"></i>'; }
+    // Chevauchements : les rendez-vous simultanés se partagent la largeur
+    d.seg.sort(function (x, y) { return x.s - y.s || y.f - x.f; });
+    var group = [], cols = [], gEnd = 0, blocks = "";
+    function flush() {
+      group.forEach(function (s) { s.n = cols.length; });
+      group = []; cols = [];
+    }
+    d.seg.forEach(function (s) {
+      if (group.length && s.s >= gEnd) { flush(); }
+      var c = 0;
+      while (c < cols.length && cols[c] > s.s) { c++; }
+      cols[c] = s.f; s.c = c; group.push(s); gEnd = Math.max(gEnd, s.f);
+      if (group.length === 1) { gEnd = s.f; }
+    });
+    flush();
+    d.seg.forEach(function (s) {
+      var e = s.e, cal = agCal(e.c), top = pct(s.h0), hgt = Math.max(pct(s.h1) - top, 0.1), mins = (s.f - s.s) / 60e3;
+      var cls = (s.f <= now ? " past" : s.s <= now && s.f > now ? " now" : "") + (mins < 45 ? " short" : "");
+      var hm = e.s < d.a ? "→ " + agHM(e.e) : agHM(e.s) + (e.e > e.s && mins >= 45 ? " – " + (e.e > d.b ? "…" : agHM(e.e)) : "");
+      blocks += '<div class="agev' + cls + '" style="top:' + top + "%;height:" + hgt + "%;left:" + (s.c / s.n * 100) + "%;width:" + (100 / s.n) + "%;" +
+        "border-left-color:" + cal.couleur + ";background:" + agRGBA(cal.couleur, 0.22) + '">' +
+        '<div class="agin"><b style="color:' + cal.couleur + '">' + hm + "</b> " + esc(e.t) +
+        (e.l && mins >= 60 && s.n < 3 ? '<span class="agl">' + esc(e.l) + "</span>" : "") + "</div></div>";
+    });
+    var nowLine = d.off === 0 && now >= d.a && now < d.b ? '<i class="agnow" style="top:' + pct((now - d.a) / 3600e3) + '%"></i>' : "";
+    var name = d.off === 0 ? "Aujourd'hui" : d.off === 1 ? "Demain" : JOURS_LONG[d.d.getDay()];
+    out += '<div class="card agday' + (d.off === 0 ? " today" : "") + (d.d.getDay() === 0 || d.d.getDay() === 6 ? " we" : "") + '">' +
+      '<div class="agd"><b>' + name + "</b><span>" + d.d.getDate() + " " + AG_MO[d.d.getMonth()] + "</span></div>" +
+      '<div class="agalls" style="height:' + allH + 'rem">' + alls + "</div>" +
+      '<div class="agtl">' + lines + blocks + nowLine + (d.seg.length || d.all.length ? "" : '<div class="agnone">Rien de prévu</div>') + "</div></div>";
+  });
   $("ag-grid").className = ag.view === 0 ? "first" : "";
   $("ag-grid").innerHTML = out;
-  cols = $("ag-grid").querySelectorAll(".agb");
-  for (i = 0; i < cols.length; i++) { cols[i].scrollTop = keep[i] || 0; }
+}
+function agRGBA(hex, a) {
+  var n = parseInt(hex.slice(1), 16);
+  return "rgba(" + (n >> 16 & 255) + "," + (n >> 8 & 255) + "," + (n & 255) + "," + a + ")";
 }
 
 $("page-agenda").addEventListener("click", function (e) {
