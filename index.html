@@ -724,6 +724,37 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
 .sea .st2 { display: inline-block; border: 1px solid rgba(255, 63, 164, .5); border-radius: .6rem; padding: 0 .55rem; margin: 0 .35rem .3rem 0; line-height: 2rem; }
 .sea .st2 i { font-style: normal; color: var(--muted); font-size: 1.1rem; }
 .film .fo { -webkit-line-clamp: 4; }
+
+/* ---------- Agenda ---------- */
+input, textarea { -webkit-user-select: text; user-select: text; }
+#page-agenda { grid-template-columns: 1fr; grid-template-rows: 3.6rem minmax(0, 1fr); grid-gap: .8rem; }
+#ag-grid { min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr); grid-gap: .6rem; }
+#ag-grid.first { grid-template-columns: minmax(0, 1.6fr) repeat(6, minmax(0, 1fr)); }
+.chip.agc i { display: inline-block; width: 1.1rem; height: 1.1rem; border-radius: 50%; margin-right: .5rem; }
+.chip.agc.off { opacity: .4; text-decoration: line-through; }
+.chip.agk { margin: 0 0 0 .6rem; padding: 0 .8rem; font-style: normal; }
+.agday { display: flex; flex-direction: column; min-height: 0; padding: .8rem .7rem; overflow: hidden; }
+.agday.today { border-color: var(--pink); box-shadow: 0 0 1.4rem rgba(255, 63, 164, .3); }
+.agday.we .agd b { color: var(--orange); }
+.agd { font-family: var(--cond); font-style: italic; text-transform: uppercase; border-bottom: 1px solid var(--line); padding-bottom: .4rem; margin-bottom: .5rem; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.agd b { display: block; font-weight: 800; font-size: 1.7rem; line-height: 1.05; color: var(--cyan); }
+.agday.today .agd b { font-size: 2.1rem; color: var(--pink); }
+.agd span { font-size: 1.25rem; color: var(--muted); letter-spacing: .08rem; }
+.agb { -webkit-flex: 1; flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.agall { color: #100a20; font-weight: 700; font-size: 1.2rem; line-height: 1.25; border-radius: .5rem; padding: .25rem .5rem; margin-bottom: .4rem; }
+.agev { border-left: .4rem solid var(--muted); background: rgba(255, 255, 255, .04); border-radius: 0 .6rem .6rem 0; padding: .35rem .5rem .4rem .6rem; margin-bottom: .45rem; }
+.agev.past { opacity: .4; }
+.agev.now { background: rgba(255, 63, 164, .14); box-shadow: 0 0 1rem rgba(255, 63, 164, .35); }
+.agh { font-family: var(--cond); font-weight: 700; font-size: 1.25rem; }
+.agt { font-size: 1.3rem; font-weight: 600; line-height: 1.25; word-wrap: break-word; }
+.agday.today .agt { font-size: 1.55rem; }
+.agl { font-size: 1.1rem; color: var(--muted); line-height: 1.25; margin-top: .1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.agnone { font-size: 1.2rem; color: var(--dim); font-style: italic; margin-top: .3rem; }
+.ag-key { grid-column: 1 / -1; max-width: 50rem; margin: 6rem auto 0; padding: 2rem 2.4rem; text-align: center; align-self: start; }
+.ag-kt { font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 2.6rem; text-transform: uppercase; color: var(--pink); margin-bottom: .6rem; }
+.ag-key p { font-size: 1.4rem; color: var(--muted); line-height: 1.4; margin-bottom: 1rem; }
+.ag-key input { width: 100%; font: inherit; font-size: 1.8rem; color: var(--text); background: var(--card2); border: .2rem solid var(--line); border-radius: 1rem; padding: .8rem 1rem; margin-bottom: 1.2rem; text-align: center; -webkit-appearance: none; }
+.ag-key .chip { display: inline-flex; margin: 0; }
 </style>
 </head>
 <body>
@@ -811,6 +842,15 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
         <path d="M4.5 12l22-5.5-1-4-22 5.5zM9.5 10.8l2.6-5.4M16 9.2l2.6-5.4M22.5 7.6l2.4-5"/>
       </svg>
       <span>Ciné</span>
+    </button>
+
+    <button class="tab" data-tab="agenda">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+        <rect x="4.5" y="7" width="23" height="20.5" rx="2.5"/>
+        <path d="M4.5 13h23M10.5 4v5M21.5 4v5"/>
+        <path d="M9.5 18h3M14.5 18h3M19.5 18h3M9.5 22.5h3M14.5 22.5h3" stroke-width="1.8"/>
+      </svg>
+      <span>Agenda</span>
     </button>
 
     <div class="side-clock"><div id="s-time" class="grad">--:--</div><div id="s-date"></div></div>
@@ -926,6 +966,12 @@ button { font: inherit; color: inherit; background: none; border: 0; -webkit-app
       <div id="cine-grid"></div>
     </section>
 
+    <!-- ================= AGENDA ================= -->
+    <section class="page" id="page-agenda">
+      <div class="chiprow" id="ag-chips"></div>
+      <div id="ag-grid"></div>
+    </section>
+
     <!-- ================= ACTUALITÉS ================= -->
     <section class="page" id="page-actus"></section>
 
@@ -950,7 +996,14 @@ var CONFIG = {
   planeProxy: "https://radar-avions.louisdemaison.workers.dev/",           // adresse du relais avions (voir proxy/LISEZMOI.txt)
   planeRadiusKm: 60,        // rayon de recherche des avions
   planeZoom: 9,
-  planeRefreshSeconds: 10
+  planeRefreshSeconds: 10,
+  // Agenda : noms et couleurs affichés (les liens secrets sont dans le relais Cloudflare)
+  agenda: [
+    { id: "perso",  nom: "Perso",        couleur: "#2de2e6" },
+    { id: "couple", nom: "À deux",       couleur: "#ff3fa4" },
+    { id: "pro",    nom: "Mon pro",      couleur: "#ff9e4f" },
+    { id: "pro2",   nom: "Pro compagne", couleur: "#a66bff" }
+  ]
 };
 // Pour tester un autre relais : ajouter ?proxy=https://... à l'adresse de la page
 (function () {
@@ -4195,6 +4248,354 @@ $("page-cine").addEventListener("click", function (e) {
 });
 
 registerTab("cine", { show: cineRender });
+</script>
+<script>
+/* =====================================================================
+   ONGLET AGENDA — calendriers perso, à deux et pros, sur 7 jours.
+   Les calendriers publiés (iCloud, Outlook) passent par le relais Cloudflare
+   (adresse .../agenda) qui garde leurs liens secrets. La page ne connaît
+   qu'une clé, saisie une fois sur l'iPad et mémorisée dessus.
+   Le format iCalendar (.ics) est lu ici, répétitions comprises.
+   ===================================================================== */
+var AG_KEY = "agendaCle";
+var ag = { ev: null, at: 0, errs: [], view: 0, hide: {}, loading: false, msg: "" };
+try { ag.hide = JSON.parse(store.get("agendaHide") || "{}") || {}; } catch (e) {}
+try { var agC = JSON.parse(store.get("agendaCache") || "null"); if (agC) { ag.ev = agC.ev; ag.at = agC.at; } } catch (e) {}
+
+function agCal(id) {
+  for (var i = 0; i < CONFIG.agenda.length; i++) { if (CONFIG.agenda[i].id === id) { return CONFIG.agenda[i]; } }
+  return { id: id, nom: id, couleur: "#b9a3d6" };
+}
+
+/* ---------- Fuseaux horaires ---------- */
+// Outlook écrit les fuseaux à la façon Windows
+var AG_WIN = {
+  "Romance Standard Time": "Europe/Paris", "W. Europe Standard Time": "Europe/Berlin",
+  "Central Europe Standard Time": "Europe/Budapest", "Central European Standard Time": "Europe/Warsaw",
+  "GMT Standard Time": "Europe/London", "Greenwich Standard Time": "Atlantic/Reykjavik",
+  "E. Europe Standard Time": "Europe/Chisinau", "FLE Standard Time": "Europe/Kiev", "GTB Standard Time": "Europe/Bucharest",
+  "Russian Standard Time": "Europe/Moscow", "Eastern Standard Time": "America/New_York",
+  "Central Standard Time": "America/Chicago", "Mountain Standard Time": "America/Denver",
+  "Pacific Standard Time": "America/Los_Angeles", "China Standard Time": "Asia/Shanghai",
+  "Tokyo Standard Time": "Asia/Tokyo", "India Standard Time": "Asia/Kolkata",
+  "Singapore Standard Time": "Asia/Singapore", "Arabian Standard Time": "Asia/Dubai",
+  "AUS Eastern Standard Time": "Australia/Sydney", "UTC": "UTC", "Coordinated Universal Time": "UTC"
+};
+var agLocalTZ = "";
+try { agLocalTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {}
+var agFmt = {};
+
+function agZone(tzid) {
+  if (!tzid) { return ""; }
+  tzid = tzid.replace(/^"|"$/g, "");
+  if (AG_WIN[tzid]) { return AG_WIN[tzid]; }
+  if (/Paris|Bruxelles|Brussels|Madrid|Amsterdam|Copenhag/i.test(tzid)) { return "Europe/Paris"; }
+  if (/^(UTC|GMT|Etc\/UTC|Etc\/GMT)$/i.test(tzid)) { return "UTC"; }
+  if (/^[A-Za-z]+\/[A-Za-z_\-\/]+$/.test(tzid)) { return tzid; }
+  return ""; // inconnu : heure de l'iPad
+}
+function agOffset(zone, ms) { // écart du fuseau avec UTC, en ms
+  var f = agFmt[zone];
+  if (!f) {
+    f = agFmt[zone] = new Intl.DateTimeFormat("en-US", { timeZone: zone, hour12: false, year: "numeric", month: "2-digit",
+      day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+  var p = {};
+  f.formatToParts(new Date(ms)).forEach(function (x) { p[x.type] = +x.value; });
+  return Date.UTC(p.year, p.month - 1, p.day, p.hour % 24, p.minute, p.second) - ms;
+}
+// heure "murale" w = [a, m, j, h, mn, s] dans le fuseau "zone" -> instant (ms)
+function agWall(w, zone) {
+  if (zone === "UTC") { return Date.UTC(w[0], w[1] - 1, w[2], w[3], w[4], w[5]); }
+  var local = new Date(w[0], w[1] - 1, w[2], w[3], w[4], w[5]).getTime();
+  if (!zone || zone === agLocalTZ) { return local; }
+  try {
+    var g = Date.UTC(w[0], w[1] - 1, w[2], w[3], w[4], w[5]), o = agOffset(zone, g), t = g - o, o2 = agOffset(zone, t);
+    return o2 === o ? t : g - o2;
+  } catch (e) { return local; }
+}
+
+/* ---------- Lecture du format iCalendar ---------- */
+function agTime(p, zoneDefault) {
+  if (!p) { return null; }
+  var m = /^(\d{4})(\d\d)(\d\d)(?:T(\d\d)(\d\d)(\d\d)?(Z)?)?/.exec(p.v);
+  if (!m) { return null; }
+  var w = [+m[1], +m[2], +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0)];
+  if (!m[4]) { return { all: true, w: w, zone: "", ms: new Date(w[0], w[1] - 1, w[2]).getTime() }; }
+  var zone = m[7] ? "UTC" : p.tz ? agZone(p.tz) : (zoneDefault || "");
+  return { all: false, w: w, zone: zone, ms: agWall(w, zone) };
+}
+function agText(v) { return (v || "").replace(/\\n/gi, " ").replace(/\\([,;\\:])/g, "$1").replace(/\s+/g, " ").trim(); }
+
+function agProps(block) {
+  var o = {};
+  block.replace(/BEGIN:VALARM[\s\S]*?END:VALARM/g, "").split(/\r?\n/).forEach(function (l) {
+    var q = false, at = -1, i;
+    for (i = 0; i < l.length; i++) {
+      var ch = l.charAt(i);
+      if (ch === '"') { q = !q; } else if (ch === ":" && !q) { at = i; break; }
+    }
+    if (at < 1) { return; }
+    var parts = l.slice(0, at).split(";"), name = parts[0].toUpperCase(), tz = "";
+    for (i = 1; i < parts.length; i++) { if (/^TZID=/i.test(parts[i])) { tz = parts[i].slice(5); } }
+    var p = { v: l.slice(at + 1), tz: tz };
+    if (name === "EXDATE") { (o.EXDATE = o.EXDATE || []).push(p); } else if (!o[name]) { o[name] = p; }
+  });
+  return o;
+}
+
+/* ---------- Répétitions (RRULE) ---------- */
+var AG_WD = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 };
+function agDn(y, m, d) { return Math.floor(Date.UTC(y, m - 1, d) / 864e5); }       // numéro de jour
+function agYmd(n) { var d = new Date(n * 864e5); return [d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()]; }
+function agWd(n) { return (n + 4) % 7; }                                                  // 0 = dimanche
+function agLast(y, m) { return new Date(Date.UTC(y, m, 0)).getUTCDate(); }
+
+function agExpand(ev, rule, from, to, emit) {
+  var r = {};
+  rule.split(";").forEach(function (kv) { var a = kv.split("="); r[a[0].toUpperCase()] = a[1] || ""; });
+  var freq = r.FREQ, iv = Math.max(1, +r.INTERVAL || 1), count = +r.COUNT || 0, until = null;
+  if (r.UNTIL) {
+    var u = agTime({ v: r.UNTIL, tz: "" }, ev.s.zone);
+    if (u) { until = u.all ? u.ms + 864e5 - 1 : u.ms; }
+  }
+  var byday = null, bmd = null, bm = null, pos = r.BYSETPOS ? +r.BYSETPOS.split(",")[0] : 0;
+  if (r.BYDAY) {
+    byday = [];
+    r.BYDAY.split(",").forEach(function (x) { var m = /^([+-]?\d+)?(MO|TU|WE|TH|FR|SA|SU)$/.exec(x); if (m) { byday.push({ n: +(m[1] || 0), d: AG_WD[m[2]] }); } });
+  }
+  if (r.BYMONTHDAY) { bmd = r.BYMONTHDAY.split(",").map(Number); }
+  if (r.BYMONTH) { bm = r.BYMONTH.split(",").map(Number); }
+  var wkst = AG_WD[r.WKST] !== undefined ? AG_WD[r.WKST] : 1;
+  var s = ev.s.w, sd = agDn(s[0], s[1], s[2]);
+  var toD = Math.floor(to / 864e5) + 2, skipTo = Math.floor(from / 864e5) - Math.ceil(ev.dur / 864e5) - 3;
+  var sy = agYmd(skipTo);
+
+  function inMonth(y, m) {
+    var last = agLast(y, m), out = [], i;
+    if (bmd) {
+      bmd.forEach(function (d) { var x = d < 0 ? last + 1 + d : d; if (x >= 1 && x <= last) { out.push(agDn(y, m, x)); } });
+    } else if (byday) {
+      var first = agDn(y, m, 1);
+      byday.forEach(function (b) {
+        var all = [];
+        for (i = 0; i < last; i++) { if (agWd(first + i) === b.d) { all.push(first + i); } }
+        if (b.n > 0) { if (all[b.n - 1] !== undefined) { out.push(all[b.n - 1]); } }
+        else if (b.n < 0) { if (all[all.length + b.n] !== undefined) { out.push(all[all.length + b.n]); } }
+        else { out = out.concat(all); }
+      });
+      out.sort(function (a, b) { return a - b; });
+      if (pos) { out = pos > 0 ? (out[pos - 1] !== undefined ? [out[pos - 1]] : []) : (out[out.length + pos] !== undefined ? [out[out.length + pos]] : []); }
+    } else if (s[2] <= last) { out.push(agDn(y, m, s[2])); }
+    return out;
+  }
+
+  var k = 0;
+  if (!count) { // pas de compteur : on saute directement près de la fenêtre affichée
+    if (freq === "DAILY") { k = Math.floor((skipTo - sd) / iv); }
+    else if (freq === "WEEKLY") { k = Math.floor((skipTo - sd) / (7 * iv)) - 1; }
+    else if (freq === "MONTHLY") { k = Math.floor(((sy[0] - s[0]) * 12 + sy[1] - s[1]) / iv) - 1; }
+    else if (freq === "YEARLY") { k = Math.floor((sy[0] - s[0]) / iv) - 1; }
+    k = Math.max(0, k);
+  }
+  var n = 0;
+  for (var guard = 0; guard < 5000; guard++, k++) {
+    var days = [], start;
+    if (freq === "DAILY") {
+      start = sd + k * iv;
+      var yd = agYmd(start);
+      if ((!byday || byday.some(function (b) { return b.d === agWd(start); })) && (!bm || bm.indexOf(yd[1]) >= 0) && (!bmd || bmd.indexOf(yd[2]) >= 0)) { days = [start]; }
+    } else if (freq === "WEEKLY") {
+      start = sd - (agWd(sd) - wkst + 7) % 7 + k * 7 * iv;
+      (byday || [{ d: agWd(sd) }]).forEach(function (b) { days.push(start + (b.d - wkst + 7) % 7); });
+      days.sort(function (a, b) { return a - b; });
+      if (bm) { days = days.filter(function (d) { return bm.indexOf(agYmd(d)[1]) >= 0; }); }
+    } else if (freq === "MONTHLY") {
+      var tot = s[1] - 1 + k * iv, y = s[0] + Math.floor(tot / 12), mo = tot % 12 + 1;
+      start = agDn(y, mo, 1);
+      if (!bm || bm.indexOf(mo) >= 0) { days = inMonth(y, mo); }
+    } else if (freq === "YEARLY") {
+      var yy = s[0] + k * iv;
+      start = agDn(yy, 1, 1);
+      (bm || [s[1]]).forEach(function (m) { days = days.concat(inMonth(yy, m)); });
+    } else { return; }
+    if (start > toD) { return; }
+    for (var i = 0; i < days.length; i++) {
+      if (days[i] < sd) { continue; }
+      n++;
+      if (count && n > count) { return; }
+      var d = agYmd(days[i]);
+      var t = ev.s.all ? new Date(d[0], d[1] - 1, d[2]).getTime() : agWall([d[0], d[1], d[2], s[3], s[4], s[5]], ev.s.zone);
+      if (until !== null && t > until) { return; }
+      if (t > to) { return; }
+      if (t + Math.max(ev.dur, 1) > from) { emit(t); }
+    }
+  }
+}
+
+// Un calendrier .ics -> liste d'événements { c, t, l, s, e, all } dans la fenêtre [from, to]
+function agParse(ics, cal, from, to) {
+  ics = ics.replace(/\r?\n[ \t]/g, ""); // lignes repliées
+  var blocks = ics.split("BEGIN:VEVENT"), masters = [], moved = {}, out = [];
+  for (var i = 1; i < blocks.length; i++) {
+    var p = agProps(blocks[i].split("END:VEVENT")[0]);
+    var s = agTime(p.DTSTART);
+    if (!s) { continue; }
+    var e = agTime(p.DTEND, s.zone), dur;
+    if (e) { dur = e.ms - s.ms; }
+    else if (p.DURATION) {
+      var dm = /P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?/.exec(p.DURATION.v) || [];
+      dur = (((+dm[1] || 0) * 7 + (+dm[2] || 0)) * 24 * 3600 + (+dm[3] || 0) * 3600 + (+dm[4] || 0) * 60 + (+dm[5] || 0)) * 1000;
+    } else { dur = s.all ? 864e5 : 0; }
+    var ev = { uid: p.UID ? p.UID.v : "x" + i, s: s, dur: Math.max(0, dur), p: p,
+               cancel: /CANCELLED/i.test(p.STATUS ? p.STATUS.v : "") };
+    if (p["RECURRENCE-ID"]) { // occurrence déplacée ou modifiée
+      var rid = agTime(p["RECURRENCE-ID"], s.zone);
+      if (rid) { (moved[ev.uid] = moved[ev.uid] || {})[rid.ms] = true; }
+      if (!ev.cancel && s.ms <= to && s.ms + Math.max(ev.dur, 1) > from) { out.push(agOut(ev, s.ms, cal)); }
+    } else if (p.RRULE) {
+      masters.push(ev);
+    } else if (!ev.cancel && s.ms <= to && s.ms + Math.max(ev.dur, 1) > from) {
+      out.push(agOut(ev, s.ms, cal));
+    }
+  }
+  masters.forEach(function (ev) {
+    if (ev.cancel) { return; }
+    var skip = moved[ev.uid] || {};
+    (ev.p.EXDATE || []).forEach(function (x) {
+      x.v.split(",").forEach(function (v) { var t = agTime({ v: v, tz: x.tz }, ev.s.zone); if (t) { skip[t.ms] = true; } });
+    });
+    try {
+      agExpand(ev, ev.p.RRULE.v, from, to, function (t) { if (!skip[t]) { out.push(agOut(ev, t, cal)); } });
+    } catch (err) {}
+  });
+  return out;
+}
+function agOut(ev, t, cal) {
+  return { c: cal, t: agText(ev.p.SUMMARY ? ev.p.SUMMARY.v : "") || "Occupé", l: agText(ev.p.LOCATION ? ev.p.LOCATION.v : ""),
+           s: t, e: t + ev.dur, all: ev.s.all };
+}
+
+/* ---------- Chargement ---------- */
+function agWindow() { var d = dayStart(new Date()); return [d.getTime() - 864e5, d.getTime() + 23 * 864e5]; }
+
+function agLoad() {
+  var key = store.get(AG_KEY);
+  if (!key || ag.loading) { return; }
+  ag.loading = true;
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", CONFIG.planeProxy.replace(/\/+$/, "") + "/agenda", true);
+  xhr.setRequestHeader("x-cle", key);
+  xhr.timeout = 30000;
+  function fail(msg) { ag.loading = false; ag.msg = msg; agRender(); }
+  xhr.onload = function () {
+    if (xhr.status === 401) { store.set(AG_KEY, ""); return fail("Clé refusée par le relais."); }
+    if (xhr.status === 404) { return fail("Le relais n'a pas encore la partie Agenda."); }
+    var d;
+    try { d = JSON.parse(xhr.responseText); } catch (e) { return fail("Réponse illisible du relais."); }
+    if (xhr.status !== 200) { return fail("Relais : " + (d.error || "HTTP " + xhr.status)); }
+    var w = agWindow(), ev = [], errs = [];
+    (d.cals || []).forEach(function (c) {
+      if (c.error) { errs.push(agCal(c.id).nom + " : " + c.error); return; }
+      try { ev = ev.concat(agParse(c.ics || "", c.id, w[0], w[1])); } catch (e) { errs.push(agCal(c.id).nom + " : illisible"); }
+    });
+    ev.sort(function (a, b) { return a.s - b.s || a.e - b.e; });
+    ag.ev = ev; ag.at = Date.now(); ag.errs = errs; ag.loading = false; ag.msg = "";
+    store.set("agendaCache", JSON.stringify({ ev: ev, at: ag.at }));
+    agRender();
+  };
+  xhr.onerror = function () { fail("Pas de connexion."); };
+  xhr.ontimeout = function () { fail("Le relais ne répond pas."); };
+  xhr.send();
+}
+
+/* ---------- Affichage ---------- */
+var AG_MO = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+function agHM(t) { var d = new Date(t); return pad(d.getHours()) + ":" + pad(d.getMinutes()); }
+
+function agKeyForm() {
+  $("ag-chips").innerHTML = "";
+  $("ag-grid").className = "";
+  $("ag-grid").innerHTML = '<div class="card ag-key"><div class="ag-kt">Agenda</div>' +
+    "<p>Saisis la clé de l'agenda (celle rangée dans le relais Cloudflare). Elle reste mémorisée sur cet appareil.</p>" +
+    (ag.msg ? '<p class="status err">' + esc(ag.msg) + "</p>" : "") +
+    '<input id="ag-in" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">' +
+    '<button class="chip on" data-save="1">Valider</button></div>';
+}
+
+function agRender() {
+  if (!store.get(AG_KEY)) { agKeyForm(); return; }
+  var views = [["Cette semaine", 0], ["Semaine prochaine", 7], ["Dans 2 semaines", 14]], html = "";
+  views.forEach(function (v) { html += '<button class="chip' + (ag.view === v[1] ? " on" : "") + '" data-view="' + v[1] + '">' + v[0] + "</button>"; });
+  CONFIG.agenda.forEach(function (c) {
+    html += '<button class="chip agc' + (ag.hide[c.id] ? " off" : "") + '" data-cal="' + c.id + '"><i style="background:' + c.couleur + '"></i>' + esc(c.nom) + "</button>";
+  });
+  var st = ag.loading && !ag.ev ? "Chargement…" : ag.msg || ag.errs.join(" · ");
+  html += '<div class="status' + (ag.msg || ag.errs.length ? " err" : "") + '">' + esc(st || (ag.at ? "màj " + agHM(ag.at) : "")) + "</div>";
+  html += '<button class="chip agk" data-reset="1" title="Changer la clé">🔑</button>';
+  $("ag-chips").innerHTML = html;
+
+  if (!ag.ev) { $("ag-grid").className = ""; $("ag-grid").innerHTML = '<div class="sp-loading">' + esc(ag.msg || "Chargement des agendas…") + "</div>"; return; }
+  var now = Date.now(), today = dayStart(new Date()), out = "";
+  for (var i = 0; i < 7; i++) {
+    var off = ag.view + i, d0 = new Date(today.getFullYear(), today.getMonth(), today.getDate() + off), d1 = new Date(today.getFullYear(), today.getMonth(), today.getDate() + off + 1);
+    var a = d0.getTime(), b = d1.getTime(), alls = "", timed = "", nb = 0;
+    ag.ev.forEach(function (e) {
+      if (ag.hide[e.c]) { return; }
+      var col = agCal(e.c).couleur;
+      if (e.all) {
+        if (e.s < b && Math.max(e.e, e.s + 1) > a) {
+          alls += '<div class="agall" style="background:' + col + '">' + esc(e.t) + "</div>"; nb++;
+        }
+        return;
+      }
+      if (!(e.s < b && (e.e > a || (e.e === e.s && e.s >= a)))) { return; }
+      var h = e.s < a ? "… → " + agHM(e.e) : e.e > b ? agHM(e.s) + " → …" : e.e > e.s ? agHM(e.s) + " – " + agHM(e.e) : agHM(e.s);
+      var cls = e.e <= now && e.e > e.s || e.e === e.s && e.s < now - 3600e3 ? " past" : e.s <= now && e.e > now ? " now" : "";
+      timed += '<div class="agev' + cls + '" style="border-left-color:' + col + '"><div class="agh" style="color:' + col + '">' + h + "</div>" +
+        '<div class="agt">' + esc(e.t) + "</div>" + (e.l ? '<div class="agl">' + esc(e.l) + "</div>" : "") + "</div>";
+      nb++;
+    });
+    var name = off === 0 ? "Aujourd'hui" : off === 1 ? "Demain" : JOURS_LONG[d0.getDay()];
+    out += '<div class="card agday' + (off === 0 ? " today" : "") + (d0.getDay() === 0 || d0.getDay() === 6 ? " we" : "") + '">' +
+      '<div class="agd"><b>' + name + "</b><span>" + d0.getDate() + " " + AG_MO[d0.getMonth()] + "</span></div>" +
+      '<div class="agb">' + alls + timed + (nb ? "" : '<div class="agnone">Rien de prévu</div>') + "</div></div>";
+  }
+  var keep = [];
+  var cols = $("ag-grid").querySelectorAll(".agb");
+  for (i = 0; i < cols.length; i++) { keep.push(cols[i].scrollTop); }
+  $("ag-grid").className = ag.view === 0 ? "first" : "";
+  $("ag-grid").innerHTML = out;
+  cols = $("ag-grid").querySelectorAll(".agb");
+  for (i = 0; i < cols.length; i++) { cols[i].scrollTop = keep[i] || 0; }
+}
+
+$("page-agenda").addEventListener("click", function (e) {
+  var el = e.target;
+  while (el && el !== this) {
+    var v = el.getAttribute("data-view"), c = el.getAttribute("data-cal");
+    if (v !== null) { ag.view = +v; agRender(); return; }
+    if (c) { ag.hide[c] = !ag.hide[c]; store.set("agendaHide", JSON.stringify(ag.hide)); agRender(); return; }
+    if (el.getAttribute("data-reset")) { store.set(AG_KEY, ""); ag.msg = ""; agRender(); return; }
+    if (el.getAttribute("data-save")) {
+      var k = ($("ag-in").value || "").replace(/\s+/g, "");
+      if (k) { store.set(AG_KEY, k); ag.msg = ""; agRender(); agLoad(); }
+      return;
+    }
+    el = el.parentNode;
+  }
+});
+
+var agTimer = null;
+registerTab("agenda", {
+  show: function () {
+    agRender();
+    if (Date.now() - ag.at > 60e3) { agLoad(); }
+    clearInterval(agTimer);
+    agTimer = setInterval(function () { if (Date.now() - ag.at > 10 * 60e3) { agLoad(); } else { agRender(); } }, 60e3);
+  },
+  hide: function () { clearInterval(agTimer); }
+});
 </script>
 <script>startApp();</script>
 </body>
