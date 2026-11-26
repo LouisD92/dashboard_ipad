@@ -2272,7 +2272,7 @@ function normEvent(ev, comp, req) {
   var st = ev.status || c.status || {}, ty = st.type || {};
   var e = { id: ev.id, comp: comp, req: req, t: parseISO(ev.date), state: ty.state, name: ty.name || "",
             detail: ty.shortDetail || "", clock: st.displayClock || "", period: st.period || 0, home: null, away: null, goals: [],
-            sit: c.situation || null };
+            sit: c.situation || null, week: ev.week && ev.week.number };
   (c.competitors || []).forEach(function (x) {
     var tm = x.team || {};
     var side = { id: tm.id, name: tm.shortDisplayName || tm.displayName || tm.name || "?", abbr: tm.abbreviation || "",
@@ -2319,33 +2319,65 @@ function loadEvents(L, ttl, cb) {
   });
 }
 
+// Regroupe les matchs par journée : numéro de semaine (NFL), numéro de journée (Betclic Élite),
+// sinon "chaque équipe ne joue qu'une fois par journée" (foot, rugby, coupes d'Europe)
+function spRounds(evs) {
+  var now = Date.now(), list = evs.filter(function (e) {
+    return !(e.state === "pre" && e.t.getTime() < now - 3 * 3600e3); // match jamais joué/reporté dans le passé : ignoré
+  }).sort(function (a, b) { return a.t - b.t; });
+  var groups = [], cur = null, lastT = 0;
+  list.forEach(function (e) {
+    var key = e.week ? "w" + e.week : e.round ? "r" + e.round : null, t = e.t.getTime();
+    // Sans numéro : même journée tant qu'aucune des deux équipes n'y a déjà joué (et moins de 4 jours d'écart)
+    var same = cur && (key ? cur.key === key : !cur.teams[e.home.id] && !cur.teams[e.away.id] && t - lastT <= 4 * 864e5);
+    if (!same && key) { // numéro connu : on rattache au groupe existant de même numéro
+      for (var i = 0; i < groups.length; i++) { if (groups[i].key === key) { cur = groups[i]; same = true; break; } }
+    }
+    if (!same) { cur = { key: key, evs: [], post: 0, pre: 0, live: 0, teams: {} }; groups.push(cur); }
+    cur.evs.push(e);
+    cur.teams[e.home.id] = cur.teams[e.away.id] = true;
+    if (e.state === "post") { cur.post++; } else if (e.state === "in") { cur.live++; } else { cur.pre++; }
+    lastT = t;
+  });
+  groups.forEach(function (g) { g.start = g.evs[0].t.getTime(); });
+  groups.sort(function (a, b) { return a.start - b.start; });
+  return groups;
+}
+
 // Classe les matchs : en direct / récents / à venir
 function classify(L, evs) {
   var now = Date.now(), live = [], recent = [], next = [];
-  evs.forEach(function (e) {
-    var t = e.t.getTime();
-    if (e.state === "in") { live.push(e); return; }
-    if (L.daily) { // NBA, NHL : nuit dernière (req 0), ce soir (req 1)
-      if (e.req === 0 && e.state === "post") { recent.push(e); }
+  if (L.daily) { // NBA, NHL : nuit dernière (req 0), ce soir (req 1)
+    evs.forEach(function (e) {
+      if (e.state === "in") { live.push(e); }
+      else if (e.req === 0 && e.state === "post") { recent.push(e); }
       else if (e.req === 1) { (e.state === "post" ? recent : next).push(e); }
-      return;
-    }
-    if (e.state === "post" && t >= now - 4 * 864e5) { recent.push(e); }
-    else if (e.state === "pre" && t >= now - 3 * 3600e3 && t <= now + 6 * 864e5) { next.push(e); }
+    });
+    recent.reverse();
+    return { live: live, recent: recent, next: next };
+  }
+  // Championnats par journée
+  var groups = spRounds(evs), current = null, prev = null, nxt = null;
+  groups.forEach(function (g) {
+    if (g.live || (g.post && g.pre)) { current = g; }            // journée commencée, pas finie
   });
-  if (!L.daily && !recent.length) { // trêve : la dernière journée jouée (matchs à moins de 3 jours du dernier)
-    var lastT = 0;
-    evs.forEach(function (e) { if (e.state === "post" && e.t.getTime() > lastT) { lastT = e.t.getTime(); } });
-    evs.forEach(function (e) { if (e.state === "post" && e.t.getTime() >= lastT - 3 * 864e5) { recent.push(e); } });
+  if (current) {
+    current.evs.forEach(function (e) { (e.state === "in" ? live : e.state === "post" ? recent : next).push(e); });
+    recent.sort(function (a, b) { return b.t - a.t; });
+    return { live: live, recent: recent, next: next, round: "current" };
   }
-  if (!L.daily && !next.length) { // et la prochaine journée
-    var firstT = 0;
-    evs.forEach(function (e) { var t = e.t.getTime(); if (e.state === "pre" && t >= now - 3 * 3600e3 && (!firstT || t < firstT)) { firstT = t; } });
-    evs.forEach(function (e) { var t = e.t.getTime(); if (e.state === "pre" && firstT && t >= firstT && t <= firstT + 3 * 864e5) { next.push(e); } });
-  }
-  recent.reverse();
-  return { live: live, recent: recent, next: next };
+  groups.forEach(function (g) {
+    if (!g.pre && !g.live && g.post) { prev = g; }               // dernière journée terminée
+    if (!nxt && g.pre && !g.post && g.start > now - 3 * 3600e3) { nxt = g; } // prochaine journée
+  });
+  if (prev) { prev.evs.forEach(function (e) { recent.push(e); }); recent.sort(function (a, b) { return b.t - a.t; }); }
+  if (nxt) { nxt.evs.forEach(function (e) { next.push(e); }); }
+  return { live: live, recent: recent, next: next, round: "between" };
 }
+
+// Titres des sections selon l'état de la journée
+function rLab(c, L) { return L.daily ? "Cette nuit" : c.round === "current" ? "Journée en cours · résultats" : "Journée précédente"; }
+function nLab(c, L) { return L.daily ? "Ce soir" : c.round === "current" ? "Journée en cours · à venir" : "Prochaine journée"; }
 
 function isFr(side) { return !!sp.frIds[side.id]; }
 function isFav(name) {
@@ -2597,8 +2629,8 @@ function homeCard(L) {
   var o = { us: us, withDay: !L.daily, badge: eu, short: true };
   var html = "";
   if (c.live.length) { html += '<div class="sec live">● En direct</div>' + matchList(c.live, { us: us, badge: eu, short: true }); }
-  if (c.recent.length) { html += '<div class="sec">' + (L.daily ? "Cette nuit" : "Derniers résultats") + "</div>" + matchList(c.recent, o); }
-  if (c.next.length) { html += '<div class="sec">' + (L.daily ? "Ce soir" : "À venir") + "</div>" + matchList(c.next, o); }
+  if (c.recent.length) { html += '<div class="sec">' + rLab(c, L) + "</div>" + matchList(c.recent, o); }
+  if (c.next.length) { html += '<div class="sec">' + nLab(c, L) + "</div>" + matchList(c.next, o); }
   if (!html) { html = '<div class="empty-s">Pas de match en ce moment.</div>'; }
   return '<div class="card lcard" data-sp="' + L.id + '">' + cardHead(L) + '<div class="scroll">' + html + "</div></div>";
 }
@@ -2736,8 +2768,8 @@ function detailSoccer(L) {
 
     var col1 = "";
     if (c.live.length) { col1 += '<div class="sec live">● En direct</div>' + matchList(c.live, { goals: true }); }
-    col1 += '<div class="sec">Derniers résultats</div>' + (c.recent.length ? matchList(c.recent, { goals: true, dayHeads: true }) : '<div class="empty-s">—</div>');
-    col1 += '<div class="sec">À venir</div>' + (c.next.length ? matchList(c.next, { dayHeads: true }) : '<div class="empty-s">—</div>');
+    col1 += '<div class="sec">' + rLab(c, L) + "</div>" + (c.recent.length ? matchList(c.recent, { goals: true, dayHeads: true }) : '<div class="empty-s">—</div>');
+    col1 += '<div class="sec">' + nLab(c, L) + "</div>" + (c.next.length ? matchList(c.next, { dayHeads: true }) : '<div class="empty-s">—</div>');
 
     var tb = soccerTable(entries, entries.length > 18, false);
     var col3 = soccerLeaders(r[1], 5) + soccerKPIs(entries) + '<div class="sec">Actualités</div><div id="nw-det"></div>';
@@ -2799,8 +2831,8 @@ function detailEurope(L) {
       });
     }
     if (c.live.length) { col1 += '<div class="sec live">● En direct</div>' + matchList(c.live.sort(byFr), { goals: true }); }
-    col1 += '<div class="sec">Derniers résultats</div>' + (c.recent.length ? matchList(stableSort(c.recent, byFr), { goals: true, withDay: true }) : '<div class="empty-s">—</div>');
-    col1 += '<div class="sec">À venir</div>' + (c.next.length ? matchList(stableSort(c.next, byFr), { withDay: true }) : '<div class="empty-s">—</div>');
+    col1 += '<div class="sec">' + rLab(c, L) + "</div>" + (c.recent.length ? matchList(stableSort(c.recent, byFr), { goals: true, withDay: true }) : '<div class="empty-s">—</div>');
+    col1 += '<div class="sec">' + nLab(c, L) + "</div>" + (c.next.length ? matchList(stableSort(c.next, byFr), { withDay: true }) : '<div class="empty-s">—</div>');
     col1 += soccerLeaders(r[1], 3);
 
     var half = Math.ceil(entries.length / 2);
@@ -2848,8 +2880,8 @@ function detailUS(L) {
     var o = { us: true, withDay: !L.daily };
     var col1 = "";
     if (c.live.length) { col1 += '<div class="sec live">● En direct</div>' + matchList(c.live, { us: true }); }
-    col1 += '<div class="sec">' + (L.daily ? "Cette nuit" : "Derniers résultats") + "</div>" + (c.recent.length ? matchList(c.recent, o) : '<div class="empty-s">—</div>');
-    col1 += '<div class="sec">' + (L.daily ? "Ce soir & demain" : "À venir") + "</div>" + (c.next.length ? matchList(c.next, { us: true, withDay: true }) : '<div class="empty-s">—</div>');
+    col1 += '<div class="sec">' + rLab(c, L) + "</div>" + (c.recent.length ? matchList(c.recent, o) : '<div class="empty-s">—</div>');
+    col1 += '<div class="sec">' + (L.daily ? "Ce soir & demain" : nLab(c, L)) + "</div>" + (c.next.length ? matchList(c.next, { us: true, withDay: true }) : '<div class="empty-s">—</div>');
     if (L.daily) { // matchs de demain soir (heure de Paris : la nuit suivante)
       var tm = (sp.events[L.id] || []).filter(function (e) { return e.req === 2 && e.state === "pre"; });
       if (tm.length) { col1 += '<div class="sec">Demain soir</div>' + matchList(tm, { us: true, withDay: true }); }
@@ -3264,12 +3296,13 @@ function lnbKPIs(evs) {
 // Noms et sigles d'usage des clubs de Top 14 (ceux d'ESPN sont incohérents)
 var RUGBY_CLUBS = {
   "Montpellier Herault": ["Montpellier", "MHR"], "Castres Olympique": ["Castres", "CO"], "Pau": ["Pau", "PAU"], "Section Paloise": ["Pau", "PAU"],
-  "Stade Toulousain": ["Toulouse", "ST"], "Clermont Auvergne": ["Clermont", "ASM"], "Perpignan": ["Perpignan", "USAP"], "Racing 92": ["Racing 92", "R92"],
-  "Lyon": ["Lyon", "LOU"], "Toulon": ["Toulon", "RCT"], "Stade Francais Paris": ["Stade Français", "SF"], "Vannes": ["Vannes", "RCV"],
-  "Bordeaux Begles": ["Bordeaux-Bègles", "UBB"], "La Rochelle": ["La Rochelle", "SR"], "Bayonne": ["Bayonne", "AB"], "Montauban": ["Montauban", "USM"],
+  "Stade Toulousain": ["Toulouse", "ST"], "Clermont Auvergne": ["Clermont", "ASM"], "Perpignan": ["Perpignan", "USAP", "https://r2.thesportsdb.com/images/media/team/badge/9jsg3o1573137449.png/tiny"], "Racing 92": ["Racing 92", "R92"],
+  "Lyon": ["Lyon", "LOU"], "Toulon": ["Toulon", "RCT"], "Stade Francais Paris": ["Stade Français", "SF"], "Vannes": ["Vannes", "RCV", "https://upload.wikimedia.org/wikipedia/fr/thumb/7/74/Logo_RC_Vannes_-_2022.svg/120px-Logo_RC_Vannes_-_2022.svg.png"],
+  "Bordeaux Begles": ["Bordeaux-Bègles", "UBB"], "La Rochelle": ["La Rochelle", "SR"], "Bayonne": ["Bayonne", "AB", "https://r2.thesportsdb.com/images/media/team/badge/z0fq591714808782.png/tiny"], "Montauban": ["Montauban", "USM"],
   "Grenoble": ["Grenoble", "FCG"], "Oyonnax": ["Oyonnax", "USO"], "Brive": ["Brive", "CAB"], "Agen": ["Agen", "SUA"]
 };
-function rugbyClean(side) { var m = RUGBY_CLUBS[side.name]; if (m) { side.name = m[0]; side.abbr = m[1]; } return side; }
+// 3e valeur : logo de remplacement (ESPN donne le drapeau des États-Unis pour Perpignan, celui du Vanuatu pour Vannes, rien pour Bayonne)
+function rugbyClean(side) { var m = RUGBY_CLUBS[side.name]; if (m) { side.name = m[0]; side.abbr = m[1]; if (m[2]) { side.logo = m[2]; } } return side; }
 
 var Z_R_DEMI = { label: "Demi-finale directe", color: "#2de2e6" };
 var Z_R_BARR = { label: "Barrages", color: "#a66bff" };
@@ -3287,8 +3320,8 @@ function detailRugby(L) {
 
     var col1 = "";
     if (c.live.length) { col1 += '<div class="sec live">● En direct</div>' + matchList(c.live, {}); }
-    col1 += '<div class="sec">Derniers résultats</div>' + (c.recent.length ? matchList(c.recent, { dayHeads: true }) : '<div class="empty-s">—</div>');
-    col1 += '<div class="sec">À venir</div>' + (c.next.length ? matchList(c.next, { dayHeads: true }) : '<div class="empty-s">—</div>');
+    col1 += '<div class="sec">' + rLab(c, L) + "</div>" + (c.recent.length ? matchList(c.recent, { dayHeads: true }) : '<div class="empty-s">—</div>');
+    col1 += '<div class="sec">' + nLab(c, L) + "</div>" + (c.next.length ? matchList(c.next, { dayHeads: true }) : '<div class="empty-s">—</div>');
 
     var zones = [];
     var html = '<table class="tbl"><colgroup><col style="width:1.4rem"><col style="width:2.6rem"><col><col style="width:2.8rem"><col style="width:2.8rem">' +
