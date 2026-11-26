@@ -807,6 +807,47 @@ input, textarea { -webkit-user-select: text; user-select: text; }
 .fcap .drv { display: block; color: var(--dim); font-size: 1.2rem; }
 #dx-field .fcap { font-size: 1.7rem; text-align: center; white-space: normal; }
 #dx-field .fcap .drv { font-size: 1.35rem; }
+
+/* ---------- NFL : jeux de la série ---------- */
+.drh { display: flex; align-items: center; font-family: var(--cond); font-size: 1.4rem; margin-bottom: .5rem; }
+.drh img { width: 2.4rem; height: 2.4rem; margin-right: .6rem; }
+.drh b { font-weight: 800; font-style: italic; font-size: 1.7rem; margin-right: .8rem; }
+.drh span { color: var(--muted); -webkit-flex: 1; flex: 1; }
+.drh em { font-style: normal; font-weight: 700; color: var(--text); }
+.drh em.on { color: var(--pink); }
+.dp { display: flex; padding: .55rem 0; border-top: 1px solid var(--line); }
+.dp.last { background: linear-gradient(90deg, rgba(255, 63, 164, .12), transparent); border-radius: .6rem; }
+.dpl { width: 7.6rem; -webkit-flex-shrink: 0; flex-shrink: 0; font-family: var(--cond); font-size: 1.15rem; color: var(--dim); line-height: 1.3; padding-left: .3rem; }
+.dpl span { display: block; }
+.dpl b { display: block; color: #ffd166; font-size: 1.35rem; }
+.dpm { -webkit-flex: 1; flex: 1; min-width: 0; }
+.dpt { display: flex; align-items: center; }
+.tag { font-family: var(--cond); font-weight: 800; font-style: italic; font-size: 1.2rem; text-transform: uppercase; letter-spacing: .04rem; padding: 0 .5rem; border-radius: .4rem; line-height: 1.9rem; color: #100a20; background: #b9a3d6; }
+.tag.gain { background: #3ddc84; } .tag.loss { background: #ff5a6e; } .tag.inc { background: #7d6aa0; color: #fff; } .tag.pen { background: #ffd400; }
+.tag.kick { background: #a66bff; color: #fff; } .tag.to { background: #ff9e4f; } .tag.info { background: transparent; color: var(--dim); padding: 0; }
+.tag.td { background: linear-gradient(90deg, #ff9e4f, #ff3fa4); color: #fff; }
+.dyd { font-family: var(--cond); font-weight: 800; font-size: 1.6rem; margin-left: .6rem; }
+.dp.gain .dyd { color: #3ddc84; } .dp.loss .dyd, .dp.to .dyd { color: #ff5a6e; }
+.d1 { margin-left: .6rem; font-family: var(--cond); font-weight: 700; font-size: 1.15rem; color: #ffd400; border: 1px solid #ffd400; border-radius: .4rem; padding: 0 .4rem; }
+.drf { position: relative; height: 1.3rem; margin: .4rem 0 .3rem; border-radius: .4rem; background: linear-gradient(180deg, #164f2c, #0f3d22); overflow: hidden; }
+.drf .yl { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(255, 255, 255, .25); }
+.drf .yl.mid { background: rgba(255, 255, 255, .5); }
+.dbar { position: absolute; top: 30%; height: 40%; border-radius: .3rem; background: #3ddc84; }
+.dbar.loss, .dbar.to { background: #ff5a6e; } .dbar.pen { background: #ffd400; } .dbar.kick { background: #a66bff; } .dbar.td { background: #ff3fa4; } .dbar.inc { background: #7d6aa0; }
+.ddot { position: absolute; top: 50%; width: .9rem; height: .9rem; margin: -.45rem 0 0 -.45rem; border-radius: 50%; background: #fff; box-shadow: 0 0 .4rem rgba(255, 255, 255, .8); }
+.ddot.inc { background: #b9a3d6; }
+.dtx { font-size: 1.15rem; color: var(--muted); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.dp.info .dtx { display: none; }
+
+/* drive chart dans le grand terrain */
+.fld.chart .turf .arr { display: none; }
+.fld.chart .turf .trail { display: none; }
+.turf .cbar { position: absolute; height: .75rem; border-radius: .3rem; background: #3ddc84; box-shadow: 0 0 .4rem rgba(0, 0, 0, .5); z-index: 1; }
+.turf .cbar.loss, .turf .cbar.to { background: #ff5a6e; } .turf .cbar.pen { background: #ffd400; } .turf .cbar.kick { background: #a66bff; }
+.turf .cbar.td { background: linear-gradient(90deg, #ff9e4f, #ff3fa4); } .turf .cbar.inc { background: #b9a3d6; border-radius: 50%; }
+.turf .clab { position: absolute; font-style: normal; font-family: var(--cond); font-weight: 700; font-size: 1rem; line-height: .75rem; color: #fff; text-shadow: 0 0 .3rem #000; white-space: nowrap; z-index: 1; }
+.fld.chart .turf .bl { margin-top: -.475rem; }
+.fld.big.chart .turf .bl { width: 1.8rem; height: 1.15rem; margin: -.2rem 0 0 -.9rem; }
 </style>
 </head>
 <body>
@@ -3657,7 +3698,7 @@ function nflBg(t) { return /^[0-9a-f]{6}$/i.test(t.color) ? "#" + t.color : "#2a
 // ESPN : yardLine = distance (en yards) depuis la ligne de but de l'équipe à domicile
 // (ex. DET à domicile : « DET 38 » = 38, « CHI 10 » = 90).
 // Sur le dessin : en-but des visiteurs à gauche, en-but de l'équipe à domicile à droite.
-function nflField(e, big, driveStart, driveText) {
+function nflField(e, big, driveStart, driveText, plays) {
   var s = e.sit, y = +s.yardLine, x = 100 - y;
   var home = s.possession === e.home.id, away = s.possession === e.away.id, att = home ? e.home : away ? e.away : null;
   var dir = home ? -1 : 1;                                       // visiteurs attaquent vers la droite
@@ -3666,7 +3707,17 @@ function nflField(e, big, driveStart, driveText) {
   var goal = att && s.distance && s.distance >= toGo;
   var fd = att && s.distance ? Math.max(0, Math.min(100, x + dir * s.distance)) : null;
   var col = att ? nflColor(att) : "#ffd166";
-  var html = '<div class="fld' + (big ? " big" : "") + (rz ? " rz" : "") + '">';
+  // Drive chart : une barre par jeu de la série, empilées de haut en bas
+  var rows = [];
+  (plays || []).forEach(function (p) {
+    var ty = nflPlayType(p), cat = ty[2], st = p.start || {}, en = p.end || {}, yd = p.statYardage;
+    if (cat === "info" || st.yardLine === undefined || en.yardLine === undefined) { return; }
+    if (cat === "gain" && yd < 0) { cat = "loss"; }
+    if (cat === "gain" && yd === 0) { cat = "inc"; }
+    rows.push({ x0: 100 - st.yardLine, x1: 100 - en.yardLine, cat: cat, yd: yd, lab: ty[1] });
+  });
+  var RH = 1.25, top0 = 0.5, hgt = rows.length ? Math.max(7, top0 + rows.length * RH + 2.6) : 0;
+  var html = '<div class="fld' + (big ? " big" : "") + (rz ? " rz" : "") + (rows.length ? " chart" : "") + '"' + (hgt ? ' style="height:' + hgt + 'rem"' : "") + ">";
   html += '<div class="ez l' + (att && dir < 0 ? " tgt" : "") + '" style="background:' + nflBg(e.away) + '"><span>' + esc(e.away.abbr) + "</span></div>";
   html += '<div class="turf">';
   for (var i = 10; i < 100; i += 10) { html += '<i class="yl' + (i === 50 ? " mid" : "") + '" style="left:' + i + '%"></i>'; }
@@ -3685,7 +3736,14 @@ function nflField(e, big, driveStart, driveText) {
     html += '<i class="los" style="left:' + x + '%"></i>';
     html += '<b class="arr ' + (dir > 0 ? "r" : "l") + '" style="left:' + x + "%;color:" + col + '">' + (dir > 0 ? "▶\uFE0E▶\uFE0E" : "◀\uFE0E◀\uFE0E") + "</b>";
   }
-  html += '<b class="bl" style="left:' + x + '%"></b>';
+  rows.forEach(function (r, i) {
+    var a = Math.min(r.x0, r.x1), w = Math.abs(r.x1 - r.x0), t = top0 + i * RH, right = r.x1 >= r.x0;
+    html += '<i class="cbar ' + r.cat + '" style="top:' + t + "rem;left:" + a + "%;width:" + Math.max(w, 0.6) + '%"></i>';
+    var lab = r.cat === "inc" ? "inc." : r.cat === "kick" || r.cat === "pen" || r.cat === "to" || r.cat === "td" ? r.lab : (r.yd > 0 ? "+" : "") + r.yd;
+    html += '<em class="clab" style="top:' + t + "rem;" + (right ? "left:" + (Math.max(r.x0, r.x1) + 0.6) + "%" : "right:" + (100 - Math.min(r.x0, r.x1) + 0.6) + "%") + '">' + esc(lab) + "</em>";
+  });
+  var by = rows.length ? ' style="left:' + x + "%;top:" + (top0 + (rows.length - 1) * RH + 0.45) + 'rem"' : ' style="left:' + x + '%"';
+  html += '<b class="bl"' + by + "></b>";
   html += "</div>";
   html += '<div class="ez r' + (att && dir > 0 ? " tgt" : "") + '" style="background:' + nflBg(e.home) + '"><span>' + esc(e.home.abbr) + "</span></div>";
   if (rz) { html += '<div class="flag" style="' + (dir > 0 ? "right:9%" : "left:9%") + '">' + (goal ? "GOAL TO GO" : "RED ZONE") + "</div>"; }
@@ -3697,6 +3755,51 @@ function nflField(e, big, driveStart, driveText) {
     (dd ? " <b>" + esc(dd) + "</b>" : "") + (where ? " · " + esc(where) : "") +
     (att ? ' · <span class="tg">' + (toGo > 0 ? toGo + " yds de l'en-but" : "") + "</span>" : "") +
     (big && driveText ? '<span class="drv">Série : ' + esc(driveText) + "</span>" : "") + "</div>";
+  return html;
+}
+
+/* ---------- NFL : tous les jeux de la série, sur le terrain ---------- */
+var NFL_PLAYS = [ // [motif du type ESPN, libellé, catégorie]
+  [/Touchdown/i, "TOUCHDOWN", "td"], [/Field Goal Good/i, "Field goal réussi", "td"], [/Field Goal Missed|Blocked Field Goal/i, "Field goal manqué", "to"],
+  [/Extra Point Good/i, "Transformation réussie", "td"], [/Extra Point Missed/i, "Transformation manquée", "to"], [/Two.Point/i, "Conversion à 2 pts", "td"],
+  [/Interception/i, "Interception", "to"], [/Fumble Recovery \(Opponent\)|Fumble Return Touchdown/i, "Fumble perdu", "to"], [/Fumble Recovery \(Own\)/i, "Fumble récupéré", "loss"],
+  [/Safety/i, "Safety", "to"], [/Sack/i, "Sack", "loss"], [/Pass Incompletion/i, "Passe incomplète", "inc"], [/Pass Reception|Pass Completion/i, "Passe", "gain"],
+  [/Rush/i, "Course", "gain"], [/Penalty/i, "Pénalité", "pen"], [/Punt/i, "Punt", "kick"], [/Kickoff/i, "Coup d'envoi", "kick"],
+  [/Two-minute/i, "Avertissement 2 min", "info"], [/Timeout/i, "Temps mort", "info"], [/End (Period|of Half|Game)|End Quarter/i, "Fin de période", "info"]
+];
+function nflPlayType(p) {
+  var t = (p.type && p.type.text) || "";
+  for (var i = 0; i < NFL_PLAYS.length; i++) { if (NFL_PLAYS[i][0].test(t)) { return NFL_PLAYS[i]; } }
+  return [null, t || "Jeu", "info"];
+}
+function nflDrive(e, dr, current) {
+  var team = dr.team && dr.team.id === e.home.id ? e.home : e.away, col = nflColor(team);
+  var plays = (dr.plays || []).slice().reverse(); // le plus récent en haut
+  var html = '<div class="sec">' + (current ? "Série en cours" : "Dernière série") + "</div>" +
+    '<div class="drh"><img src="' + team.logo + '" alt=""><b style="color:' + col + '">' + esc(team.name) + "</b>" +
+    '<span>' + esc(dr.description || "") + "</span>" + '<em class="' + (current ? "on" : "") + '">' + esc(current ? "● En cours" : dr.displayResult || "") + "</em></div>";
+  html += '<div class="drlist">';
+  plays.forEach(function (p, i) {
+    var ty = nflPlayType(p), cat = ty[2], st = p.start || {}, en = p.end || {}, yd = p.statYardage;
+    if (cat === "gain" && yd < 0) { cat = "loss"; }
+    if (cat === "gain" && yd === 0) { cat = "inc"; }
+    var fd = cat !== "kick" && cat !== "info" && cat !== "td" && en.down === 1 && st.down > 0 && en.team && st.team && en.team.id === st.team.id;
+    var bar = "";
+    if (cat !== "info" && st.yardLine !== undefined && en.yardLine !== undefined) {
+      var x0 = 100 - st.yardLine, x1 = 100 - en.yardLine, a = Math.min(x0, x1), w = Math.abs(x1 - x0);
+      bar = '<div class="drf">' + '<i class="yl" style="left:25%"></i><i class="yl mid" style="left:50%"></i><i class="yl" style="left:75%"></i>' +
+        (w > 0.4 ? '<i class="dbar ' + cat + (x1 < x0 ? " back" : "") + '" style="left:' + a + "%;width:" + w + '%"></i>' : "") +
+        '<i class="ddot ' + cat + '" style="left:' + x1 + '%"></i></div>';
+    }
+    var yds = typeof yd === "number" && cat !== "info" && cat !== "kick" && cat !== "inc" ? (yd > 0 ? "+" + yd : yd < 0 ? "−" + (-yd) : "0") + " yd" + (Math.abs(yd) > 1 ? "s" : "") : "";
+    var when = (p.period && p.period.number ? "QT" + p.period.number + " " : "") + ((p.clock && p.clock.displayValue) || "");
+    html += '<div class="dp ' + cat + (i === 0 && current ? " last" : "") + '">' +
+      '<div class="dpl"><span class="dpw">' + esc(when) + "</span><b>" + esc(frDown(st.shortDownDistanceText || "")) + "</b>" + (st.possessionText ? "<span>" + esc(st.possessionText) + "</span>" : "") + "</div>" +
+      '<div class="dpm"><div class="dpt"><span class="tag ' + cat + '">' + esc(ty[1]) + "</span>" + (yds ? '<span class="dyd">' + yds + "</span>" : "") +
+        (fd ? '<span class="d1">1er down</span>' : "") + "</div>" + bar +
+        '<div class="dtx">' + esc(p.text || "") + "</div></div></div>";
+  });
+  html += "</div>";
   return html;
 }
 
@@ -3745,15 +3848,9 @@ function dxSummary(e, d, us) {
   if (e.sport === "football" && d.drives) {
     var dr = d.drives.current || (d.drives.previous && d.drives.previous[d.drives.previous.length - 1]);
     if (d.drives.current && d.drives.current.start && $("dx-field") && e.sit && e.sit.yardLine !== undefined) {
-      $("dx-field").innerHTML = nflField(e, true, d.drives.current.start.yardLine, d.drives.current.description);
+      $("dx-field").innerHTML = nflField(e, true, d.drives.current.start.yardLine, d.drives.current.description, d.drives.current.plays);
     }
-    if (dr) {
-      html += '<div class="sec">' + (d.drives.current ? "Série en cours" : "Dernière série") + " · " + esc((dr.team && dr.team.abbreviation) || "") + "</div>" +
-        '<div class="kpi">' + esc(dr.description || "") + " <b>" + esc(dr.displayResult || "En cours") + "</b></div>";
-      (dr.plays || []).slice(-4).reverse().forEach(function (p) {
-        html += '<div class="play"><b>' + esc(frDown((p.start && p.start.downDistanceText) || "")) + "</b> " + esc(p.text || "") + "</div>";
-      });
-    }
+    if (dr) { html += nflDrive(e, dr, !!d.drives.current); }
   }
   // NBA / NHL : dernières actions
   if ((e.sport === "basketball" || e.sport === "hockey") && d.plays && d.plays.length) {
