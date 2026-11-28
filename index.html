@@ -935,6 +935,13 @@ input, textarea { -webkit-user-select: text; user-select: text; }
 .tab svg { width: 2.7rem; height: 2.7rem; }
 .tab span { font-size: 1.15rem; margin-top: .2rem; }
 .tab.on:before { top: .5rem; bottom: .5rem; }
+
+/* Boutons de zoom façon HUD */
+.leaflet-control-zoom { border: 0 !important; margin: 0 1.2rem 3rem 0 !important; box-shadow: 0 0 1rem rgba(0, 0, 0, .6); }
+.leaflet-control-zoom a { width: 4.4rem !important; height: 4.4rem !important; line-height: 4.2rem !important; font-size: 2.6rem !important; font-weight: 700;
+  background: rgba(7, 4, 12, .88) !important; color: var(--cyan) !important; border: 1px solid rgba(45, 226, 230, .45) !important; }
+.leaflet-control-zoom a:first-child { border-radius: 1rem 1rem 0 0 !important; }
+.leaflet-control-zoom a:last-child { border-radius: 0 0 1rem 1rem !important; }
 </style>
 </head>
 <body>
@@ -1371,6 +1378,16 @@ function makeMap(id, lat, lon, zoom) {
   L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
     maxZoom: 16, pane: "labels"
   }).addTo(map);
+  return map;
+}
+// Cartes de ville (Tram, Carbu) : zoom au doigt, à la molette, double-clic et boutons + / −
+function makeCityMap(id, lat, lon, zoom) {
+  var map = makeMap(id, lat, lon, zoom);
+  map.options.maxZoom = 16;
+  map.options.zoomSnap = 0.25;
+  map.scrollWheelZoom.enable();
+  map.doubleClickZoom.enable();
+  L.control.zoom({ position: "bottomright", zoomInTitle: "Zoomer", zoomOutTitle: "Dézoomer" }).addTo(map);
   return map;
 }
 function leafletOK(id) {
@@ -5159,9 +5176,7 @@ function trBoard() {
 /* ---------- Carte ---------- */
 function trInitMap() {
   if (tr.map || !leafletOK("tram-map")) { return; }
-  tr.map = makeMap("tram-map", 47.4705, -0.5560, 13);
-  tr.map.options.maxZoom = 16;
-  tr.map.options.zoomSnap = 0.25; // cadrage plus serré que les niveaux entiers
+  tr.map = makeCityMap("tram-map", 47.4705, -0.5560, 13);
   $("tram-map").className += " gta";
   var bounds = [];
   // Lignes : A large, B moyenne, C fine par-dessus -> les troncs communs restent visibles
@@ -5267,9 +5282,7 @@ function cbColor(t) { return t <= 0.34 ? "#3ddc84" : t <= 0.67 ? "#ffd400" : "#f
 
 function cbInitMap() {
   if (cb.map || !leafletOK("cb-map")) { return; }
-  cb.map = makeMap("cb-map", 47.4705, -0.556, 12);
-  cb.map.options.zoomSnap = 0.25;
-  cb.map.options.maxZoom = 16;
+  cb.map = makeCityMap("cb-map", 47.4705, -0.556, 12);
   $("cb-map").className += " gta";
   cb.layer = L.layerGroup().addTo(cb.map);
   cb.fitted = false;
@@ -5297,7 +5310,7 @@ function cbRender() {
     var pts = [];
     cb.list.forEach(function (s) {
       var ll = [s.geom.lat, s.geom.lon], p = s[f + "_prix"], i = rank[s.id], sel = String(s.id) === String(cb.sel);
-      pts.push(ll);
+      if (Math.abs(ll[0] - 47.4705) < 0.06 && Math.abs(ll[1] + 0.556) < 0.085) { pts.push(ll); } // cadrage : Angers et sa 1re couronne
       var icon;
       if (i === undefined) {
         icon = L.divIcon({ className: "cbm-w", iconSize: [10, 10], iconAnchor: [5, 5], html: '<div class="cbm-off"></div>' });
