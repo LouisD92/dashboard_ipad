@@ -942,6 +942,20 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   background: rgba(7, 4, 12, .88) !important; color: var(--cyan) !important; border: 1px solid rgba(45, 226, 230, .45) !important; }
 .leaflet-control-zoom a:first-child { border-radius: 1rem 1rem 0 0 !important; }
 .leaflet-control-zoom a:last-child { border-radius: 0 0 1rem 1rem !important; }
+
+/* Tuile Soleil */
+.tile .sunv { font-size: 1.95rem; letter-spacing: -.02rem; }
+.tile .sunv i { font-style: normal; margin-left: .3rem; }
+.tile .sunarc { position: absolute; right: .7rem; top: .45rem; width: 4.8rem; height: 2.7rem; }
+
+/* Ciné : bascule Cinéma / Streaming */
+.chip.mode { font-size: 1.55rem; }
+.chip.mode.on { border-color: var(--cyan); box-shadow: 0 0 1.2rem rgba(45, 226, 230, .35); }
+.chipsep { display: inline-block; width: 1px; height: 2.4rem; background: var(--line); margin: 0 .8rem 0 .3rem; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.chip .pdot { display: inline-block; width: 1rem; height: 1rem; border-radius: 50%; margin-right: .45rem; }
+.sday { grid-column: 1 / -1; font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 1.6rem; text-transform: uppercase; letter-spacing: .1rem; color: var(--pink); margin: .4rem 0 -.2rem; }
+.sday:first-child { margin-top: 0; }
+.splat { align-self: flex-start; color: #fff; font-family: var(--cond); font-weight: 800; font-size: 1.15rem; letter-spacing: .05rem; text-transform: uppercase; border-radius: .4rem; padding: 0 .5rem; margin-bottom: .3rem; }
 </style>
 </head>
 <body>
@@ -1511,7 +1525,7 @@ var meteo = {
 
 /* ---------- Saint du jour (Nominis, Église catholique en France) ---------- */
 function loadSaint() {
-  var d = new Date(), key = "saint_" + ymd(d);
+  var d = new Date(), key = "saint2_" + ymd(d);
   function show(html) { meteo.saint = html; var el = $("saint"); if (el) { el.innerHTML = html; } }
   var c = store.get(key);
   if (c) { show(c); return; }
@@ -1519,7 +1533,7 @@ function loadSaint() {
     try {
       var r = j.response, saints = Object.keys((r.saints && r.saints.majeurs) || {}), pren = Object.keys((r.prenoms && r.prenoms.majeurs) || {});
       var first = saints.length ? htmlToText(r.saints.majeurs[saints[0]].valeur) : "";
-      var html = "✝︎ <b>" + esc(first || "—") + "</b>" + (pren.length ? " · Bonne fête aux " + esc(pren.slice(0, 3).join(", ")) : "");
+      var html = "✝︎ <b>" + esc(first || "—") + "</b>";
       store.set(key, html);
       show(html);
     } catch (e) {}
@@ -1582,7 +1596,7 @@ function meteoStatus(msg, isErr) {
 }
 
 /* ---------- Indicateurs ---------- */
-var TILE_ORDER = ["feels", "hum", "dew", "press", "wind", "gust", "uv", "vis", "cloud", "rain", "aqi", "pollen"];
+var TILE_ORDER = ["feels", "hum", "sun", "press", "wind", "gust", "uv", "vis", "cloud", "rain", "aqi", "pollen"];
 function setTile(id, label, value, sub, color) { meteo.tiles[id] = [label, value, sub, color]; }
 function drawTiles() {
   var html = "";
@@ -1645,11 +1659,19 @@ function meteoRender(data) {
 
   var rh = c.relative_humidity_2m;
   setTile("hum", "Humidité", rh + "<small>%</small>",
-    rh < 30 ? "Air sec" : rh < 60 ? "Confortable" : rh < 80 ? "Humide" : "Très humide");
+    (rh < 30 ? "Air sec" : rh < 60 ? "Confortable" : rh < 80 ? "Humide" : "Très humide") + " · rosée " + deg(c.dew_point_2m));
 
   var dp = c.dew_point_2m;
-  setTile("dew", "Point de rosée", deg(dp),
-    dp < 10 ? "Air sec" : dp < 16 ? "Agréable" : dp < 20 ? "Lourd" : "Étouffant");
+  // Soleil : lever, coucher, durée du jour et sa variation, position actuelle sur l'arc
+  var sr = parseISO(dl.sunrise[0]), ss = parseISO(dl.sunset[0]), now = new Date();
+  var dd = dl.daylight_duration[1] !== undefined ? Math.round((dl.daylight_duration[1] - dl.daylight_duration[0]) / 60) : 0;
+  var frac = Math.max(0, Math.min(1, (now - sr) / (ss - sr))), up = now > sr && now < ss;
+  var ang = Math.PI * (1 - frac), sx = 30 + 26 * Math.cos(ang), sy = 30 - 26 * Math.sin(ang);
+  var arc = '<svg class="sunarc" viewBox="0 0 60 34"><path d="M4 30 A26 26 0 0 1 56 30" fill="none" stroke="rgba(255,209,102,.35)" stroke-width="1.6" stroke-dasharray="2 2.5"/>' +
+    '<line x1="0" y1="30.5" x2="60" y2="30.5" stroke="rgba(185,163,214,.4)" stroke-width="1"/>' +
+    (up ? '<circle cx="' + sx.toFixed(1) + '" cy="' + sy.toFixed(1) + '" r="4.2" fill="#ffd166" style="filter:drop-shadow(0 0 3px #ff9e4f)"/>' : "") + "</svg>";
+  setTile("sun", "Soleil", '<span class="sunv">↑' + hhmm(dl.sunrise[0]) + ' <i>↓</i>' + hhmm(dl.sunset[0]) + "</span>" + arc,
+    "Jour " + Math.floor(dlen / 60) + " h " + pad(Math.round(dlen % 60)) + (dd ? " · " + (dd > 0 ? "+" : "−") + Math.abs(dd) + " min demain" : ""));
 
   var p3 = start >= 3 ? h.pressure_msl[start - 3] : null, trend = "";
   if (p3 !== null && p3 !== undefined) {
@@ -4534,24 +4556,77 @@ registerTab("tv", { show: function () { tvLoad(tvRender); } });
 </script>
 <script>
 /* =====================================================================
-   ONGLET CINÉ — films à l'affiche, sorties du mois et du mois prochain,
-   séances du jour et du lendemain au Pathé Angers.
+   ONGLET CINÉ — deux parties :
+   - Cinéma : films à l'affiche, sorties du mois et du mois prochain,
+     séances du jour et du lendemain au Pathé Angers.
+   - Streaming : nouveautés de la semaine sur Netflix, Disney+ et Prime Video
+     (data/streaming.json, préparé par outils/streaming.py depuis JustWatch).
    Les données (site pathe.fr) sont préparées toutes les 3 heures par GitHub
    (outils/cine.py + .github/workflows/cine.yml) dans data/cine.json.
    ===================================================================== */
 var CINE_URL = /localhost|127\.0\.0\.1/.test(location.hostname) ? "data/cine.json"
   : "https://raw.githubusercontent.com/LouisD92/dashboard_ipad/main/data/cine.json";
-var cine = { view: store.get("cineView") || "now", only: false };
+var STREAM_URL = /localhost|127\.0\.0\.1/.test(location.hostname) ? "data/streaming.json"
+  : "https://raw.githubusercontent.com/LouisD92/dashboard_ipad/main/data/streaming.json";
+var STREAM_COL = { "Netflix": "#e50914", "Disney+": "#1f4fe0", "Prime Video": "#00a8e1" };
+var cine = { view: store.get("cineView") || "now", only: false, mode: store.get("cineMode") || "salle", plat: store.get("cinePlat") || "", all: false };
+
+// Bascule Cinéma / Streaming (toujours en tête de la rangée de puces)
+function cineModes() {
+  return '<button class="chip mode' + (cine.mode === "salle" ? " on" : "") + '" data-mode="salle">🎬 Cinéma</button>' +
+    '<button class="chip mode' + (cine.mode === "stream" ? " on" : "") + '" data-mode="stream">📺 Streaming</button><i class="chipsep"></i>';
+}
+
+function streamRender() {
+  spGet(STREAM_URL, 1800, function (d) {
+    var all = d.titres || [], n = {};
+    all.forEach(function (t) { if (t.neuf || cine.all) { n[t.p] = (n[t.p] || 0) + 1; } });
+    var html = cineModes() + '<button class="chip' + (!cine.plat ? " on" : "") + '" data-plat="">Tout</button>';
+    (d.plateformes || []).forEach(function (p) {
+      html += '<button class="chip' + (cine.plat === p ? " on" : "") + '" data-plat="' + esc(p) + '"><i class="pdot" style="background:' + (STREAM_COL[p] || "#888") + '"></i>' + esc(p) + " <small>" + (n[p] || 0) + "</small></button>";
+    });
+    html += '<button class="chip' + (cine.all ? " on" : "") + '" data-all="1">+ Retours au catalogue</button>';
+    var m = /T(\d\d:\d\d)/.exec(d.maj || "");
+    html += '<div class="status">7 derniers jours' + (m ? " · màj " + m[1] : "") + "</div>";
+    $("cine-tabs").innerHTML = html;
+
+    var list = all.filter(function (t) { return (t.neuf || cine.all) && (!cine.plat || t.p === cine.plat); });
+    var out = "", day = "";
+    list.forEach(function (t) {
+      if (t.jour !== day) {
+        day = t.jour;
+        var dd = parseDay(day), diff = Math.round((dayStart(new Date()) - dd) / 864e5);
+        out += '<div class="sday">' + (diff === 0 ? "Aujourd'hui" : diff === 1 ? "Hier" : JOURS_LONG[dd.getDay()] + " " + dd.getDate() + " " + MOIS[dd.getMonth()]) + "</div>";
+      }
+      var meta = t.type === "Saison" ? esc(t.saison || "Nouvelle saison") + (t.ep ? " · " + t.ep + " épisodes" : "") : t.type + (t.an ? " · " + t.an : "") + (t.duree ? " · " + cineDur(t.duree) : "");
+      out += '<div class="card film strm">' +
+        (t.affiche ? '<img class="poster" src="' + esc(t.affiche) + '" alt="">' : '<div class="poster"></div>') +
+        '<div class="fb"><div class="splat" style="background:' + (STREAM_COL[t.p] || "#888") + '">' + esc(t.p) + "</div>" +
+        '<div class="ft">' + esc(t.titre || "") + "</div>" +
+        '<div class="fm">' + meta + (t.note ? ' <span class="star">★ ' + String(t.note).replace(".", ",") + "</span>" : "") + "</div>" +
+        (t.genres.length && t.genres[0] ? '<div class="fm">' + esc(t.genres.filter(Boolean).join(", ")) + "</div>" : "") +
+        '<div class="fo">' + esc(t.resume || "Pas de résumé pour l'instant.") + "</div>" +
+        '<a class="fl" href="' + esc(t.lien) + '" target="_blank" rel="noopener">Voir la fiche ›</a></div></div>';
+    });
+    var keep = $("cine-grid").scrollTop;
+    $("cine-grid").innerHTML = out || '<div class="sp-loading">Aucune nouveauté cette semaine.</div>';
+    $("cine-grid").scrollTop = keep;
+  }, function () {
+    $("cine-tabs").innerHTML = cineModes();
+    $("cine-grid").innerHTML = '<div class="sp-loading">Nouveautés streaming indisponibles (pas de connexion ?).</div>';
+  });
+}
 
 function cineDate(s) { var d = parseDay(s); return d.getDate() + " " + MOIS[d.getMonth()]; }
 function cineDur(m) { return m ? Math.floor(m / 60) + "h" + pad(m % 60) : ""; }
 
 function cineRender() {
+  if (cine.mode === "stream") { streamRender(); return; }
   spGet(CINE_URL, 1800, function (d) {
     var lists = d.listes || [], L = lists[0];
     lists.forEach(function (x) { if (x.id === cine.view) { L = x; } });
     var j0 = d.jours[0], j1 = d.jours[1];
-    var html = lists.map(function (x) {
+    var html = cineModes() + lists.map(function (x) {
       return '<button class="chip' + (x === L ? " on" : "") + '" data-cv="' + x.id + '">' + esc(x.nom) + " <small>" + x.films.length + "</small></button>";
     }).join("");
     if (L.id === "now") {
@@ -4594,6 +4669,10 @@ function cineRender() {
 $("page-cine").addEventListener("click", function (e) {
   var el = e.target;
   while (el && el !== this) {
+    var md = el.getAttribute("data-mode"), pl = el.getAttribute("data-plat");
+    if (md) { cine.mode = md; store.set("cineMode", md); $("cine-grid").scrollTop = 0; cineRender(); return; }
+    if (pl !== null) { cine.plat = pl; store.set("cinePlat", pl); $("cine-grid").scrollTop = 0; cineRender(); return; }
+    if (el.getAttribute("data-all")) { cine.all = !cine.all; $("cine-grid").scrollTop = 0; cineRender(); return; }
     var v = el.getAttribute("data-cv");
     if (v) { cine.view = v; store.set("cineView", v); $("cine-grid").scrollTop = 0; cineRender(); return; }
     if (el.getAttribute("data-only")) { cine.only = !cine.only; $("cine-grid").scrollTop = 0; cineRender(); return; }
