@@ -956,6 +956,25 @@ input, textarea { -webkit-user-select: text; user-select: text; }
 .sday { grid-column: 1 / -1; font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 1.6rem; text-transform: uppercase; letter-spacing: .1rem; color: var(--pink); margin: .4rem 0 -.2rem; }
 .sday:first-child { margin-top: 0; }
 .splat { align-self: flex-start; color: #fff; font-family: var(--cond); font-weight: 800; font-size: 1.15rem; letter-spacing: .05rem; text-transform: uppercase; border-radius: .4rem; padding: 0 .5rem; margin-bottom: .3rem; }
+
+/* TV > Sport */
+#tv-grid.sport { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.tvs { padding: .8rem 1rem .9rem; }
+.tvs.live { border-color: rgba(255, 63, 164, .6); box-shadow: 0 0 1rem rgba(255, 63, 164, .25); }
+.tvs-h { font-family: var(--cond); font-size: 1.3rem; color: var(--muted); }
+.tvs-h b { color: var(--cyan); font-size: 1.6rem; }
+.tvs-live { color: var(--pink); font-weight: 700; margin-left: .3rem; }
+.tvs-m span { display: flex; align-items: center; color: var(--text); font-size: 1.5rem; font-weight: 600; line-height: 1.25; margin-top: .25rem; }
+.tvs-m img { width: 2.1rem; height: 2.1rem; margin-right: .6rem; object-fit: contain; }
+.tvs-t { font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 1.7rem; text-transform: uppercase; line-height: 1.15; margin-top: .2rem; }
+.tvs-s { font-size: 1.25rem; color: var(--muted); margin-top: .15rem; }
+.tvs-c { display: flex; flex-wrap: wrap; align-items: center; margin-top: .5rem; }
+.tvs-c .flag { font-size: 1.6rem; margin-right: .5rem; }
+.tvs-c .pill { font-family: var(--cond); font-weight: 700; font-size: 1.25rem; background: var(--card2); border: 1px solid rgba(45, 226, 230, .35); color: var(--text); border-radius: .5rem; padding: .05rem .5rem; margin: 0 .35rem .3rem 0; white-space: nowrap; }
+.tvs-c .pill.loc { border-color: var(--line); color: var(--muted); }
+.tvs-c .pill.all { border-style: dashed; border-color: rgba(255, 158, 79, .6); }
+.tvs-c .pill i { font-style: normal; font-weight: 400; font-size: 1.05rem; color: var(--dim); }
+.tvs-none { font-size: 1.2rem; color: var(--dim); font-style: italic; margin-top: .5rem; }
 </style>
 </head>
 <body>
@@ -4405,7 +4424,9 @@ function frNews() {
 </script>
 <script>
 /* =====================================================================
-   ONGLET TV — programme de la TNT, 1re et 2e parties de soirée
+   ONGLET TV — « Ce soir » : programme de la TNT, 1re et 2e parties de soirée
+   « Sport » : matchs des 7 prochains jours et leurs chaînes en France, aux
+   États-Unis, au Canada et au Royaume-Uni (data/tvsport.json, outils/tvsport.py)
    Source : xmltvfr.fr (guide XMLTV gratuit, ~9 jours, lecture autorisée).
    Le fichier (~840 Ko compressé) est téléchargé une fois par jour ; on n'en
    garde que les soirées, mémorisées sur l'iPad.
@@ -4419,7 +4440,77 @@ var TV_CATS = [
   ["divert", "Divertissement", /Divertissement|Jeu|Variétés|Spectacle|Musique|Humour|Téléréalité/i],
   ["doc", "Docs & magazines", /Documentaire|Magazine|Reportage|Débat|Information/i]
 ];
-var tv = { data: null, day: null, cat: store.get("tvCat") || "all", loading: false };
+var tv = { data: null, day: null, cat: store.get("tvCat") || "all", loading: false, mode: store.get("tvMode") || "soir", sday: null, fam: store.get("tvFam") || "all" };
+var TVSPORT_URL = /localhost|127\.0\.0\.1/.test(location.hostname) ? "data/tvsport.json"
+  : "https://raw.githubusercontent.com/LouisD92/dashboard_ipad/main/data/tvsport.json";
+var TVS_FAMS = [["all", "Tout"], ["foot", "⚽︎ Foot"], ["rugby", "🏉 Rugby"], ["nfl", "🏈 NFL"], ["nba", "🏀 NBA"], ["nhl", "🏒 NHL"], ["f1", "🏎 F1"], ["autres", "Autres sports"]];
+var TVS_PAYS = [["fr", "🇫🇷"], ["us", "🇺🇸"], ["ca", "🇨🇦"], ["uk", "🇬🇧"]];
+
+function tvModes() {
+  return '<button class="chip mode' + (tv.mode === "soir" ? " on" : "") + '" data-tvmode="soir">📺 Ce soir</button>' +
+    '<button class="chip mode' + (tv.mode === "sport" ? " on" : "") + '" data-tvmode="sport">🏟 Sport</button><i class="chipsep"></i>';
+}
+function tvsDayKey(d) { return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()); }
+
+/* ---------- Sport : matchs et chaînes en France, aux États-Unis, au Canada et au Royaume-Uni ---------- */
+function tvSportRender() {
+  spGet(TVSPORT_URL, 1800, function (d) {
+    var now = Date.now(), items = [];
+    (d.matchs || []).forEach(function (m) { var t = Date.parse(m.t); if (t + 2.5 * 3600e3 > now) { items.push({ k: "m", t: t, m: m }); } });
+    (d.autres || []).forEach(function (a) { var t = Date.parse(a.t); if (Date.parse(a.fin) > now) { items.push({ k: "a", t: t, a: a }); } });
+    // Jours disponibles
+    var days = [];
+    items.forEach(function (it) { var k = tvsDayKey(new Date(it.t)); if (days.indexOf(k) < 0) { days.push(k); } });
+    days.sort();
+    if (!tv.sday || days.indexOf(tv.sday) < 0) { tv.sday = days[0]; }
+    var html = tvModes();
+    days.slice(0, 7).forEach(function (k, i) {
+      var dt = new Date(+k.slice(0, 4), +k.slice(4, 6) - 1, +k.slice(6, 8));
+      var lab = k === tvsDayKey(new Date()) ? "Aujourd'hui" : k === tvsDayKey(new Date(now + 864e5)) ? "Demain" : JOURS[dt.getDay()] + " " + dt.getDate();
+      html += '<button class="chip' + (k === tv.sday ? " on" : "") + '" data-sday="' + k + '">' + lab + "</button>";
+    });
+    $("tv-days").innerHTML = html;
+    var inDay = items.filter(function (it) { return tvsDayKey(new Date(it.t)) === tv.sday; });
+    $("tv-cats").innerHTML = TVS_FAMS.map(function (f) {
+      var n = inDay.filter(function (it) { return f[0] === "all" ? it.k === "m" : f[0] === "autres" ? it.k === "a" : it.k === "m" && it.m.f === f[0]; }).length;
+      return '<button class="chip' + (f[0] === tv.fam ? " on" : "") + '" data-fam="' + f[0] + '">' + f[1] + " <small>" + n + "</small></button>";
+    }).join("") + '<div class="status">màj ' + esc((d.maj || "").slice(11, 16)) + "</div>";
+
+    var list = inDay.filter(function (it) { return tv.fam === "all" ? it.k === "m" : tv.fam === "autres" ? it.k === "a" : it.k === "m" && it.m.f === tv.fam; });
+    list.sort(function (a, b) { return a.t - b.t; });
+    var out = "";
+    list.forEach(function (it) {
+      var t = new Date(it.t), hmTxt = pad(t.getHours()) + ":" + pad(t.getMinutes());
+      if (it.k === "a") {
+        var a = it.a, f = new Date(a.fin), live = it.t <= now && now < Date.parse(a.fin);
+        out += '<div class="card tvs autre"><div class="tvs-h"><b>' + hmTxt + "</b> – " + pad(f.getHours()) + ":" + pad(f.getMinutes()) + (live ? ' <span class="tvs-live">● DIRECT</span>' : "") + "</div>" +
+          '<div class="tvs-t">' + esc(a.titre.split(" | ")[0]) + "</div>" + (a.sous || a.titre.indexOf(" | ") > 0 ? '<div class="tvs-s">' + esc(a.titre.split(" | ")[1] || a.sous) + "</div>" : "") +
+          '<div class="tvs-c"><span class="flag">🇫🇷</span>' + a.ch.map(function (c) { return '<span class="pill">' + esc(c) + "</span>"; }).join("") + "</div></div>";
+        return;
+      }
+      var m = it.m, live = m.live || (it.t <= now && now < it.t + 2.2 * 3600e3), rows = "";
+      TVS_PAYS.forEach(function (p) {
+        var l = m.ch[p[0]];
+        if (!l || !l.length) { return; }
+        rows += '<div class="tvs-c"><span class="flag">' + p[1] + "</span>" + l.map(function (c) {
+          return '<span class="pill' + (c[1] ? (c[1] === "tous les matchs" ? " all" : " loc") : "") + '">' + esc(c[0]) + (c[1] && c[1] !== "tous les matchs" ? " <i>" + esc(c[1]) + "</i>" : "") + "</span>";
+        }).join("") + "</div>";
+      });
+      out += '<div class="card tvs' + (live ? " live" : "") + '"><div class="tvs-h"><b>' + hmTxt + "</b> · " + esc(m.lig) + (live ? ' <span class="tvs-live">● DIRECT</span>' : "") + "</div>" +
+        (m.dom ? '<div class="tvs-m"><span>' + (m.ld ? '<img src="' + esc(m.ld) + '" alt="">' : "") + esc(m.dom) + "</span><span>" + (m.le ? '<img src="' + esc(m.le) + '" alt="">' : "") + esc(m.ext) + "</span></div>"
+               : '<div class="tvs-t">' + esc(m.titre || m.lig) + "</div>") +
+        (rows || '<div class="tvs-none">Diffusion non trouvée</div>') + "</div>";
+    });
+    var keep = $("tv-grid").scrollTop;
+    $("tv-grid").className = "sport";
+    $("tv-grid").innerHTML = out || '<div class="sp-loading">Rien dans cette catégorie ce jour-là.</div>';
+    $("tv-grid").scrollTop = keep;
+  }, function () {
+    $("tv-days").innerHTML = tvModes();
+    $("tv-cats").innerHTML = "";
+    $("tv-grid").innerHTML = '<div class="sp-loading">Programme sport indisponible (pas de connexion ?).</div>';
+  });
+}
 
 function xmlDecode(s) {
   return String(s || "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#039;|&apos;/g, "'").replace(/&amp;/g, "&");
@@ -4506,12 +4597,14 @@ function tvMatch(p) {
 }
 
 function tvRender() {
+  if (tv.mode === "sport") { tvSportRender(); return; }
+  $("tv-grid").className = "";
   var d = tv.data;
   if (!d) { return; }
   var keys = Object.keys(d.days).sort().filter(function (k) { return k >= ymd(new Date()); });
   if (!tv.day || keys.indexOf(tv.day) < 0) { tv.day = keys[0]; }
   // Jours
-  var html = "";
+  var html = tvModes();
   keys.forEach(function (k, i) {
     var dt = new Date(+k.slice(0, 4), +k.slice(4, 6) - 1, +k.slice(6, 8));
     html += '<button class="chip' + (k === tv.day ? " on" : "") + '" data-day="' + k + '">' + (i === 0 ? "Ce soir" : i === 1 ? "Demain" : JOURS[dt.getDay()] + " " + dt.getDate()) + "</button>";
@@ -4545,6 +4638,10 @@ function tvRender() {
 $("page-tv").addEventListener("click", function (e) {
   var el = e.target;
   while (el && el !== this) {
+    var md = el.getAttribute("data-tvmode"), sd = el.getAttribute("data-sday"), fam = el.getAttribute("data-fam");
+    if (md) { tv.mode = md; store.set("tvMode", md); $("tv-grid").scrollTop = 0; if (md === "soir") { tvLoad(tvRender); } else { tvRender(); } return; }
+    if (sd) { tv.sday = sd; $("tv-grid").scrollTop = 0; tvRender(); return; }
+    if (fam) { tv.fam = fam; store.set("tvFam", fam); $("tv-grid").scrollTop = 0; tvRender(); return; }
     var dday = el.getAttribute("data-day"), cat = el.getAttribute("data-cat");
     if (dday) { tv.day = dday; $("tv-grid").scrollTop = 0; tvRender(); return; }
     if (cat) { tv.cat = cat; store.set("tvCat", cat); tvRender(); return; }
@@ -4552,7 +4649,7 @@ $("page-tv").addEventListener("click", function (e) {
   }
 });
 
-registerTab("tv", { show: function () { tvLoad(tvRender); } });
+registerTab("tv", { show: function () { if (tv.mode === "sport") { tvRender(); } else { tvLoad(tvRender); } } });
 </script>
 <script>
 /* =====================================================================

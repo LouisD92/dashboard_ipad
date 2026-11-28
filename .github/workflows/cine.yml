@@ -1,5 +1,5 @@
 # Met à jour data/cine.json (films, séances au Pathé Angers) et data/streaming.json
-# (nouveautés Netflix, Disney+, Prime Video) toutes les 3 heures.
+# (nouveautés Netflix, Disney+, Prime Video) et data/tvsport.json (matchs et chaînes) toutes les 3 heures.
 name: Données cinéma
 on:
   schedule:
@@ -16,11 +16,12 @@ jobs:
         run: |
           python3 outils/cine.py || true   # Pathé refuse souvent les serveurs GitHub : données gardées
           python3 outils/streaming.py
+          python3 outils/tvsport.py || true
       - name: Enregistrer
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/cine.json data/streaming.json
+          git add data/cine.json data/streaming.json data/tvsport.json
           if git diff --cached --quiet; then echo "Pas de changement"; exit 0; fi
           git commit -m "Données cinéma $(date -u +%Y-%m-%dT%H:%M)"
           git pull --rebase -q && git push
