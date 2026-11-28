@@ -848,6 +848,46 @@ input, textarea { -webkit-user-select: text; user-select: text; }
 .turf .clab { position: absolute; font-style: normal; font-family: var(--cond); font-weight: 700; font-size: 1rem; line-height: .75rem; color: #fff; text-shadow: 0 0 .3rem #000; white-space: nowrap; z-index: 1; }
 .fld.chart .turf .bl { margin-top: -.475rem; }
 .fld.big.chart .turf .bl { width: 1.8rem; height: 1.15rem; margin: -.2rem 0 0 -.9rem; }
+
+/* ---------- Tram ---------- */
+#page-tram { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr); }
+#tram-card { grid-row: 1; }
+#tram-map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+/* Carte façon GPS de jeu : nuit bleu-vert, coucher de soleil dans les coins */
+#tram-map.gta .leaflet-tile-pane { -webkit-filter: sepia(1) hue-rotate(155deg) saturate(1.7) brightness(.92) contrast(1.2); filter: sepia(1) hue-rotate(155deg) saturate(1.7) brightness(.92) contrast(1.2); }
+#tram-card:after { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 450;
+  background: radial-gradient(ellipse at 100% 0%, rgba(255, 63, 164, .22), transparent 45%), radial-gradient(ellipse at 0% 100%, rgba(255, 158, 79, .16), transparent 45%), radial-gradient(ellipse at 50% 50%, transparent 60%, rgba(7, 4, 12, .55)); }
+#tram-hud { position: absolute; bottom: 1.2rem; left: 1.2rem; z-index: 600; background: rgba(7, 4, 12, .82); border: 1px solid rgba(255, 255, 255, .12); border-radius: 1.2rem; padding: 1rem 1.3rem 1.1rem; min-width: 19rem; }
+.th-k { font-family: var(--cond); font-style: italic; font-weight: 700; font-size: 1.3rem; letter-spacing: .12rem; text-transform: uppercase; color: var(--muted); }
+.th-n { font-family: var(--cond); font-style: italic; font-weight: 800; font-size: 5.6rem; line-height: 1; background: var(--sunset); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .5rem; }
+.th-l { display: flex; margin-top: .4rem; }
+.th-c { font-family: var(--cond); font-weight: 700; font-size: 1.8rem; margin-right: 1.2rem; display: flex; align-items: center; }
+.th-c b { display: inline-block; width: 2.4rem; height: 2.4rem; line-height: 2.4rem; text-align: center; border-radius: .6rem; color: #fff; font-size: 1.6rem; margin-right: .5rem; }
+.th-s { font-size: 1.1rem; color: var(--dim); margin-top: .6rem; }
+.th-s.err { color: #ff7a9c; }
+/* Panneau d'arrêt : afficheur noir à LED jaunes */
+#tram-board { position: absolute; top: 1.2rem; right: 1.2rem; z-index: 600; width: 38rem; background: #050505; border: .4rem solid #1d1d1f; border-radius: 1rem; padding: 1.1rem 1.3rem 1.2rem;
+  box-shadow: 0 0 0 1px #3a3a3e, 0 1rem 3rem rgba(0, 0, 0, .7); font-family: "Doto", monospace; color: #ffc400; text-shadow: 0 0 .5rem rgba(255, 196, 0, .65); }
+.tb-head { font-weight: 900; font-size: 2.3rem; text-transform: uppercase; letter-spacing: .1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-lines { margin: .3rem 0 .6rem; }
+.tb-lines b { display: inline-block; font-family: var(--cond); font-weight: 800; color: #fff; text-shadow: none; font-size: 1.3rem; width: 2.2rem; text-align: center; border-radius: .4rem; margin-right: .4rem; }
+.tb-row { display: flex; align-items: center; border-top: 1px dashed rgba(255, 196, 0, .25); padding: .55rem 0; }
+.tb-ln { -webkit-flex-shrink: 0; flex-shrink: 0; width: 3rem; height: 3rem; line-height: 3rem; text-align: center; border-radius: .5rem; color: #fff; text-shadow: none; font-family: var(--cond); font-weight: 800; font-size: 2rem; margin-right: 1rem; }
+.tb-d { -webkit-flex: 1; flex: 1; min-width: 0; font-weight: 800; font-size: 1.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
+.tb-m { font-weight: 900; font-size: 2.8rem; margin-left: .8rem; white-space: nowrap; }
+.tb-m small { font-size: 1.4rem; margin-left: .3rem; }
+.tb-now { font-style: normal; font-size: 1.8rem; -webkit-animation: tbblink 1s steps(2, start) infinite; animation: tbblink 1s steps(2, start) infinite; }
+@-webkit-keyframes tbblink { to { visibility: hidden; } }
+@keyframes tbblink { to { visibility: hidden; } }
+.tb-msg { font-weight: 700; font-size: 1.5rem; line-height: 1.4; margin-top: .6rem; }
+/* Rames */
+.trm-w { background: none; border: 0; }
+.trm { position: relative; width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 10px rgba(255, 255, 255, .8), 0 0 18px rgba(255, 63, 164, .6); }
+.trm b { position: absolute; left: 0; right: 0; top: 0; line-height: 22px; text-align: center; font-family: var(--cond); font-weight: 800; font-size: 14px; color: #fff; }
+.trd { position: absolute; left: 50%; top: 50%; width: 0; height: 0; margin: -22px 0 0 -6px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 9px solid #fff;
+  -webkit-transform-origin: 6px 22px; transform-origin: 6px 22px; }
+.tr-tip { background: #050505; color: #ffc400; border: 1px solid #ffc400; font-family: "Doto", monospace; font-weight: 900; font-size: 13px; box-shadow: 0 0 8px rgba(255, 196, 0, .5); }
+.tr-tip:before { border-top-color: #ffc400 !important; }
 </style>
 </head>
 <body>
@@ -901,6 +941,17 @@ input, textarea { -webkit-user-select: text; user-select: text; }
               d="M12 1.5c.9 0 1.4 1 1.4 2.2v5.4l8.1 4.8v2.1l-8.1-2.4v4.9l2.4 1.8v1.8L12 21.2l-3.8.9v-1.8l2.4-1.8v-4.9l-8.1 2.4v-2.1l8.1-4.8V3.7c0-1.2.5-2.2 1.4-2.2z"/>
       </svg>
       <span>Radar</span>
+    </button>
+
+    <button class="tab" data-tab="tram">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M12 3.5h8M16 3.5v3"/>
+        <rect x="8" y="6.5" width="16" height="17" rx="4"/>
+        <path d="M8 15h16M11.5 10h9"/>
+        <circle cx="12" cy="19.5" r="1" fill="currentColor"/><circle cx="20" cy="19.5" r="1" fill="currentColor"/>
+        <path d="M11 23.5l-3 5M21 23.5l3 5M9.5 26.5h13"/>
+      </svg>
+      <span>Tram</span>
     </button>
 
     <button class="tab" data-tab="sports">
@@ -1057,6 +1108,15 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     <section class="page" id="page-cine">
       <div class="chiprow" id="cine-tabs"></div>
       <div id="cine-grid"></div>
+    </section>
+
+    <!-- ================= TRAM ================= -->
+    <section class="page" id="page-tram">
+      <div class="card" id="tram-card">
+        <div id="tram-map"></div>
+        <div id="tram-hud"></div>
+        <div id="tram-board"></div>
+      </div>
     </section>
 
     <!-- ================= AGENDA ================= -->
@@ -4846,6 +4906,251 @@ registerTab("agenda", {
     agTimer = setInterval(function () { if (Date.now() - ag.at > 10 * 60e3) { agLoad(); } else { agRender(); } }, 60e3);
   },
   hide: function () { clearInterval(agTimer); }
+});
+</script>
+<script>
+/* =====================================================================
+   ONGLET TRAM — les 3 lignes du tram d'Angers en temps réel (réseau Irigo)
+   - Réseau (tracés, arrêts) : data/tram.json, préparé par outils/tram.py
+   - Temps réel : relais Cloudflare (adresse .../tram) qui lit les flux
+     ouverts Irigo : position de chaque rame + horaires prévus à chaque arrêt.
+   Entre deux mises à jour, chaque rame avance en douceur le long du tracé
+   d'après les horaires prévus.
+   ===================================================================== */
+var TRAM_NET = /localhost|127\.0\.0\.1/.test(location.hostname) ? "data/tram.json"
+  : "https://raw.githubusercontent.com/LouisD92/dashboard_ipad/main/data/tram.json";
+var TRAM_RT = CONFIG.planeProxy.replace(/\/+$/, "") + "/tram";
+(function () { var m = location.search.match(/[?&]tramrt=([^&]+)/); if (m) { TRAM_RT = decodeURIComponent(m[1]); } })();
+
+var tr = { net: null, map: null, rt: null, at: 0, err: "", sel: store.get("tramStop"), veh: {}, markers: {}, stopLayer: null,
+           timerRT: null, timerAnim: null, timerBoard: null, sens: {}, loading: false };
+
+/* ---------- Géométrie le long d'un tracé ---------- */
+function trXY(p, lat0) { return [p[1] * 111320 * Math.cos(lat0 * Math.PI / 180), p[0] * 110540]; }
+// distance (m) le long du tracé du point le plus proche de [lat, lon]
+function trProject(S, lat, lon) {
+  var best = 0, bd = 1e18, lat0 = S.pts[0][0], P = trXY([lat, lon], lat0);
+  for (var i = 0; i < S.pts.length - 1; i++) {
+    var A = S.xy[i], B = S.xy[i + 1], dx = B[0] - A[0], dy = B[1] - A[1], l2 = dx * dx + dy * dy || 1e-9;
+    var t = Math.max(0, Math.min(1, ((P[0] - A[0]) * dx + (P[1] - A[1]) * dy) / l2));
+    var qx = A[0] + t * dx - P[0], qy = A[1] + t * dy - P[1], d = qx * qx + qy * qy;
+    if (d < bd) { bd = d; best = S.cum[i] + t * (S.cum[i + 1] - S.cum[i]); }
+  }
+  return best;
+}
+// point [lat, lon] et cap (degrés) à la distance d le long du tracé
+function trAt(S, d) {
+  var c = S.cum, n = c.length, i = 0;
+  if (d <= 0) { i = 0; d = 0; } else if (d >= c[n - 1]) { i = n - 2; d = c[n - 1]; }
+  else { while (i < n - 2 && c[i + 1] < d) { i++; } }
+  var a = S.pts[i], b = S.pts[i + 1], t = (d - c[i]) / ((c[i + 1] - c[i]) || 1);
+  var hd = Math.atan2((b[1] - a[1]) * Math.cos(a[0] * Math.PI / 180), b[0] - a[0]) * 180 / Math.PI;
+  return { ll: [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])], hd: hd };
+}
+
+/* ---------- Données ---------- */
+function trLoadNet(cb) {
+  if (tr.net) { cb(); return; }
+  spGet(TRAM_NET, 7 * 86400, function (d) {
+    tr.net = d;
+    d.lignes.forEach(function (L) {
+      L.sens.forEach(function (S) {
+        S.xy = S.pts.map(function (p) { return trXY(p, S.pts[0][0]); });
+        S.at = {};
+        S.arrets.forEach(function (a) { S.at[a[0]] = a[1]; });
+        tr.sens[L.id + S.d] = S;
+      });
+    });
+    cb();
+  }, function () { $("tram-board").innerHTML = '<div class="tb-msg">Réseau indisponible (pas de connexion ?)</div>'; });
+}
+
+function trLoadRT() {
+  if (tr.loading) { return; }
+  tr.loading = true;
+  getJSON(TRAM_RT + (TRAM_RT.indexOf("?") < 0 ? "?" : "&") + "_=" + Date.now(), function (d) {
+    tr.loading = false;
+    if (d.error) { tr.err = d.error; trHud(); return; }
+    tr.rt = d; tr.at = Date.now(); tr.err = "";
+    trUpdateVehicles();
+    trHud(); trBoard();
+  }, function (e) {
+    tr.loading = false;
+    tr.err = /404/.test(e) ? "le relais n'a pas encore la partie Tram" : e;
+    trHud();
+  });
+}
+
+/* ---------- Rames : trajectoire prévue (distance le long du tracé en fonction du temps) ---------- */
+function trUpdateVehicles() {
+  var up = {}, seen = {};
+  tr.rt.u.forEach(function (u) { up[u[0]] = u; });
+  tr.rt.v.forEach(function (v) {
+    var id = v[0] || v[8], line = v[1], S = tr.sens[line + v[2]] || tr.sens[line + "0"];
+    if (!S) { return; }
+    seen[id] = true;
+    var d0 = trProject(S, v[3], v[4]), keys = [[v[7] * 1000 || Date.now(), d0]], u = up[v[0]];
+    if (u) {
+      u[3].forEach(function (s) {
+        var d = S.at[s[0]];
+        if (d !== undefined && d > keys[keys.length - 1][1] - 5 && s[1] * 1000 > keys[keys.length - 1][0]) { keys.push([s[1] * 1000, d]); }
+      });
+    }
+    var old = tr.veh[id];
+    tr.veh[id] = { id: id, line: line, S: S, keys: keys, disp: old && old.S === S ? old.disp : d0, last: u ? tr.net.noms[u[3][u[3].length - 1][0]] || "" : "",
+                   lat: v[3], lon: v[4], num: v[8] };
+  });
+  Object.keys(tr.veh).forEach(function (id) { if (!seen[id]) { delete tr.veh[id]; } });
+}
+function trTarget(V, now) {
+  var k = V.keys;
+  if (now <= k[0][0] || k.length === 1) { return k[0][1]; }
+  for (var i = 1; i < k.length; i++) {
+    if (now <= k[i][0]) { return k[i - 1][1] + (k[i][1] - k[i - 1][1]) * (now - k[i - 1][0]) / (k[i][0] - k[i - 1][0]); }
+  }
+  return k[k.length - 1][1];
+}
+
+function trColor(id) {
+  var L = null;
+  (tr.net ? tr.net.lignes : []).forEach(function (x) { if (x.id === id) { L = x; } });
+  return L ? L.couleur : "#fff";
+}
+
+function trAnimate() {
+  if (!tr.map || !tr.net) { return; }
+  var now = Date.now(), alive = {};
+  Object.keys(tr.veh).forEach(function (id) {
+    var V = tr.veh[id], target = trTarget(V, now);
+    V.disp += (target - V.disp) * 0.25; // rattrapage en douceur
+    var p = trAt(V.S, V.disp);
+    alive[id] = true;
+    var m = tr.markers[id];
+    if (!m) {
+      m = tr.markers[id] = L.marker(p.ll, { icon: L.divIcon({ className: "trm-w", iconSize: [26, 26], iconAnchor: [13, 13],
+        html: '<div class="trm" style="background:' + trColor(V.line) + '"><i class="trd"></i><b>' + V.line + "</b></div>" }), zIndexOffset: 1000, interactive: false }).addTo(tr.map);
+    } else {
+      m.setLatLng(p.ll);
+    }
+    var el = m.getElement && m.getElement(), dir = el && el.querySelector(".trd");
+    if (dir) { dir.style.webkitTransform = dir.style.transform = "rotate(" + Math.round(p.hd) + "deg)"; }
+  });
+  Object.keys(tr.markers).forEach(function (id) { if (!alive[id]) { tr.map.removeLayer(tr.markers[id]); delete tr.markers[id]; } });
+}
+
+/* ---------- Affichages : compteur et panneau d'arrêt ---------- */
+function trHud() {
+  var n = { A: 0, B: 0, C: 0 }, tot = 0;
+  Object.keys(tr.veh).forEach(function (id) { n[tr.veh[id].line]++; tot++; });
+  var html = '<div class="th-k">Trams en circulation</div><div class="th-n">' + (tr.rt ? tot : "—") + "</div><div class=\"th-l\">";
+  (tr.net ? tr.net.lignes : []).forEach(function (L) {
+    html += '<span class="th-c"><b style="background:' + L.couleur + '">' + L.id + "</b>" + (tr.rt ? n[L.id] : "–") + "</span>";
+  });
+  html += "</div>";
+  var t = tr.rt ? new Date(tr.rt.t * 1000) : null;
+  html += '<div class="th-s' + (tr.err ? " err" : "") + '">' + (tr.err ? "⚠︎ " + esc(tr.err) : t ? "Temps réel · " + pad(t.getHours()) + ":" + pad(t.getMinutes()) + ":" + pad(t.getSeconds()) : "Connexion…") + "</div>";
+  $("tram-hud").innerHTML = html;
+}
+
+function trStopById(i) { return tr.net && tr.net.arrets[i]; }
+
+function trBoard() {
+  var A = tr.sel !== null && tr.sel !== undefined ? trStopById(+tr.sel) : null;
+  if (!A) { $("tram-board").innerHTML = '<div class="tb-head">ANGERS TRAM</div><div class="tb-msg">Touche un arrêt sur la carte pour voir les prochains passages.</div>'; return; }
+  var ids = {}, now = Date.now(), list = [];
+  A.ids.forEach(function (s) { ids[s] = true; });
+  if (tr.rt) {
+    tr.rt.u.forEach(function (u) {
+      var st = u[3], last = st.length ? st[st.length - 1][0] : "";
+      st.forEach(function (s) {
+        if (ids[s[0]] && s[1] * 1000 > now - 30000 && !ids[last]) {
+          list.push({ line: u[1], dest: tr.net.noms[last] || "", t: s[1] * 1000 });
+        }
+      });
+    });
+  }
+  list.sort(function (a, b) { return a.t - b.t; });
+  // 4 prochains passages, et au moins 2 par ligne quand l'arrêt en a plusieurs
+  var rows = list.slice(0, 4), per = {};
+  rows.forEach(function (r) { per[r.line] = (per[r.line] || 0) + 1; });
+  A.l.split("").forEach(function (ln) {
+    list.forEach(function (r) { if (r.line === ln && (per[ln] || 0) < 2 && rows.indexOf(r) < 0) { rows.push(r); per[ln] = (per[ln] || 0) + 1; } });
+  });
+  rows.sort(function (a, b) { return a.t - b.t; });
+  var html = '<div class="tb-head">' + esc(A.n) + '</div><div class="tb-lines">';
+  A.l.split("").forEach(function (ln) { html += '<b style="background:' + trColor(ln) + '">' + ln + "</b>"; });
+  html += "</div>";
+  if (!rows.length) {
+    html += '<div class="tb-msg">' + (tr.rt ? "Aucun tram annoncé dans l'heure." : "Chargement…") + "</div>";
+  }
+  rows.forEach(function (r) {
+    var mn = Math.floor((r.t - now) / 60000);
+    html += '<div class="tb-row"><b class="tb-ln" style="background:' + trColor(r.line) + '">' + r.line + '</b><span class="tb-d">' + esc(r.dest) + '</span><span class="tb-m">' +
+      (mn <= 0 ? '<i class="tb-now">À QUAI</i>' : mn + "<small>min</small>") + "</span></div>";
+  });
+  $("tram-board").innerHTML = html;
+}
+
+/* ---------- Carte ---------- */
+function trInitMap() {
+  if (tr.map || !leafletOK("tram-map")) { return; }
+  tr.map = makeMap("tram-map", 47.4705, -0.5560, 13);
+  tr.map.options.maxZoom = 16;
+  tr.map.options.zoomSnap = 0.25; // cadrage plus serré que les niveaux entiers
+  $("tram-map").className += " gta";
+  var bounds = [];
+  // Lignes : A large, B moyenne, C fine par-dessus -> les troncs communs restent visibles
+  var W = { A: 9, B: 6, C: 3.2 };
+  ["A", "B", "C"].forEach(function (id) {
+    tr.net.lignes.forEach(function (Ln) {
+      if (Ln.id !== id) { return; }
+      var pts = Ln.sens[0].pts;
+      bounds = bounds.concat(pts);
+      L.polyline(pts, { color: Ln.couleur, weight: W[id] + 10, opacity: 0.18, interactive: false }).addTo(tr.map);
+      L.polyline(pts, { color: "#07040c", weight: W[id] + 2.5, opacity: 0.9, interactive: false }).addTo(tr.map);
+      L.polyline(pts, { color: Ln.couleur, weight: W[id], opacity: 1, interactive: false }).addTo(tr.map);
+    });
+  });
+  tr.stopLayer = L.layerGroup().addTo(tr.map);
+  trDrawStops();
+  tr.bounds = bounds;
+  trFit();
+}
+// Cadrage : le réseau entier, entre le compteur (à gauche) et le panneau (à droite)
+function trFit() {
+  if (!tr.map || !tr.bounds) { return; }
+  var r = remPx();
+  tr.map.fitBounds(tr.bounds, { paddingTopLeft: [3 * r, 2.5 * r], paddingBottomRight: [36 * r, 1.5 * r] });
+}
+function trDrawStops() {
+  tr.stopLayer.clearLayers();
+  tr.net.arrets.forEach(function (A, i) {
+    var sel = String(i) === String(tr.sel), big = A.l.length > 1;
+    L.circleMarker([A.la, A.lo], { radius: sel ? 9 : big ? 6 : 4.5, color: sel ? "#ffd400" : "#07040c", weight: sel ? 3 : 2,
+      fillColor: sel ? "#ffd400" : "#fff", fillOpacity: 1, interactive: false }).addTo(tr.stopLayer);
+    // zone de toucher plus large que le point
+    var hit = L.circleMarker([A.la, A.lo], { radius: 14, stroke: false, fillOpacity: 0, fillColor: "#000" }).addTo(tr.stopLayer);
+    hit.on("click", function () { tr.sel = String(i); store.set("tramStop", tr.sel); trDrawStops(); trBoard(); });
+    if (sel) {
+      L.tooltip({ permanent: true, direction: "top", offset: [0, -10], className: "tr-tip" }).setLatLng([A.la, A.lo]).setContent(esc(A.n)).addTo(tr.stopLayer);
+    }
+  });
+}
+
+registerTab("tram", {
+  show: function () {
+    trLoadNet(function () {
+      trInitMap();
+      if (tr.map) { tr.map.invalidateSize(); }
+      trHud(); trBoard(); trLoadRT();
+    });
+    clearInterval(tr.timerRT); clearInterval(tr.timerAnim); clearInterval(tr.timerBoard);
+    tr.timerRT = setInterval(trLoadRT, 20000);
+    tr.timerAnim = setInterval(trAnimate, 200);
+    tr.timerBoard = setInterval(trBoard, 15000);
+  },
+  hide: function () { clearInterval(tr.timerRT); clearInterval(tr.timerAnim); clearInterval(tr.timerBoard); },
+  resize: function () { if (tr.map) { tr.map.invalidateSize(); trFit(); } }
 });
 </script>
 <script>startApp();</script>
