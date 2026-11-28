@@ -4625,22 +4625,27 @@ function cineRender() {
   spGet(CINE_URL, 1800, function (d) {
     var lists = d.listes || [], L = lists[0];
     lists.forEach(function (x) { if (x.id === cine.view) { L = x; } });
-    var j0 = d.jours[0], j1 = d.jours[1];
+    // Jours de séances encore valables (les données peuvent dater de la veille ou plus)
+    var t0 = new Date(), today = t0.getFullYear() + "-" + pad(t0.getMonth() + 1) + "-" + pad(t0.getDate());
+    var t1 = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() + 1), tomorrow = t1.getFullYear() + "-" + pad(t1.getMonth() + 1) + "-" + pad(t1.getDate());
+    var jdays = [];
+    (d.jours || []).forEach(function (j) { if (j === today) { jdays.push([j, "Aujourd'hui"]); } else if (j === tomorrow) { jdays.push([j, "Demain"]); } });
+    var j0 = jdays[0] ? jdays[0][0] : "x", j1 = jdays[1] ? jdays[1][0] : "x";
     var html = cineModes() + lists.map(function (x) {
       return '<button class="chip' + (x === L ? " on" : "") + '" data-cv="' + x.id + '">' + esc(x.nom) + " <small>" + x.films.length + "</small></button>";
     }).join("");
-    if (L.id === "now") {
+    if (L.id === "now" && jdays.length) {
       html += '<button class="chip' + (cine.only ? " on" : "") + '" data-only="1">🎟 Séances à ' + esc(d.cinema.replace("Pathé ", "")) + "</button>";
     }
     var m = /T(\d\d:\d\d)/.exec(d.maj || "");
-    html += '<div class="status">' + esc(d.cinema) + (m ? " · màj " + m[1] : "") + "</div>";
+    html += '<div class="status">' + esc(d.cinema) + (m ? " · màj " + m[1] : "") + (jdays.length ? "" : " · séances à voir sur pathe.fr") + "</div>";
     $("cine-tabs").innerHTML = html;
 
-    var films = L.films.filter(function (f) { return !cine.only || L.id !== "now" || (f.seances && (f.seances[j0] || f.seances[j1])); });
+    var films = L.films.filter(function (f) { return !cine.only || L.id !== "now" || !jdays.length || (f.seances && (f.seances[j0] || f.seances[j1])); });
     var out = "";
     films.forEach(function (f) {
       var sea = "";
-      [[j0, "Aujourd'hui"], [j1, "Demain"]].forEach(function (j) {
+      jdays.forEach(function (j) {
         var list = f.seances && f.seances[j[0]];
         if (!list || !list.length) { return; }
         sea += '<div class="sea"><span class="sj">' + j[1] + "</span>" + list.map(function (s) {
