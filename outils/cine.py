@@ -110,6 +110,9 @@ def main():
             out.append(cache[f["slug"]])
         return out
 
+    if not films:  # Pathé injoignable (ou refuse ce serveur) : on garde les données précédentes
+        print("Pathé injoignable : data/cine.json n'est pas modifié")
+        return
     data = {
         "maj": dt.datetime.now().strftime("%Y-%m-%dT%H:%M"),
         "cinema": "Pathé Angers", "jours": jours,
