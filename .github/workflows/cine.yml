@@ -1,0 +1,26 @@
+# Met à jour data/cine.json (films, séances au Pathé Angers) et data/streaming.json
+# (nouveautés Netflix, Disney+, Prime Video) toutes les 3 heures.
+name: Données cinéma
+on:
+  schedule:
+    - cron: "17 */3 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  maj:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Préparer les données
+        run: |
+          python3 outils/cine.py
+          python3 outils/streaming.py
+      - name: Enregistrer
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/cine.json data/streaming.json
+          if git diff --cached --quiet; then echo "Pas de changement"; exit 0; fi
+          git commit -m "Données cinéma $(date -u +%Y-%m-%dT%H:%M)"
+          git pull --rebase -q && git push
